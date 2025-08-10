@@ -3,7 +3,7 @@
 </h1>
 
 <p align="center">
-  可在网页上使用的背单词软件
+  一个可以在网页上背单词、背文章的网站
 </p>
 
 <p align="center">
@@ -17,9 +17,14 @@
 <a href="https://trendshift.io/repositories/14139" target="_blank" class="trendshift-badge"><img src="https://trendshift.io/api/badge/repositories/14139" alt="TypeWords | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 </div>
 
-## 📸 在线访问
+## 在线访问
 
 Github Pages: <https://2study.top>
+
+## 截图
+
+![image](/docs/word.png)
+![image](/docs/article.png)
 
 ## 🛠 功能列表
 
@@ -50,15 +55,6 @@ API 等词库。 尽可能满足大部分用户对背单词的需求，也非常
 3. 打开命令行，在项目根目录下，运行`npm install`来下载依赖。
 4. 执行`npm start`来启动项目，项目默认地址为[`http://localhost:3000`](http://localhost:3000)
 5. 在浏览器中打开[`http://localhost:3000`](http://localhost:3000)  来访问项目。
-
-## 📕 词库列表
-
-- CET-4、CET-6、GMAT、GRE、IELTS、SAT、TOEFL、BEC
-- 考研英语、专业四级英语、专业八级英语、商务英语
-- Coder Dict 程序员常用词
-- 高考、中考、人教版英语 3-9 年级
-- 王陆雅思王听力语料库 
-- 日语常见词、N1 ～ N5 
 
 ## 🎙 功能与建议
 
