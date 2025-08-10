@@ -11,6 +11,7 @@ import {isMobile, shakeCommonDict} from "@/utils";
 import router, {routes} from "@/router.ts";
 
 import {useRoute} from "vue-router";
+import ConflictNotice from "@/pages/pc/components/ConflictNotice.vue";
 
 const store = useBaseStore()
 const runtimeStore = useRuntimeStore()

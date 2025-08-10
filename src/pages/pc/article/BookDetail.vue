@@ -54,8 +54,8 @@ async function init() {
     if (!runtimeStore.editDict.id) {
       await router.push("/article")
     } else {
-      if (!runtimeStore.editDict.articles.length
-          && !runtimeStore.editDict.custom
+      if (!runtimeStore.editDict?.articles?.length
+          && !runtimeStore.editDict?.custom
           && ![DictId.articleCollect].includes(runtimeStore.editDict.id)
       ) {
         loading = true
@@ -66,6 +66,7 @@ async function init() {
       if (runtimeStore.editDict.articles.length) {
         selectArticle = runtimeStore.editDict.articles[0]
       }
+      console.log(runtimeStore.editDict)
     }
   }
 }

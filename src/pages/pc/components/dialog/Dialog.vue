@@ -93,13 +93,13 @@ watch(() => props.modelValue, n => {
     runtimeStore.modalList.push({id, close})
     zIndex = 999 + runtimeStore.modalList.length
     visible = true
+    console.log(12)
   } else {
     close()
   }
 })
 
 onMounted(() => {
-  // console.log('props.modelValue', props.modelValue)
   if (props.modelValue === undefined) {
     visible = true
     id = Date.now()

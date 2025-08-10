@@ -1,7 +1,5 @@
 import {Article, Word} from "@/types/types.ts";
 import {useBaseStore} from "@/stores/base.ts";
-import {nanoid} from "nanoid";
-import {getDefaultArticle} from "@/types/func.ts";
 
 export function useWordOptions() {
   const store = useBaseStore()
@@ -64,7 +62,7 @@ export function useArticleOptions() {
   const store = useBaseStore()
 
   function isArticleCollect(val: Article) {
-    return !!store.collectArticle.articles.find(v => v.id === val.id)
+    return !!store.collectArticle?.articles?.find(v => v.id === val.id)
   }
 
   //todo 这里先收藏，再修改。收藏里面的未同步。单词也是一样的

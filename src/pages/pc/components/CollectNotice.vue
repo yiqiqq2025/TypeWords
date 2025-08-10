@@ -3,7 +3,7 @@
 import {Icon} from "@iconify/vue";
 import Close from "@/components/icon/Close.vue";
 import BaseButton from "@/components/BaseButton.vue";
-import {watch} from "vue";
+import {onMounted, watch} from "vue";
 import {useSettingStore} from "@/stores/setting.ts";
 
 import {isMobile} from "@/utils";

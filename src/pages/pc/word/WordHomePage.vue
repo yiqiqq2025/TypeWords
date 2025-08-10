@@ -15,6 +15,7 @@ import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
 import {ElMessage, ElProgress, ElSlider} from 'element-plus';
 import BaseButton from "@/components/BaseButton.vue";
 import {getDefaultDict} from "@/types/func.ts";
+import ConflictNotice from "@/pages/pc/components/ConflictNotice.vue";
 
 const store = useBaseStore()
 const router = useRouter()

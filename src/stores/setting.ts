@@ -41,6 +41,7 @@ export interface SettingState {
   first: boolean
   firstTime: number
   load: boolean
+  conflictNotice: boolean // 其他脚本/插件冲突提示
 }
 
 export const DefaultChapterWordNumber = 30
@@ -83,7 +84,8 @@ export const getDefaultSettingState = (): SettingState => ({
   shortcutKeyMap: cloneDeep(DefaultShortcutKeyMap),
   first: true,
   firstTime: Date.now(),
-  load: false
+  load: false,
+  conflictNotice: true
 })
 
 export const useSettingStore = defineStore('setting', {

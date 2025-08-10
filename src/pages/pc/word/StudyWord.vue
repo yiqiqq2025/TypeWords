@@ -25,6 +25,7 @@ import {usePracticeStore} from "@/stores/practice.ts";
 import {dictionaryResources} from "@/assets/dictionary.ts";
 import {ElMessage} from "element-plus";
 import {getDefaultWord} from "@/types/func.ts";
+import ConflictNotice from "@/pages/pc/components/ConflictNotice.vue";
 
 interface IProps {
   new: Word[],
@@ -439,6 +440,7 @@ useEvents([
     </div>
   </div>
   <Statistics v-model="showStatDialog"/>
+  <ConflictNotice/>
 </template>
 
 <style scoped lang="scss">

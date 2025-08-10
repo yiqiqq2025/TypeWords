@@ -4,7 +4,6 @@ import {onMounted, onUnmounted} from "vue";
 import {useBaseStore} from "@/stores/base.ts";
 import {emitter, EventKey, useEvents} from "@/utils/eventBus.ts";
 import {useSettingStore} from "@/stores/setting.ts";
-import {useRuntimeStore} from "@/stores/runtime.ts";
 import {Article, ArticleItem, ArticleWord, ShortcutKey, Word} from "@/types/types.ts";
 import {useOnKeyboardEventListener, useStartKeyboardEventListener} from "@/hooks/event.ts";
 import useTheme from "@/hooks/theme.ts";
@@ -22,6 +21,7 @@ import ArticleList from "@/pages/pc/components/list/ArticleList.vue";
 import EditSingleArticleModal from "@/pages/pc/article/components/EditSingleArticleModal.vue";
 import Tooltip from "@/pages/pc/components/Tooltip.vue";
 import {Icon} from "@iconify/vue";
+import ConflictNotice from "@/pages/pc/components/ConflictNotice.vue";
 
 const store = useBaseStore()
 const settingStore = useSettingStore()
@@ -352,6 +352,7 @@ const {playSentenceAudio} = usePlaySentenceAudio()
       </div>
     </div>
   </div>
+  <ConflictNotice/>
 </template>
 
 <style scoped lang="scss">
