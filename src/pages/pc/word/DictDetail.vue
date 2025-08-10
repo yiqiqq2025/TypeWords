@@ -206,8 +206,8 @@ defineRender(() => {
                   <BackIcon class="z-2" onClick={() => router.back()}/>
                   <div class="absolute page-title text-align-center w-full">{runtimeStore.editDict.name}</div>
                   <div class="flex">
-                    <BaseButton type="info" onClick={() => isEdit = true}>编辑</BaseButton>
-                    <BaseButton loading={studyLoading} onClick={addMyStudyList}>学习</BaseButton>
+                    <BaseButton loading={studyLoading || loading} type="info" onClick={() => isEdit = true}>编辑</BaseButton>
+                    <BaseButton loading={studyLoading || loading} onClick={addMyStudyList}>学习</BaseButton>
                   </div>
                 </div>
                 <div class="text-lg  ">介绍：{runtimeStore.editDict.description}</div>

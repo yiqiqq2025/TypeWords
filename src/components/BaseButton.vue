@@ -36,7 +36,7 @@ defineEmits(['click'])
             class="loading"
             icon="eos-icons:loading"
             width="18"
-            color="#ffffff"
+            :color="type === 'info'?'#000000':'#ffffff'"
       />
       <div class="key-notice" v-if="keyboard">
         <Icon icon="bi:keyboard" width="14" color="#ffffff"/>
@@ -121,7 +121,7 @@ defineEmits(['click'])
 
   &.info {
     background: var(--btn-info);
-    border: 1px solid  var(--color-main-text);
+    border: 1px solid var(--color-main-text);
     color: var(--color-main-text);
   }
 
