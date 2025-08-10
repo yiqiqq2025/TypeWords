@@ -65,9 +65,6 @@ dependencies:
   vue:
     specifier: ^3.5.17
     version: 3.5.17(typescript@5.8.3)
-  vue-activity-calendar:
-    specifier: ^1.2.2
-    version: 1.2.2
   vue-router:
     specifier: ^4.5.1
     version: 4.5.1(vue@3.5.17)
@@ -6564,10 +6561,6 @@ packages:
   /vscode-uri@3.1.0:
     resolution: {integrity: sha512-/BpdSx+yCQGnCvecbyXdxHDkuk55/G3xwnC0GqY4gmQ3j+A+g8kzzgB4Nk/SINjqn6+waqw3EgbVF2QKExkRxQ==}
     dev: true
-
-  /vue-activity-calendar@1.2.2:
-    resolution: {integrity: sha512-HhFfLqmkMB0ylFSjceiJ1b23p/leH6OSXy9iGVkSzndkInG2sh2/F6AG4olFgWRGclxsZXtzIBtE9rm9UwDc+Q==}
-    dev: false
 
   /vue-demi@0.14.10(vue@3.5.17):
     resolution: {integrity: sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==}
