@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import {useBaseStore} from "@/stores/base.ts";
 import {Icon} from '@iconify/vue'
-import {ActivityCalendar} from "vue-activity-calendar";
-import "vue-activity-calendar/style.css";
 import {useRouter} from "vue-router";
 import BaseIcon from "@/components/BaseIcon.vue";
 import Dialog from "@/pages/pc/components/dialog/Dialog.vue";
-import {_dateFormat, _getAccomplishDate, _getAccomplishDays, _getDictDataByUrl, useNav} from "@/utils";
+import {_getAccomplishDate, _getAccomplishDays, _getDictDataByUrl, useNav} from "@/utils";
 import BasePage from "@/pages/pc/components/BasePage.vue";
 import {DictResource} from "@/types/types.ts";
 import {onMounted, watch} from "vue";
@@ -50,8 +48,16 @@ function startStudy() {
     if (!store.sdict.words.length) {
       return ElMessage.warning('没有单词可学习！')
     }
+    window.umami.track('startStudyDict', {
+      name: store.sdict.name,
+      index: store.sdict.lastLearnIndex,
+      perDayStudyNumber: store.sdict.perDayStudyNumber,
+      custom: store.sdict.custom,
+      complete: store.sdict.complete,
+    })
     nav('study-word', {}, currentStudy)
   } else {
+    window.umami.track('no-dict')
     ElMessage.warning('请先选择一本词典')
   }
 }
@@ -107,50 +113,6 @@ function toggleSelect(item) {
   }
 }
 
-// 统计所有词典的学习日期
-const allStudyDays = $computed(() => {
-  const dateCountMap = new Map<string, { count: number, spend: number }>();
-  store.word.bookList.forEach(dict => {
-    if (Array.isArray(dict.statistics)) {
-      dict.statistics.forEach(stat => {
-        // 格式化为 'YYYY-MM-DD'
-        const date = _dateFormat(stat.startDate, 'YYYY-MM-DD');
-        if (!date) return;
-        // spend 直接累加原始毫秒数
-        const spend = Number(stat.spend || stat.speed) || 0;
-        if (!dateCountMap.has(date)) {
-          dateCountMap.set(date, {count: 1, spend});
-        } else {
-          const v = dateCountMap.get(date)!;
-          v.count += 1;
-          v.spend += spend;
-        }
-      });
-    }
-  });
-  // 转为 [{ date, count, spend }]
-  return Array.from(dateCountMap.entries()).map(([date, {count, spend}]) => ({date, count, spend}));
-});
-
-function clickActivityEvent(e) {
-  // e.date 是 'YYYY-MM-DD'
-  const day = allStudyDays.find(item => item.date === e.date);
-  if (day) {
-    // 这里将毫秒转为分钟和小时
-    const min = Math.round(day.spend / 1000 / 60);
-    let msg = '';
-    if (min < 60) {
-      msg = ` 学习了${min}分钟`;
-    } else {
-      const hour = (min / 60).toFixed(1);
-      msg = ` 学习了${min}分钟（约${hour}小时）`;
-    }
-    ElMessage.success(e.date + msg);
-  } else {
-    ElMessage.info('当天无学习记录');
-  }
-}
-
 const progressTextLeft = $computed(() => {
   if (store.sdict.complete) return '已学完，进入总复习阶段'
   return '已学习' + store.currentStudyProgress + '%'
@@ -168,8 +130,9 @@ const progressTextRight = $computed(() => {
     <div class="card flex gap-10">
       <div class="flex-1 flex flex-col gap-2">
         <div class="flex">
-          <div class="bg-third px-3 h-14 rounded-md flex items-center " >
-            <span @click="goDictDetail(store.sdict)" class="text-xl font-bold cursor-pointer">{{ store.sdict.name || '请选择词典开始学习' }}</span>
+          <div class="bg-third px-3 h-14 rounded-md flex items-center ">
+            <span @click="goDictDetail(store.sdict)"
+                  class="text-xl font-bold cursor-pointer">{{ store.sdict.name || '请选择词典开始学习' }}</span>
             <BaseIcon title="切换词典"
                       :icon="store.sdict.name ? 'gg:arrows-exchange' : 'fluent:add-20-filled'"
                       class="ml-4"
@@ -245,23 +208,6 @@ const progressTextRight = $computed(() => {
               @check="() => toggleSelect(item)" :show-checkbox="isMultiple && j >= 3"
               v-for="(item, j) in store.word.bookList" @click="goDictDetail(item)"/>
         <Book :is-add="true" @click="router.push('/dict-list')"/>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="title">
-        已学习 <span class="text-3xl">{{ allStudyDays.length }}</span> 天
-      </div>
-      <div class="center">
-        <ActivityCalendar :data="allStudyDays"
-                          :width="40"
-                          :height="7"
-                          :cellLength="16"
-                          :cellInterval="8"
-                          :fontSize="12"
-                          :showLevelFlag="true"
-                          :showWeekDayFlag="true"
-                          :clickEvent="clickActivityEvent"/>
       </div>
     </div>
 

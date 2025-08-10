@@ -37,8 +37,15 @@ function startStudy() {
     if (!base.sbook.articles.length) {
       return ElMessage.warning('没有文章可学习！')
     }
+    window.umami.track('startStudyArticle', {
+      name: base.sbook.name,
+      index: base.sbook.lastLearnIndex,
+      custom: base.sbook.custom,
+      complete: base.sbook.complete,
+    })
     nav('/study-article')
   } else {
+    window.umami.track('no-book')
     ElMessage.warning('请先选择一本书籍')
   }
 }

@@ -1,5 +1,3 @@
-import {cloneDeep} from "@/utils"
-
 export {}
 
 declare global {
@@ -7,6 +5,12 @@ declare global {
     parse(v: any): void
 
     json(v: any, space: number): void
+  }
+
+  interface Window {
+    umami: {
+      track(name:string,data?:any):void
+    }
   }
 }
 console.json = function (v: any, space = 0) {
