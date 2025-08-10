@@ -37,7 +37,7 @@ function startStudy() {
     if (!base.sbook.articles.length) {
       return ElMessage.warning('没有文章可学习！')
     }
-    window.umami.track('startStudyArticle', {
+    window.umami?.track('startStudyArticle', {
       name: base.sbook.name,
       index: base.sbook.lastLearnIndex,
       custom: base.sbook.custom,
@@ -45,7 +45,7 @@ function startStudy() {
     })
     nav('/study-article')
   } else {
-    window.umami.track('no-book')
+    window.umami?.track('no-book')
     ElMessage.warning('请先选择一本书籍')
   }
 }

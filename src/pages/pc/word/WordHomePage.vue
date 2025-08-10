@@ -48,7 +48,7 @@ function startStudy() {
     if (!store.sdict.words.length) {
       return ElMessage.warning('没有单词可学习！')
     }
-    window.umami.track('startStudyDict', {
+    window.umami?.track('startStudyDict', {
       name: store.sdict.name,
       index: store.sdict.lastLearnIndex,
       perDayStudyNumber: store.sdict.perDayStudyNumber,
@@ -57,7 +57,7 @@ function startStudy() {
     })
     nav('study-word', {}, currentStudy)
   } else {
-    window.umami.track('no-dict')
+    window.umami?.track('no-dict')
     ElMessage.warning('请先选择一本词典')
   }
 }
