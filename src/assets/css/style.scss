@@ -17,10 +17,11 @@
 
   --practice-wrapper-translateX: 1px;
   --article-width: 50vw;
+  --article-toolbar-width: 50rem;
   --toolbar-width: 50rem;
   --panel-width: 24rem;
   --space: 1rem;
-  --stat-gap: 2rem;
+  --stat-gap: 1rem;
   --shadow: rgba(0, 0, 0, 0.08) 0px 4px 12px;
   --panel-margin-left: calc(50% + var(--toolbar-width) / 2 + 1rem);
   --article-panel-margin-left: calc(50% + var(--article-width) / 2 + 1rem);
@@ -416,7 +417,7 @@ a {
 
 .book {
   @extend .anim;
-  @apply p-4 rounded-md relative cursor-pointer bg-third hover:bg-card-active flex flex-col justify-between;
+  @apply p-4 rounded-md relative cursor-pointer bg-third hover:bg-card-active flex flex-col justify-between shrink-0;
   $w: 6rem;
   width: $w;
   height: calc($w * 1.4);

@@ -17,7 +17,6 @@ export const EventKey = {
   write: 'write',
   editDict: 'editDict',
   openMyDictDialog: 'openMyDictDialog',
-  jumpSpecifiedChapter: 'jumpSpecifiedChapter',
 }
 
 export function useEvent(key: string, func: any) {

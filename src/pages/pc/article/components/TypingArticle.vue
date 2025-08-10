@@ -21,7 +21,6 @@ interface IProps {
   sentenceIndex?: number,
   wordIndex?: number,
   stringIndex?: number,
-  active: boolean,
 }
 
 const props = withDefaults(defineProps<IProps>(), {
@@ -30,7 +29,6 @@ const props = withDefaults(defineProps<IProps>(), {
   sentenceIndex: 0,
   wordIndex: 0,
   stringIndex: 0,
-  active: true,
 })
 
 const emit = defineEmits<{
@@ -38,7 +36,8 @@ const emit = defineEmits<{
   wrong: [val: Word],
   play: [val: Sentence],
   nextWord: [val: ArticleWord],
-  over: [],
+  complete: [],
+  next: [],
   edit: [val: Article]
 }>()
 
@@ -175,7 +174,7 @@ function nextSentence() {
     if (!props.article.sections[sectionIndex]) {
       console.log('打完了')
       isEnd = true
-      emit('over')
+      emit('complete')
     } else {
       emit('play', props.article.sections[sectionIndex][0])
     }
@@ -186,7 +185,6 @@ function nextSentence() {
 }
 
 function onTyping(e: KeyboardEvent) {
-  if (!props.active) return
   if (!props.article.sections.length) return
   // console.log('keyDown', e.key, e.code, e.keyCode)
   wrong = ''
@@ -458,7 +456,7 @@ let showQuestions = $ref(false)
     <div class="options flex justify-center" v-if="isEnd">
       <BaseButton
           v-if="store.currentBook.lastLearnIndex < store.currentBook.articles.length - 1"
-          @click="emitter.emit(EventKey.continueStudy)">下一章
+          @click="emit('next')">下一章
       </BaseButton>
     </div>
 

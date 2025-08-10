@@ -126,7 +126,7 @@ async function goBookDetail(val: DictResource) {
           <div class="color-blue cursor-pointer" @click="nav('dict-detail', { isAdd: true })">创建个人书籍</div>
         </div>
       </div>
-      <div class="grid grid-cols-6 gap-4  mt-4">
+      <div class="flex gap-4 flex-wrap mt-4">
         <Book :is-add="false" quantifier="篇" :item="item" :checked="selectIds.includes(item.id)"
               @check="() => toggleSelect(item)"
               :show-checkbox="isMultiple && j >= 1"

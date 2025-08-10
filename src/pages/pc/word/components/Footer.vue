@@ -29,18 +29,6 @@ function format(val: number, suffix: string = '', check: number = -1) {
   return val === check ? '-' : (val + suffix)
 }
 
-let speedMinute = $ref(0)
-let timer = $ref(0)
-onMounted(() => {
-  timer = setInterval(() => {
-    speedMinute = Math.floor((Date.now() - statisticsStore.startDate) / 1000 / 60)
-  }, 1000)
-})
-
-onUnmounted(() => {
-  timer && clearInterval(timer)
-})
-
 let studyData = inject<StudyData>('studyData')
 
 const status = $computed(() => {

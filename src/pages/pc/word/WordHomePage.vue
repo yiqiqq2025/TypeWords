@@ -203,7 +203,7 @@ const progressTextRight = $computed(() => {
           <div class="color-blue cursor-pointer" @click="nav('dict-detail', { isAdd: true })">创建个人词典</div>
         </div>
       </div>
-      <div class="grid grid-cols-6 gap-4  mt-4">
+      <div class="flex gap-4 flex-wrap  mt-4">
         <Book :is-add="false" quantifier="个词" :item="item" :checked="selectIds.includes(item.id)"
               @check="() => toggleSelect(item)" :show-checkbox="isMultiple && j >= 3"
               v-for="(item, j) in store.word.bookList" @click="goDictDetail(item)"/>
