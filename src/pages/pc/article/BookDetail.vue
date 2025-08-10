@@ -92,7 +92,7 @@ const {
         <div class="absolute text-2xl text-align-center w-full">{{ runtimeStore.editDict.name }}</div>
         <div class="flex">
           <BaseButton type="info" @click="isEdit = true">编辑</BaseButton>
-          <BaseButton type="info" @click="router.push('batch-edit-article')">文章管理</BaseButton>
+<!--          <BaseButton type="info" @click="router.push('batch-edit-article')">文章管理</BaseButton>-->
           <BaseButton :loading="studyLoading" @click="addMyStudyList">学习</BaseButton>
         </div>
       </div>

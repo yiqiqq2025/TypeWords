@@ -416,7 +416,10 @@ a {
 
 .book {
   @extend .anim;
-  @apply p-4 rounded-md relative cursor-pointer h-40 bg-third hover:bg-card-active flex flex-col justify-between;
+  @apply p-4 rounded-md relative cursor-pointer bg-third hover:bg-card-active flex flex-col justify-between;
+  $w: 6rem;
+  width: $w;
+  height: calc($w * 1.4);
 }
 
 .line {

@@ -376,11 +376,11 @@ const {playSentenceAudio} = usePlaySentenceAudio()
                         :title="`开关释义显示(${settingStore.shortcutKeyMap[ShortcutKey.ToggleShowTranslate]})`"
                         @click="settingStore.translate = !settingStore.translate"/>
 
-              <BaseIcon
-                  :title="`编辑(${settingStore.shortcutKeyMap[ShortcutKey.EditArticle]})`"
-                  icon="tabler:edit"
-                  @click="emitter.emit(ShortcutKey.EditArticle)"
-              />
+<!--              <BaseIcon-->
+<!--                  :title="`编辑(${settingStore.shortcutKeyMap[ShortcutKey.EditArticle]})`"-->
+<!--                  icon="tabler:edit"-->
+<!--                  @click="emitter.emit(ShortcutKey.EditArticle)"-->
+<!--              />-->
               <BaseIcon
                   @click="settingStore.showPanel = !settingStore.showPanel"
                   :title="`面板(${settingStore.shortcutKeyMap[ShortcutKey.TogglePanel]})`"
