@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import "vue-activity-calendar/style.css";
 import {useNav} from "@/utils";
 import BasePage from "@/pages/pc/components/BasePage.vue";
 import {DictResource} from "@/types/types.ts";
