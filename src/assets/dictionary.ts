@@ -2847,7 +2847,7 @@ export const enArticle: DictResource[] = [
     category: '文章学习',
     tags: ['新概念英语'],
     url: 'NCE_4.json',
-    length: 3,
+    length: 1,
     translateLanguage: 'common',
     language: 'en',
     type: DictType.article
