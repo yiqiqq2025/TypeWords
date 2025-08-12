@@ -149,8 +149,7 @@ export function checkAndUpgradeSaveDict(val: any) {
                   if (r) {
                     formatWord(v)
                     let dict = getDefaultDict(r)
-                    checkRiskKey(dict, v)
-                    dict.length = dict.words.length
+                    checkRiskKey(dict, v) 
                     dict.id = r.id
                     defaultState.word.bookList.push(dict)
                     if (currentDictId === studyDictId) defaultState.word.studyIndex = defaultState.word.bookList.length - 1
@@ -171,8 +170,7 @@ export function checkAndUpgradeSaveDict(val: any) {
                   if (r) {
                     formatWord(v)
                     let dict = getDefaultDict(r)
-                    checkRiskKey(dict, v)
-                    dict.length = dict.articles.length
+                    checkRiskKey(dict, v) 
                     dict.id = r.id
                     defaultState.article.bookList.push(dict)
                     if (currentDictId === studyDictId) defaultState.article.studyIndex = defaultState.article.bookList.length - 1
