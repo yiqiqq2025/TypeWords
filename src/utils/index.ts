@@ -180,7 +180,7 @@ export function checkAndUpgradeSaveDict(val: any) {
                 }
               }
             } catch (e) {
-              console.log('升级数据失败！')
+              console.error('升级数据失败！', e)
             }
           })
         }
