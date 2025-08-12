@@ -1,5 +1,3 @@
-export {}
-
 declare global {
   interface Console {
     parse(v: any): void
@@ -9,10 +7,11 @@ declare global {
 
   interface Window {
     umami: {
-      track(name:string,data?:any):void
+      track(name: string, data?: any): void
     }
   }
 }
+
 console.json = function (v: any, space = 0) {
   const json = JSON.stringify(
     v,
@@ -30,3 +29,5 @@ console.json = function (v: any, space = 0) {
 console.parse = function (v: any) {
   console.log(JSON.parse(v))
 }
+
+export {}

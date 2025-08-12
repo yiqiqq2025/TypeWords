@@ -42,25 +42,25 @@ export default defineConfig(() => {
             open: true //如果存在本地服务端口，将在打包后自动展示
           }) : null,
         SlidePlugin(),
-        // importToCDN({
-        //   modules: [
-        //     {
-        //       name: 'vue',
-        //       var: 'Vue',
-        //       path: `https://cdn.jsdelivr.net/npm/vue@3.5.14/dist/vue.global.prod.min.js`
-        //     },
-        //     {
-        //       name: 'vue-router',
-        //       var: 'VueRouter',
-        //       path: `https://cdn.jsdelivr.net/npm/vue-router@4.5.1/dist/vue-router.global.prod.min.js`
-        //     },
-        //     {
-        //       name: 'axios',
-        //       var: 'axios',
-        //       path: 'https://cdn.jsdelivr.net/npm/axios@1.9.0/dist/axios.min.js'
-        //     },
-        //   ]
-        // })
+        importToCDN({
+          modules: [
+            {
+              name: 'vue',
+              var: 'Vue',
+              path: `https://type-words.oss-cn-shenzhen.aliyuncs.com/vue.global.prod.min.js`
+            },
+            {
+              name: 'vue-router',
+              var: 'VueRouter',
+              path: `https://type-words.oss-cn-shenzhen.aliyuncs.com/vue-router.global.prod.min.js`
+            },
+            {
+              name: 'axios',
+              var: 'axios',
+              path: 'https://type-words.oss-cn-shenzhen.aliyuncs.com/axios.min.js'
+            },
+          ]
+        })
       ],
       define: {
         LATEST_COMMIT_HASH: JSON.stringify(latestCommitHash + (process.env.NODE_ENV === 'production' ? '' : ' (dev)')),
@@ -73,11 +73,11 @@ export default defineConfig(() => {
         },
         extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue']
       },
-      // build: {
-      //   rollupOptions: {
-      //     external: ['axios'],// 使用全局的 axios。因为百度翻译库内部用了0.19版本的axios，会被打包到代码里面
-      //   }
-      // },
+      build: {
+        rollupOptions: {
+          external: ['axios'],// 使用全局的 axios。因为百度翻译库内部用了0.19版本的axios，会被打包到代码里面
+        }
+      },
       css: {
         preprocessorOptions: {
           scss: {

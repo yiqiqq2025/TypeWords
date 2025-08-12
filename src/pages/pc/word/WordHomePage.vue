@@ -12,10 +12,10 @@ import {getCurrentStudyWord} from "@/hooks/dict.ts";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 import Book from "@/pages/pc/components/Book.vue";
 import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
-import {ElMessage, ElProgress, ElSlider} from 'element-plus';
+import {ElProgress, ElSlider} from 'element-plus';
+import Toast from '@/pages/pc/components/Toast/Toast.ts';
 import BaseButton from "@/components/BaseButton.vue";
 import {getDefaultDict} from "@/types/func.ts";
-import ConflictNotice from "@/pages/pc/components/ConflictNotice.vue";
 
 const store = useBaseStore()
 const router = useRouter()
@@ -47,7 +47,7 @@ async function init() {
 function startStudy() {
   if (store.sdict.id) {
     if (!store.sdict.words.length) {
-      return ElMessage.warning('没有单词可学习！')
+      return Toast.warning('没有单词可学习！')
     }
     window.umami?.track('startStudyDict', {
       name: store.sdict.name,
@@ -59,7 +59,7 @@ function startStudy() {
     nav('study-word', {}, currentStudy)
   } else {
     window.umami?.track('no-dict')
-    ElMessage.warning('请先选择一本词典')
+    Toast.warning('请先选择一本词典')
   }
 }
 
@@ -68,7 +68,7 @@ function setPerDayStudyNumber() {
     show = true
     tempPerDayStudyNumber = store.sdict.perDayStudyNumber
   } else {
-    ElMessage.warning('请先选择一本词典')
+    Toast.warning('请先选择一本词典')
   }
 }
 
@@ -102,7 +102,7 @@ function handleBatchDel() {
     }
   })
   selectIds = []
-  ElMessage.success("删除成功！")
+  Toast.success("删除成功！")
 }
 
 function toggleSelect(item) {
@@ -181,7 +181,8 @@ const progressTextRight = $computed(() => {
           </div>
           个单词 <span class="color-blue cursor-pointer" @click="setPerDayStudyNumber">更改</span>
         </div>
-        <BaseButton size="large" :disabled="!store.sdict.name" @click="startStudy">
+        <!--        <BaseButton size="large" :disabled="!store.sdict.name" @click="startStudy">-->
+        <BaseButton size="large" @click="startStudy">
           <div class="flex items-center gap-2">
             <span>开始学习</span>
             <Icon icon="icons8:right-round" class="text-2xl"/>
