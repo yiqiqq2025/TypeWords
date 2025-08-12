@@ -11,8 +11,8 @@ import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
 import Empty from "@/components/Empty.vue";
 import {Icon} from "@iconify/vue";
 import {ElCheckbox} from 'element-plus'
-import Pagination from '@/pages/pc/components/Pagination.vue'
-import Toast from '@/pages/pc/components/Toast/Toast.ts'
+import Pagination from '@/pages/pc/components/base/Pagination.vue'
+import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 
 let list = defineModel('list')
 

@@ -13,8 +13,8 @@ import {useRuntimeStore} from "@/stores/runtime.ts";
 import Book from "@/pages/pc/components/Book.vue";
 import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
 import {ElSlider} from 'element-plus';
-import Progress from '@/pages/pc/components/Progress.vue';
-import Toast from '@/pages/pc/components/Toast/Toast.ts';
+import Progress from '@/pages/pc/components/base/Progress.vue';
+import Toast from '@/pages/pc/components/base/toast/Toast.ts';
 import BaseButton from "@/components/BaseButton.vue";
 import {getDefaultDict} from "@/types/func.ts";
 

@@ -10,13 +10,13 @@ import {_nextTick, _parseLRC, cloneDeep, last} from "@/utils";
 import {watch} from "vue";
 import Empty from "@/components/Empty.vue";
 import {ElInputNumber, ElOption, ElPopover, ElSelect} from "element-plus";
-import Toast from '@/pages/pc/components/Toast/Toast.ts'
+import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import * as Comparison from "string-comparison"
 import BaseIcon from "@/components/BaseIcon.vue";
 import Dialog from "@/pages/pc/components/dialog/Dialog.vue";
 import {getDefaultArticle} from "@/types/func.ts";
 import copy from "copy-to-clipboard";
-import {Option, Select} from "@/pages/pc/components/Select";
+import {Option, Select} from "@/pages/pc/components/base/select";
 
 interface IProps {
   article?: Article,

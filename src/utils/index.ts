@@ -9,7 +9,7 @@ import axios from "axios";
 import {env} from "@/config/ENV.ts";
 import {nextTick} from "vue";
 import {dictionaryResources, enArticle} from "@/assets/dictionary.ts";
-import Toast from '@/pages/pc/components/Toast/Toast.ts'
+import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import {getDefaultArticle, getDefaultDict, getDefaultWord} from "@/types/func.ts";
 
 export function no() {

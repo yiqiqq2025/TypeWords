@@ -1,6 +1,6 @@
 import {createVNode, render} from 'vue'
-import ToastComponent from '@/pages/pc/components/Toast/Toast.vue'
-import type {ToastOptions, ToastInstance, ToastService} from '@/pages/pc/components/Toast/type.ts'
+import ToastComponent from '@/pages/pc/components/base/toast/Toast.vue'
+import type {ToastOptions, ToastInstance, ToastService} from '@/pages/pc/components/base/toast/type.ts'
 
 interface ToastContainer {
   id: string

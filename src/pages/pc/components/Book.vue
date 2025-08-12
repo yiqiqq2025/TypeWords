@@ -2,7 +2,7 @@
 import {Dict} from "@/types/types.ts";
 import {Icon} from "@iconify/vue";
 import {ElCheckbox} from 'element-plus';
-import Progress from '@/pages/pc/components/Progress.vue'
+import Progress from '@/pages/pc/components/base/Progress.vue'
 
 const props = defineProps<{
   item?: Partial<Dict>;

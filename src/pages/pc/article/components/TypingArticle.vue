@@ -13,7 +13,7 @@ import {getTranslateText} from "@/hooks/article.ts";
 import BaseButton from "@/components/BaseButton.vue";
 import QuestionForm from "@/pages/pc/article/components/QuestionForm.vue";
 import {getDefaultArticle} from "@/types/func.ts";
-import Toast from '@/pages/pc/components/Toast/Toast.ts'
+import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 
 interface IProps {
   article: Article,

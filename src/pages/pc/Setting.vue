@@ -15,9 +15,9 @@ import {GITHUB} from "@/config/ENV.ts";
 import dayjs from "dayjs";
 import BasePage from "@/pages/pc/components/BasePage.vue";
 import {ElInputNumber, ElRadio, ElRadioGroup, ElSlider} from 'element-plus'
-import Toast from '@/pages/pc/components/Toast/Toast.ts'
-import {Option, Select} from "@/pages/pc/components/Select";
-import Switch from "@/pages/pc/components/Switch.vue";
+import Toast from '@/pages/pc/components/base/toast/Toast.ts'
+import {Option, Select} from "@/pages/pc/components/base/select";
+import Switch from "@/pages/pc/components/base/Switch.vue";
 
 const emit = defineEmits<{
   toggleDisabledDialogEscKey: [val: boolean]

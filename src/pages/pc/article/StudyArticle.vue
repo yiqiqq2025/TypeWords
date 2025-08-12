@@ -7,7 +7,7 @@ import {useSettingStore} from "@/stores/setting.ts";
 import {Article, ArticleItem, ArticleWord, ShortcutKey, Word} from "@/types/types.ts";
 import {useOnKeyboardEventListener, useStartKeyboardEventListener} from "@/hooks/event.ts";
 import useTheme from "@/hooks/theme.ts";
-import Toast from '@/pages/pc/components/Toast/Toast.ts'
+import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import {cloneDeep} from "@/utils";
 import {usePracticeStore} from "@/stores/practice.ts";
 import {useArticleOptions} from "@/hooks/dict.ts";

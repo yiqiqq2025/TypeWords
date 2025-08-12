@@ -45,7 +45,7 @@
 <script setup lang="ts">
 import {ref, useTemplateRef} from 'vue'
 import QuestionItem from './QuestionItem.vue'
-import Toast from '@/pages/pc/components/Toast/Toast.ts'
+import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 
 interface IProps {
   questions: Array,

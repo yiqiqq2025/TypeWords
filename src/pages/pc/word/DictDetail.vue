@@ -11,7 +11,7 @@ import BaseTable from "@/pages/pc/components/BaseTable.vue";
 import WordItem from "@/pages/pc/components/WordItem.vue";
 import type {FormInstance, FormRules} from "element-plus";
 import {ElForm, ElFormItem, ElInput} from "element-plus";
-import Toast from '@/pages/pc/components/Toast/Toast.ts'
+import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
 import BackIcon from "@/pages/pc/components/BackIcon.vue";
 import BaseButton from "@/components/BaseButton.vue";

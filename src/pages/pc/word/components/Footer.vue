@@ -7,7 +7,7 @@ import {ShortcutKey, StudyData} from "@/types/types.ts";
 import BaseIcon from "@/components/BaseIcon.vue";
 import {Icon} from "@iconify/vue";
 import Tooltip from "@/pages/pc/components/Tooltip.vue";
-import Progress from '@/pages/pc/components/Progress.vue'
+import Progress from '@/pages/pc/components/base/Progress.vue'
 
 const statisticsStore = usePracticeStore()
 const settingStore = useSettingStore()

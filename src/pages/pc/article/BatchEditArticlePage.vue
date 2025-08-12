@@ -13,7 +13,7 @@ import {useRuntimeStore} from "@/stores/runtime.ts";
 import {nanoid} from "nanoid";
 import EditArticle from "@/pages/pc/article/components/EditArticle.vue";
 import BaseIcon from "@/components/BaseIcon.vue";
-import Toast from '@/pages/pc/components/Toast/Toast.ts'
+import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import {getDefaultArticle} from "@/types/func.ts";
 
 const emit = defineEmits<{

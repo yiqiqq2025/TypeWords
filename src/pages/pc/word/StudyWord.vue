@@ -23,7 +23,7 @@ import Empty from "@/components/Empty.vue";
 import {useBaseStore} from "@/stores/base.ts";
 import {usePracticeStore} from "@/stores/practice.ts";
 import {dictionaryResources} from "@/assets/dictionary.ts";
-import Toast from '@/pages/pc/components/Toast/Toast.ts'
+import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import {getDefaultWord} from "@/types/func.ts";
 import ConflictNotice from "@/pages/pc/components/ConflictNotice.vue";
 

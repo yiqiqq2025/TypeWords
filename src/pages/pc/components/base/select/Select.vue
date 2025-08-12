@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, computed, watch, provide, useSlots, VNode, nextTick, useAttrs, onMounted, onBeforeUnmount} from 'vue';
+import {computed, nextTick, onBeforeUnmount, onMounted, provide, ref, useAttrs, useSlots, VNode, watch} from 'vue';
 import {Icon} from "@iconify/vue";
 import {useWindowClick} from "@/hooks/event.ts";
 

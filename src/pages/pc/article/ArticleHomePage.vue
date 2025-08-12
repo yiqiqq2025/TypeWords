@@ -8,8 +8,8 @@ import {DictResource, DictType} from "@/types/types.ts";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 import BaseIcon from "@/components/BaseIcon.vue";
 import Book from "@/pages/pc/components/Book.vue";
-import Progress from '@/pages/pc/components/Progress.vue';
-import Toast from '@/pages/pc/components/Toast/Toast.ts'
+import Progress from '@/pages/pc/components/base/Progress.vue';
+import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import BaseButton from "@/components/BaseButton.vue";
 import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
 import {onMounted, watch} from "vue";
