@@ -1,19 +1,19 @@
 <template>
   <Transition name="message-fade" appear>
     <div v-if="visible" class="message" :class="type" :style="style" @mouseenter="handleMouseEnter"
-      @mouseleave="handleMouseLeave">
+         @mouseleave="handleMouseLeave">
       <div class="message-content">
-        <Icon v-if="icon" :icon="icon" class="message-icon" />
+        <Icon v-if="icon" :icon="icon" class="message-icon"/>
         <span class="message-text">{{ message }}</span>
-        <Icon v-if="showClose" icon="mdi:close" class="message-close" @click="close" />
+        <Icon v-if="showClose" icon="mdi:close" class="message-close" @click="close"/>
       </div>
     </div>
   </Transition>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import { Icon } from '@iconify/vue'
+import {ref, computed, onMounted, onBeforeUnmount} from 'vue'
+import {Icon} from '@iconify/vue'
 
 interface Props {
   message: string

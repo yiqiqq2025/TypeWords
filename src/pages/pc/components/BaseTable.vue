@@ -10,7 +10,8 @@ import Input from "@/pages/pc/components/Input.vue";
 import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
 import Empty from "@/components/Empty.vue";
 import {Icon} from "@iconify/vue";
-import {ElCheckbox, ElPagination} from 'element-plus'
+import {ElCheckbox} from 'element-plus'
+import Pagination from '@/pages/pc/components/Pagination.vue'
 import Toast from '@/pages/pc/components/Toast/Toast.ts'
 
 let list = defineModel('list')
@@ -221,14 +222,14 @@ defineRender(
                           })}
                         </div>
                         <div class="flex justify-end">
-                          <ElPagination background
-                                        currentPage={pageNo}
-                                        onUpdate:current-page={handlePageNo}
-                                        pageSize={pageSize}
-                                        onUpdate:page-size={(e) => pageSize = e}
-                                        pageSizes={[20, 50, 100, 200]}
-                                        layout="prev, pager, next"
-                                        total={list.value.length}/>
+                          <Pagination
+                              currentPage={pageNo}
+                              onUpdate:current-page={handlePageNo}
+                              pageSize={pageSize}
+                              onUpdate:page-size={(e) => pageSize = e}
+                              pageSizes={[20, 50, 100, 200]}
+                              layout="prev, pager, next"
+                              total={list.value.length}/>
                         </div>
                       </>
                   ) : <Empty/>

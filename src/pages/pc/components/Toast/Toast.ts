@@ -87,7 +87,7 @@ const Toast: ToastService = (options: ToastOptions | string): ToastInstance => {
     instance,
     offset: 0
   }
-  
+
   toastContainers.push(toastContainer)
   updateToastPositions()
 

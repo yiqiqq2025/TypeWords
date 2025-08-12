@@ -9,7 +9,7 @@ import {genArticleSectionData, splitCNArticle2, splitEnArticle2, usePlaySentence
 import {_nextTick, _parseLRC, cloneDeep, last} from "@/utils";
 import {watch} from "vue";
 import Empty from "@/components/Empty.vue";
-import {ElInputNumber, ElOption, ElPopover, ElSelect, ElUpload, UploadProps} from "element-plus";
+import {ElInputNumber, ElOption, ElPopover, ElSelect} from "element-plus";
 import Toast from '@/pages/pc/components/Toast/Toast.ts'
 import * as Comparison from "string-comparison"
 import BaseIcon from "@/components/BaseIcon.vue";
@@ -156,10 +156,11 @@ function save(option: 'save' | 'saveAndNext') {
 //不知道为什么直接用editArticle，取到是空的默认值
 defineExpose({save, getEditArticle: () => cloneDeep(editArticle)})
 
-const handleChange: UploadProps['onChange'] = (uploadFile, uploadFiles) => {
-  console.log(uploadFile)
+function handleChange(e: any) {
+  let uploadFile = e.target?.files?.[0]
+  if (!uploadFile) return
   let reader = new FileReader();
-  reader.readAsText(uploadFile.raw, 'UTF-8');
+  reader.readAsText(uploadFile, 'UTF-8');
   reader.onload = function (e) {
     let lrc: string = e.target.result as string;
     console.log(lrc)
@@ -384,14 +385,12 @@ function setStartTime(val: Sentence, i: number, j: number) {
       <div class="center">正文、译文与结果均可编辑，编辑后点击应用按钮会自动同步</div>
       <div class="flex gap-2">
         <BaseButton>添加音频</BaseButton>
-        <ElUpload
-            class="upload-demo"
-            :limit="1"
-            :on-change="handleChange"
-            :auto-upload="false"
-        >
+        <div class="upload relative">
           <BaseButton>添加音频LRC文件</BaseButton>
-        </ElUpload>
+          <input type="file"
+                 @change="handleChange"
+                 class="w-full h-full absolute left-0 top-0 opacity-0"/>
+        </div>
         <audio ref="audioRef" :src="editArticle.audioSrc" controls></audio>
       </div>
       <template v-if="editArticle?.sections?.length">
