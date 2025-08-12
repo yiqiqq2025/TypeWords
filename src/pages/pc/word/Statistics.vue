@@ -57,6 +57,12 @@ watch(model, (newVal) => {
       new: statStore.newWordNumber,
       review: statStore.reviewWordNumber + statStore.writeWordNumber
     }
+    window.umami?.track('studyWordEnd', {
+      name: store.sbook.name,
+      index: store.sbook.lastLearnIndex,
+      custom: store.sbook.custom,
+      complete: store.sbook.complete,
+    })
     //这里不知为啥会卡，打开有延迟
     requestIdleCallback(() => {
       store.sdict.lastLearnIndex = store.sdict.lastLearnIndex + statStore.newWordNumber
