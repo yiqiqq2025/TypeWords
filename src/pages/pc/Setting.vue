@@ -14,9 +14,10 @@ import {saveAs} from "file-saver";
 import {GITHUB} from "@/config/ENV.ts";
 import dayjs from "dayjs";
 import BasePage from "@/pages/pc/components/BasePage.vue";
-import {ElInputNumber, ElRadio, ElRadioGroup, ElSlider, ElSwitch} from 'element-plus'
+import {ElInputNumber, ElRadio, ElRadioGroup, ElSlider} from 'element-plus'
 import Toast from '@/pages/pc/components/Toast/Toast.ts'
 import {Option, Select} from "@/pages/pc/components/Select";
+import Switch from "@/pages/pc/components/Switch.vue";
 
 const emit = defineEmits<{
   toggleDisabledDialogEscKey: [val: boolean]
@@ -163,9 +164,8 @@ function importData(e) {
           <div class="row">
             <label class="main-title">所有音效</label>
             <div class="wrapper">
-              <ElSwitch v-model="settingStore.allSound"
+              <Switch v-model="settingStore.allSound"
                         @change="useChangeAllSound"
-                        inline-prompt
                         active-text="开"
                         inactive-text="关"
               />
@@ -175,7 +175,7 @@ function importData(e) {
           <div class="row">
             <label class="item-title">单词/句子自动发音</label>
             <div class="wrapper">
-              <ElSwitch v-model="settingStore.wordSound"
+              <Switch v-model="settingStore.wordSound"
                         inline-prompt
                         active-text="开"
                         inactive-text="关"
@@ -212,7 +212,7 @@ function importData(e) {
           <div class="row">
             <label class="item-title">按键音</label>
             <div class="wrapper">
-              <ElSwitch v-model="settingStore.keyboardSound"
+              <Switch v-model="settingStore.keyboardSound"
                         inline-prompt
                         active-text="开"
                         inactive-text="关"
@@ -253,7 +253,7 @@ function importData(e) {
           <div class="row">
             <label class="item-title">效果音（输入错误、完成时的音效）</label>
             <div class="wrapper">
-              <ElSwitch v-model="settingStore.effectSound"
+              <Switch v-model="settingStore.effectSound"
                         inline-prompt
                         active-text="开"
                         inactive-text="关"
@@ -292,7 +292,7 @@ function importData(e) {
           <div class="row">
             <label class="item-title">显示上一个/下一个单词</label>
             <div class="wrapper">
-              <ElSwitch v-model="settingStore.showNearWord"
+              <Switch v-model="settingStore.showNearWord"
                         inline-prompt
                         active-text="开"
                         inactive-text="关"
@@ -306,7 +306,7 @@ function importData(e) {
           <div class="row">
             <label class="item-title">忽略大小写</label>
             <div class="wrapper">
-              <ElSwitch v-model="settingStore.ignoreCase"
+              <Switch v-model="settingStore.ignoreCase"
                         inline-prompt
                         active-text="开"
                         inactive-text="关"
@@ -320,7 +320,7 @@ function importData(e) {
           <div class="row">
             <label class="item-title">允许默写模式下显示提示</label>
             <div class="wrapper">
-              <ElSwitch v-model="settingStore.allowWordTip"
+              <Switch v-model="settingStore.allowWordTip"
                         inline-prompt
                         active-text="开"
                         inactive-text="关"
