@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import {Dict, DictResource} from "@/types/types.ts";
+import {Dict} from "@/types/types.ts";
 import {Icon} from "@iconify/vue";
-import {ElProgress, ElCheckbox} from 'element-plus';
+import {ElCheckbox} from 'element-plus';
+import Progress from '@/pages/pc/components/Progress.vue'
 
 const props = defineProps<{
   item?: Partial<Dict>;
@@ -37,9 +38,9 @@ const studyProgress = $computed(() => {
         <div>{{ studyProgress }}{{ item?.length }}{{ quantifier }}</div>
       </div>
       <div class="absolute bottom-2 left-4 right-4">
-        <ElProgress v-if="item?.lastLearnIndex || item.complete" class="mt-1"
+        <Progress v-if="item?.lastLearnIndex || item.complete" class="mt-1"
                     :percentage="progress"
-                    :show-text="false"></ElProgress>
+                    :show-text="false"></Progress>
       </div>
       <ElCheckbox v-if="showCheckbox"
                   :model-value="checked"

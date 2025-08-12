@@ -12,7 +12,8 @@ import {getCurrentStudyWord} from "@/hooks/dict.ts";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 import Book from "@/pages/pc/components/Book.vue";
 import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
-import {ElProgress, ElSlider} from 'element-plus';
+import {ElSlider} from 'element-plus';
+import Progress from '@/pages/pc/components/Progress.vue';
 import Toast from '@/pages/pc/components/Toast/Toast.ts';
 import BaseButton from "@/components/BaseButton.vue";
 import {getDefaultDict} from "@/types/func.ts";
@@ -146,7 +147,7 @@ const progressTextRight = $computed(() => {
             <span>{{ progressTextLeft }}</span>
             <span>{{ progressTextRight }} / {{ store.sdict.words.length }}</span>
           </div>
-          <ElProgress class="mt-1" :percentage="store.currentStudyProgress" :show-text="false"></ElProgress>
+          <Progress class="mt-1" :percentage="store.currentStudyProgress" :show-text="false"></Progress>
         </div>
         <div class="text-sm text-align-end">
           预计完成日期：{{ _getAccomplishDate(store.sdict.words.length, store.sdict.perDayStudyNumber) }}

@@ -61,12 +61,12 @@
 
 
   //修改element-ui的进度条底色
-  --el-border-color-lighter: #d1d5df !important;
+  --color-progress-bar: #d1d5df !important;
 }
 
 .footer {
   &.hide {
-    --el-border-color-lighter: #dbdbdb !important;
+    --color-progress-bar: #dbdbdb !important;
   }
 }
 
@@ -104,11 +104,11 @@ html.dark {
   --color-textarea-bg: rgb(43, 45, 48);
   --color-article: white;
 
-  --el-border-color-lighter: rgb(73, 77, 82) !important;
+  --color-progress-bar: rgb(73, 77, 82) !important;
 
   .footer {
     &.hide {
-      --el-border-color-lighter: var(--color-third) !important;
+      --color-progress-bar: var(--color-third) !important;
     }
   }
 }

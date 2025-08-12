@@ -1,8 +1,6 @@
 /// <reference types="vite/client" />
 /// <reference types="unplugin-vue-macros/macros-global" />
 
-import {ElMessageBox} from "element-plus";
-
 // declare module '*.json' {
 //   const src: string
 //   export default src
@@ -49,4 +47,3 @@ declare module "*.vue" {
 //   }
 // }
 
-declare var ElMessageBox: ElMessageBox;

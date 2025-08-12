@@ -8,7 +8,7 @@ import {DictResource, DictType} from "@/types/types.ts";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 import BaseIcon from "@/components/BaseIcon.vue";
 import Book from "@/pages/pc/components/Book.vue";
-import {ElProgress} from 'element-plus';
+import Progress from '@/pages/pc/components/Progress.vue';
 import Toast from '@/pages/pc/components/Toast/Toast.ts'
 import BaseButton from "@/components/BaseButton.vue";
 import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
@@ -110,7 +110,7 @@ async function goBookDetail(val: DictResource) {
         </BaseButton>
       </div>
       <div class="mt-5 text-sm">已学习{{ base.currentBook.lastLearnIndex }}篇文章</div>
-      <ElProgress class="mt-1" :percentage="base.currentBookProgress" :show-text="false"></ElProgress>
+      <Progress class="mt-1" :percentage="base.currentBookProgress" :show-text="false"></Progress>
     </div>
 
     <div class="card  flex flex-col">

@@ -1,13 +1,13 @@
 <script setup lang="ts">
 
-import {inject, onMounted, onUnmounted} from "vue"
+import {inject} from "vue"
 import {usePracticeStore} from "@/stores/practice.ts";
 import {useSettingStore} from "@/stores/setting.ts";
 import {ShortcutKey, StudyData} from "@/types/types.ts";
 import BaseIcon from "@/components/BaseIcon.vue";
 import {Icon} from "@iconify/vue";
 import Tooltip from "@/pages/pc/components/Tooltip.vue";
-import {ElProgress} from 'element-plus';
+import Progress from '@/pages/pc/components/Progress.vue'
 
 const statisticsStore = usePracticeStore()
 const settingStore = useSettingStore()
@@ -72,7 +72,7 @@ const progress = $computed(() => {
     </Tooltip>
 
     <div class="bottom">
-      <ElProgress
+      <Progress
           :percentage="progress"
           :stroke-width="8"
           :show-text="false"/>
@@ -146,15 +146,12 @@ const progress = $computed(() => {
         </div>
       </div>
     </div>
-    <div class="progress">
-      <ElProgress :percentage="progress"
-                  :stroke-width="8"
-                  :show-text="false"/>
+    <div class="progress-wrap">
+      <Progress :percentage="progress"
+                :stroke-width="8"
+                :show-text="false"/>
     </div>
   </div>
-  <!--
-   @click="emitter.emit(EventKey.openStatModal, {})"
-              @click="settingStore.showPanel = !settingStore.showPanel"-->
 </template>
 
 <style scoped lang="scss">
@@ -172,7 +169,7 @@ const progress = $computed(() => {
     margin-bottom: -6rem;
     margin-top: 3rem;
 
-    .progress {
+    .progress-wrap {
       bottom: calc(100% + 1.8rem);
     }
   }
@@ -210,17 +207,13 @@ const progress = $computed(() => {
     }
   }
 
-  .progress {
+  .progress-wrap {
     width: 100%;
     transition: all .3s;
     padding: 0 .6rem;
     box-sizing: border-box;
     position: absolute;
     bottom: 0;
-  }
-
-  :deep(.el-progress-bar__inner) {
-    background: var(--color-scrollbar);
   }
 
   .arrow {
