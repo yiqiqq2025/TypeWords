@@ -45,6 +45,7 @@
 <script setup lang="ts">
 import {ref, useTemplateRef} from 'vue'
 import QuestionItem from './QuestionItem.vue'
+import Toast from '@/pages/pc/components/Toast/Toast.ts'
 
 interface IProps {
   questions: Array,
@@ -90,7 +91,7 @@ const submitAll = () => {
   const wrongCount = results.length - correctCount
 
   console.log('最终结果：', results)
-  ElMessage({message: `共 ${results.length} 题，答对 ${correctCount}，答错 ${wrongCount}`})
+  Toast.success(`共 ${results.length} 题，答对 ${correctCount}，答错 ${wrongCount}`)
 }
 </script>
 

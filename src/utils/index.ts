@@ -4,17 +4,16 @@ import {getDefaultSettingState} from "@/stores/setting.ts";
 import {Dict, DictId, DictResource, DictType} from "@/types/types.ts";
 import {useRouter} from "vue-router";
 import {useRuntimeStore} from "@/stores/runtime.ts";
-import {nanoid} from "nanoid";
 import dayjs from 'dayjs'
 import axios from "axios";
 import {env} from "@/config/ENV.ts";
 import {nextTick} from "vue";
 import {dictionaryResources, enArticle} from "@/assets/dictionary.ts";
-import {ElMessage} from "element-plus";
+import Toast from '@/pages/pc/components/Toast/Toast.ts'
 import {getDefaultArticle, getDefaultDict, getDefaultWord} from "@/types/func.ts";
 
 export function no() {
-  ElMessage.warning('未现实')
+  Toast.warning('未现实')
 }
 
 //检测多余字段，防止人为删除数据，导致数据不完整报错
@@ -52,7 +51,7 @@ export function checkAndUpgradeSaveDict(val: any) {
       } else {
         if (version === 3) {
           localStorage.setItem('type-word-dict-v3',JSON.stringify(state))
-          
+
           let studyDictId = ''
           if (state.current.index >= 0) {
             let dict = state.myDictList[state.current.index]
@@ -151,7 +150,7 @@ export function checkAndUpgradeSaveDict(val: any) {
                   if (r) {
                     formatWord(v)
                     let dict = getDefaultDict(r)
-                    checkRiskKey(dict, v) 
+                    checkRiskKey(dict, v)
                     dict.id = r.id
                     defaultState.word.bookList.push(dict)
                     if (currentDictId === studyDictId) defaultState.word.studyIndex = defaultState.word.bookList.length - 1
@@ -172,7 +171,7 @@ export function checkAndUpgradeSaveDict(val: any) {
                   if (r) {
                     formatWord(v)
                     let dict = getDefaultDict(r)
-                    checkRiskKey(dict, v) 
+                    checkRiskKey(dict, v)
                     dict.id = r.id
                     defaultState.article.bookList.push(dict)
                     if (currentDictId === studyDictId) defaultState.article.studyIndex = defaultState.article.bookList.length - 1

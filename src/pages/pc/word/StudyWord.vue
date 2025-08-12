@@ -23,7 +23,7 @@ import Empty from "@/components/Empty.vue";
 import {useBaseStore} from "@/stores/base.ts";
 import {usePracticeStore} from "@/stores/practice.ts";
 import {dictionaryResources} from "@/assets/dictionary.ts";
-import {ElMessage} from "element-plus";
+import Toast from '@/pages/pc/components/Toast/Toast.ts'
 import {getDefaultWord} from "@/types/func.ts";
 import ConflictNotice from "@/pages/pc/components/ConflictNotice.vue";
 
@@ -100,7 +100,7 @@ watch(() => studyData, () => {
         data.words = studyData.write
         statStore.step = 4
       } else {
-        ElMessage.warning('没有可学习的单词！')
+        Toast.warning('没有可学习的单词！')
         router.push('/word')
       }
     }
@@ -275,7 +275,7 @@ function repeat() {
 
 function prev() {
   if (data.index === 0) {
-    ElMessage.warning('已经是第一个了~')
+    Toast.warning('已经是第一个了~')
   } else {
     data.index--
   }

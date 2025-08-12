@@ -8,7 +8,8 @@ import {DictResource, DictType} from "@/types/types.ts";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 import BaseIcon from "@/components/BaseIcon.vue";
 import Book from "@/pages/pc/components/Book.vue";
-import {ElMessage, ElProgress} from 'element-plus';
+import {ElProgress} from 'element-plus';
+import Toast from '@/pages/pc/components/Toast/Toast.ts'
 import BaseButton from "@/components/BaseButton.vue";
 import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
 import {onMounted, watch} from "vue";
@@ -34,7 +35,7 @@ async function init() {
 function startStudy() {
   if (base.sbook.id) {
     if (!base.sbook.articles.length) {
-      return ElMessage.warning('没有文章可学习！')
+      return Toast.warning('没有文章可学习！')
     }
     window.umami?.track('startStudyArticle', {
       name: base.sbook.name,
@@ -45,7 +46,7 @@ function startStudy() {
     nav('/study-article')
   } else {
     window.umami?.track('no-book')
-    ElMessage.warning('请先选择一本书籍')
+    Toast.warning('请先选择一本书籍')
   }
 }
 
@@ -66,7 +67,7 @@ function handleBatchDel() {
     }
   })
   selectIds = []
-  ElMessage.success("删除成功！")
+  Toast.success("删除成功！")
 }
 
 function toggleSelect(item) {

@@ -15,7 +15,8 @@ import {checkAndUpgradeSaveDict, checkAndUpgradeSaveSetting, shakeCommonDict} fr
 import {GITHUB} from "@/config/ENV.ts";
 import dayjs from "dayjs";
 import BasePage from "@/pages/pc/components/BasePage.vue";
-import {ElSwitch, ElSelect, ElOption, ElSlider, ElRadioGroup, ElRadio, ElInputNumber,ElMessage} from 'element-plus'
+import {ElSwitch, ElSelect, ElOption, ElSlider, ElRadioGroup, ElRadio, ElInputNumber} from 'element-plus'
+import Toast from '@/pages/pc/components/Toast/Toast.ts'
 
 const emit = defineEmits<{
   toggleDisabledDialogEscKey: [val: boolean]
@@ -60,7 +61,7 @@ useEventListener('keydown', (e: KeyboardEvent) => {
       for (const [k, v] of Object.entries(settingStore.shortcutKeyMap)) {
         if (v === shortcutKey && k !== editShortcutKey) {
           settingStore.shortcutKeyMap[editShortcutKey] = DefaultShortcutKeyMap[editShortcutKey]
-          return ElMessage.warning('快捷键重复！')
+          return Toast.warning('快捷键重复！')
         }
       }
       settingStore.shortcutKeyMap[editShortcutKey] = shortcutKey
@@ -71,7 +72,7 @@ useEventListener('keydown', (e: KeyboardEvent) => {
 function resetShortcutKeyMap() {
   editShortcutKey = ''
   settingStore.shortcutKeyMap = cloneDeep(DefaultShortcutKeyMap)
-  ElMessage.success('恢复成功')
+  Toast.success('恢复成功')
 }
 
 function exportData() {
@@ -90,7 +91,7 @@ function exportData() {
   }
   let blob = new Blob([JSON.stringify(data)], {type: "text/plain;charset=utf-8"});
   saveAs(blob, `${APP_NAME}-User-Data-${dayjs().format('YYYY-MM-DD HH-mm-ss')}.json`);
-  ElMessage.success('导出成功！')
+  Toast.success('导出成功！')
 }
 
 function importData(e) {
@@ -115,9 +116,9 @@ function importData(e) {
         settingStore.setState(settingState)
         let baseState = checkAndUpgradeSaveDict(data.dict)
         store.setState(baseState)
-        ElMessage.success('导入成功！')
+        Toast.success('导入成功！')
       } catch (err) {
-        return ElMessage.error('导入失败！')
+        return Toast.error('导入失败！')
       }
     }
   }

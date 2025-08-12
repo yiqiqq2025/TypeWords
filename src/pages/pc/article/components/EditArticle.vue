@@ -9,7 +9,8 @@ import {genArticleSectionData, splitCNArticle2, splitEnArticle2, usePlaySentence
 import {_nextTick, _parseLRC, cloneDeep, last} from "@/utils";
 import {watch} from "vue";
 import Empty from "@/components/Empty.vue";
-import {ElInputNumber, ElMessage, ElOption, ElPopover, ElSelect, ElUpload, UploadProps} from "element-plus";
+import {ElInputNumber, ElOption, ElPopover, ElSelect, ElUpload, UploadProps} from "element-plus";
+import Toast from '@/pages/pc/components/Toast/Toast.ts'
 import * as Comparison from "string-comparison"
 import BaseIcon from "@/components/BaseIcon.vue";
 import Dialog from "@/pages/pc/components/dialog/Dialog.vue";
@@ -62,7 +63,7 @@ function apply(isHandle: boolean = true) {
     // text = `While it is yet to be seen what direction the second Trump administration will take globally in its China policy, VOA traveled to the main island of Mahe in Seychelles to look at how China and the U.S. have impacted the country, and how each is fairing in that competition for influence there.`
     // text = "It was Sunday. I never get up early on Sundays. I sometimes stay in bed until lunchtime. Last Sunday I got up very late. I looked out of the window. It was dark outside. 'What a day!' I thought. 'It's raining again.' Just then, the telephone rang. It was my aunt Lucy. 'I've just arrived by train,' she said. 'I'm coming to see you.'\n\n     'But I'm still having breakfast,' I said.\n\n     'What are you doing?' she asked.\n\n     'I'm having breakfast,' I repeated.\n\n     'Dear me,' she said. 'Do you always get up so late? It's one o'clock!'"
     editArticle.sections = []
-    ElMessage.error('请填写原文！')
+    Toast.error('请填写原文！')
     return
   }
   failCount = genArticleSectionData(editArticle)
@@ -91,10 +92,10 @@ function splitTranslateText() {
 //TODO
 async function startNetworkTranslate() {
   if (!editArticle.title.trim()) {
-    return ElMessage.error('请填写标题！')
+    return Toast.error('请填写标题！')
   }
   if (!editArticle.text.trim()) {
-    return ElMessage.error('请填写正文！')
+    return Toast.error('请填写正文！')
   }
   apply()
   //注意！！！
@@ -132,11 +133,11 @@ function save(option: 'save' | 'saveAndNext') {
     editArticle.textTranslate = editArticle.textTranslate.trim()
 
     if (!editArticle.title) {
-      ElMessage.error('请填写标题！')
+      Toast.error('请填写标题！')
       return resolve(false)
     }
     if (!editArticle.text) {
-      ElMessage.error('请填写正文！')
+      Toast.error('请填写正文！')
       return resolve(false)
     }
 

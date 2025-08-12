@@ -7,7 +7,7 @@ import {useSettingStore} from "@/stores/setting.ts";
 import {Article, ArticleItem, ArticleWord, ShortcutKey, Word} from "@/types/types.ts";
 import {useOnKeyboardEventListener, useStartKeyboardEventListener} from "@/hooks/event.ts";
 import useTheme from "@/hooks/theme.ts";
-import {ElMessage} from "element-plus";
+import Toast from '@/pages/pc/components/Toast/Toast.ts'
 import {cloneDeep} from "@/utils";
 import {usePracticeStore} from "@/stores/practice.ts";
 import {useArticleOptions} from "@/hooks/dict.ts";
@@ -58,7 +58,7 @@ function repeat() {
 function prev() {
   // console.log('next')
   if (store.sbook.lastLearnIndex === 0) {
-    ElMessage.warning('已经在第一章了~')
+    Toast.warning('已经在第一章了~')
   } else {
     store.sbook.lastLearnIndex--
     getCurrentPractice()

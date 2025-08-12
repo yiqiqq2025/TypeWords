@@ -11,6 +11,7 @@ import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
 import Empty from "@/components/Empty.vue";
 import {Icon} from "@iconify/vue";
 import {ElCheckbox, ElPagination} from 'element-plus'
+import Toast from '@/pages/pc/components/Toast/Toast.ts'
 
 let list = defineModel('list')
 
@@ -94,11 +95,11 @@ let showSearchInput = $ref(false)
 
 function sort(type: Sort) {
   if (type === Sort.reverse) {
-    ElMessage.success('已翻转排序')
+    Toast.success('已翻转排序')
     list.value = reverse(cloneDeep(list.value))
   }
   if (type === Sort.random) {
-    ElMessage.success('已随机排序')
+    Toast.success('已随机排序')
     list.value = shuffle(cloneDeep(list.value))
   }
   showSortDialog = false

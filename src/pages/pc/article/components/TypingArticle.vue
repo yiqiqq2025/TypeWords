@@ -13,7 +13,7 @@ import {getTranslateText} from "@/hooks/article.ts";
 import BaseButton from "@/components/BaseButton.vue";
 import QuestionForm from "@/pages/pc/article/components/QuestionForm.vue";
 import {getDefaultArticle} from "@/types/func.ts";
-import {ElMessage} from "element-plus";
+import Toast from '@/pages/pc/components/Toast/Toast.ts'
 
 interface IProps {
   article: Article,
@@ -319,10 +319,7 @@ function onContextMenu(e: MouseEvent, sentence: Sentence, i, j) {
         label: "复制",
         onClick: () => {
           navigator.clipboard.writeText(sentence.text).then(r => {
-            ElMessage({
-              message: '已复制',
-              type: 'success',
-            })
+            Toast.success('已复制')
           })
         }
       },
@@ -330,11 +327,7 @@ function onContextMenu(e: MouseEvent, sentence: Sentence, i, j) {
         label: "语法分析",
         onClick: () => {
           navigator.clipboard.writeText(sentence.text).then(r => {
-            ElMessage({
-              message: '已复制！随后将打开语法分析网站！',
-              type: 'success',
-              duration: 3000
-            })
+            Toast.success('已复制！随后将打开语法分析网站！')
             setTimeout(() => {
               window.open('https://enpuz.com/')
             }, 1000)

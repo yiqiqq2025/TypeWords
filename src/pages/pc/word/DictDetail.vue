@@ -10,7 +10,8 @@ import BaseIcon from "@/components/BaseIcon.vue";
 import BaseTable from "@/pages/pc/components/BaseTable.vue";
 import WordItem from "@/pages/pc/components/WordItem.vue";
 import type {FormInstance, FormRules} from "element-plus";
-import {ElForm, ElFormItem, ElInput, ElMessage} from "element-plus";
+import {ElForm, ElFormItem, ElInput} from "element-plus";
+import Toast from '@/pages/pc/components/Toast/Toast.ts'
 import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
 import BackIcon from "@/pages/pc/components/BackIcon.vue";
 import BaseButton from "@/components/BaseButton.vue";
@@ -88,9 +89,9 @@ async function onSubmitWord() {
         let r = list.find(v => v.id === data.id)
         if (r) {
           Object.assign(r, data)
-          ElMessage.success('修改成功')
+          Toast.success('修改成功')
         } else {
-          ElMessage.success('修改失败，未找到单词')
+          Toast.success('修改失败，未找到单词')
           return
         }
       } else {
@@ -98,15 +99,15 @@ async function onSubmitWord() {
         data.checked = false
         let r = list.find(v => v.word === wordForm.word)
         if (r) {
-          ElMessage.warning('已有相同名称单词！')
+          Toast.warning('已有相同名称单词！')
           return
         } else list.push(data)
-        ElMessage.success('添加成功')
+        Toast.success('添加成功')
         wordForm = getDefaultFormWord()
       }
       syncDictInMyStudyList()
     } else {
-      ElMessage.warning('请填写完整')
+      Toast.warning('请填写完整')
     }
   })
 }

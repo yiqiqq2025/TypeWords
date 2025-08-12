@@ -3,7 +3,8 @@
 import {Dict, DictId, DictType} from "@/types/types.ts";
 import {cloneDeep} from "@/utils";
 
-import {ElForm, ElFormItem, ElInput, ElSelect, ElOption, FormInstance, FormRules, ElMessage} from "element-plus";
+import {ElForm, ElFormItem, ElInput, ElSelect, ElOption, FormInstance, FormRules} from "element-plus";
+import Toast from '@/pages/pc/components/Toast/Toast.ts'
 import {onMounted, reactive} from "vue";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 import {useBaseStore} from "@/stores/base.ts";
@@ -54,13 +55,13 @@ async function onSubmit() {
       if (props.isAdd) {
         data.id = 'custom-dict-' + Date.now()
         if (source.bookList.find(v => v.name === data.name)) {
-          ElMessage.warning('已有相同名称！')
+          Toast.warning('已有相同名称！')
           return
         } else {
           source.bookList.push(cloneDeep(data))
           runtimeStore.editDict = data
           emit('submit')
-          ElMessage.success('添加成功')
+          Toast.success('添加成功')
         }
       } else {
         let rIndex = source.bookList.findIndex(v => v.id === data.id)
@@ -68,15 +69,15 @@ async function onSubmit() {
         if (rIndex > -1) {
           source.bookList[rIndex] = cloneDeep(data)
           emit('submit')
-          ElMessage.success('修改成功')
+          Toast.success('修改成功')
         } else {
           source.bookList.push(cloneDeep(data))
-          ElMessage.success('修改成功并加入我的词典')
+          Toast.success('修改成功并加入我的词典')
         }
       }
       console.log('submit!', data)
     } else {
-      ElMessage.warning('请填写完整')
+      Toast.warning('请填写完整')
     }
   })
 }
