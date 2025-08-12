@@ -65,7 +65,7 @@ export function getDefaultDict(val: Partial<Dict> = {}): Dict {
     complete: false,
     ...val,
     words: shallowReactive(val.words ?? []),
-    list: shallowReactive(val.articles ?? []),
+    articles: shallowReactive(val.articles ?? []),
     statistics: shallowReactive(val.statistics ?? [])
   }
 }
