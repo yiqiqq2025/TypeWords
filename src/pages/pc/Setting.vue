@@ -15,7 +15,7 @@ import {checkAndUpgradeSaveDict, checkAndUpgradeSaveSetting, shakeCommonDict} fr
 import {GITHUB} from "@/config/ENV.ts";
 import dayjs from "dayjs";
 import BasePage from "@/pages/pc/components/BasePage.vue";
-import {ElSwitch, ElSelect, ElOption, ElSlider, ElRadioGroup, ElRadio, ElInputNumber} from 'element-plus'
+import {ElSwitch, ElSelect, ElOption, ElSlider, ElRadioGroup, ElRadio, ElInputNumber,ElMessage} from 'element-plus'
 
 const emit = defineEmits<{
   toggleDisabledDialogEscKey: [val: boolean]
