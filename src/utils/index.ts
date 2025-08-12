@@ -51,6 +51,8 @@ export function checkAndUpgradeSaveDict(val: any) {
         return defaultState
       } else {
         if (version === 3) {
+          localStorage.setItem('type-word-dict-v3',JSON.stringify(state))
+          
           let studyDictId = ''
           if (state.current.index >= 0) {
             let dict = state.myDictList[state.current.index]
