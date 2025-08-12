@@ -3,13 +3,14 @@
 import {Dict, DictId, DictType} from "@/types/types.ts";
 import {cloneDeep} from "@/utils";
 
-import {ElForm, ElFormItem, ElInput, ElSelect, ElOption, FormInstance, FormRules} from "element-plus";
+import {ElForm, ElFormItem, ElInput, FormInstance, FormRules} from "element-plus";
 import Toast from '@/pages/pc/components/Toast/Toast.ts'
 import {onMounted, reactive} from "vue";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 import {useBaseStore} from "@/stores/base.ts";
 import BaseButton from "@/components/BaseButton.vue";
 import {getDefaultDict} from "@/types/func.ts";
+import {Option, Select} from "@/pages/pc/components/Select";
 
 const props = defineProps<{
   isAdd: boolean,
@@ -104,20 +105,20 @@ onMounted(() => {
         <ElInput v-model="dictForm.description" type="textarea"/>
       </ElFormItem>
       <ElFormItem label="原文语言">
-        <ElSelect v-model="dictForm.language" placeholder="请选择选项">
-          <ElOption label="英语" value="en"/>
-          <ElOption label="德语" value="de"/>
-          <ElOption label="日语" value="ja"/>
-          <ElOption label="代码" value="code"/>
-        </ElSelect>
+        <Select v-model="dictForm.language" placeholder="请选择选项">
+          <Option label="英语" value="en"/>
+          <Option label="德语" value="de"/>
+          <Option label="日语" value="ja"/>
+          <Option label="代码" value="code"/>
+        </Select>
       </ElFormItem>
       <ElFormItem label="译文语言">
-        <ElSelect v-model="dictForm.translateLanguage" placeholder="请选择选项">
-          <ElOption label="中文" value="zh-CN"/>
-          <ElOption label="英语" value="en"/>
-          <ElOption label="德语" value="de"/>
-          <ElOption label="日语" value="ja"/>
-        </ElSelect>
+        <Select v-model="dictForm.translateLanguage" placeholder="请选择选项">
+          <Option label="中文" value="zh-CN"/>
+          <Option label="英语" value="en"/>
+          <Option label="德语" value="de"/>
+          <Option label="日语" value="ja"/>
+        </Select>
       </ElFormItem>
       <div class="center">
         <base-button type="info" @click="emit('close')">关闭</base-button>

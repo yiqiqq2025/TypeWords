@@ -16,6 +16,7 @@ import BaseIcon from "@/components/BaseIcon.vue";
 import Dialog from "@/pages/pc/components/dialog/Dialog.vue";
 import {getDefaultArticle} from "@/types/func.ts";
 import copy from "copy-to-clipboard";
+import {Option, Select} from "@/pages/pc/components/Select";
 
 interface IProps {
   article?: Article,
@@ -344,15 +345,15 @@ function setStartTime(val: Sentence, i: number, j: number) {
           <BaseButton @click="startNetworkTranslate"
                       :loading="progress!==0 && progress !== 100">翻译
           </BaseButton>
-          <ElSelect v-model="networkTranslateEngine"
+          <Select v-model="networkTranslateEngine"
           >
-            <ElOption
+            <Option
                 v-for="item in TranslateEngineOptions"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
             />
-          </ElSelect>
+          </Select>
           {{ progress }}%
         </div>
         <div class="flex items-center">

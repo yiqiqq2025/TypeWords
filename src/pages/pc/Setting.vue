@@ -4,19 +4,19 @@ import {ref, watch} from "vue";
 import {useSettingStore} from "@/stores/setting.ts";
 import {getAudioFileUrl, useChangeAllSound, usePlayAudio, useWatchAllSound} from "@/hooks/sound.ts";
 import {getShortcutKey, useDisableEventListener, useEventListener} from "@/hooks/event.ts";
-import {cloneDeep} from "@/utils";
+import {checkAndUpgradeSaveDict, checkAndUpgradeSaveSetting, cloneDeep, shakeCommonDict} from "@/utils";
 import {DefaultShortcutKeyMap, ShortcutKey} from "@/types/types.ts";
 import BaseButton from "@/components/BaseButton.vue";
 import {APP_NAME, EXPORT_DATA_KEY, SAVE_DICT_KEY, SAVE_SETTING_KEY, SoundFileOptions} from "@/utils/const.ts";
 import VolumeIcon from "@/components/icon/VolumeIcon.vue";
 import {useBaseStore} from "@/stores/base.ts";
 import {saveAs} from "file-saver";
-import {checkAndUpgradeSaveDict, checkAndUpgradeSaveSetting, shakeCommonDict} from "@/utils";
 import {GITHUB} from "@/config/ENV.ts";
 import dayjs from "dayjs";
 import BasePage from "@/pages/pc/components/BasePage.vue";
-import {ElSwitch, ElSelect, ElOption, ElSlider, ElRadioGroup, ElRadio, ElInputNumber} from 'element-plus'
+import {ElInputNumber, ElRadio, ElRadioGroup, ElSlider, ElSwitch} from 'element-plus'
 import Toast from '@/pages/pc/components/Toast/Toast.ts'
+import {Option, Select} from "@/pages/pc/components/Select";
 
 const emit = defineEmits<{
   toggleDisabledDialogEscKey: [val: boolean]
@@ -185,12 +185,13 @@ function importData(e) {
           <div class="row">
             <label class="sub-title">单词/句子发音口音</label>
             <div class="wrapper">
-              <ElSelect v-model="settingStore.wordSoundType"
-                        placeholder="请选择"
+              <Select v-model="settingStore.wordSoundType"
+                      placeholder="请选择"
+                      class="w-50!"
               >
-                <ElOption label="美音" value="us"/>
-                <ElOption label="英音" value="uk"/>
-              </ElSelect>
+                <Option label="美音" value="us"/>
+                <Option label="英音" value="uk"/>
+              </Select>
             </div>
           </div>
           <div class="row">
@@ -221,10 +222,11 @@ function importData(e) {
           <div class="row">
             <label class="item-title">按键音效</label>
             <div class="wrapper">
-              <ElSelect v-model="settingStore.keyboardSoundFile"
-                        placeholder="请选择"
+              <Select v-model="settingStore.keyboardSoundFile"
+                      placeholder="请选择"
+                      class="w-50!"
               >
-                <ElOption
+                <Option
                     v-for="item in SoundFileOptions"
                     :key="item.value"
                     :label="item.label"
@@ -236,8 +238,8 @@ function importData(e) {
                         :time="100"
                         @click="usePlayAudio(getAudioFileUrl(item.value)[0])"/>
                   </div>
-                </ElOption>
-              </ElSelect>
+                </Option>
+              </Select>
             </div>
           </div>
           <div class="row">
