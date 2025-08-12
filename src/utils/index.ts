@@ -62,7 +62,7 @@ export function checkAndUpgradeSaveDict(val: any) {
           const safeString = (str) => (typeof str === 'string' ? str.trim() : '');
 
           function formatWord(dict) {
-            dict.words = dict.words.map(v => {
+            dict.words = dict.words?.map?.(v => {
               return getDefaultWord({
                 word: v.name,
                 phonetic0: v.usphone,
@@ -84,8 +84,8 @@ export function checkAndUpgradeSaveDict(val: any) {
                   return {pos: '', cn: safeString(line)};
                 })
               })
-            })
-            dict.statistics = dict.statistics.map(v => {
+            }) || []
+            dict.statistics = dict.statistics?.map?.(v => {
               return {
                 startDate: v.startDate,
                 spend: v.endDate - v.startDate,
@@ -93,14 +93,14 @@ export function checkAndUpgradeSaveDict(val: any) {
                 new: v.total,
                 wrong: v.wrongWordNumber
               }
-            })
-            dict.articles = dict.articles.map(v => {
+            }) || []
+            dict.articles = dict.articles?.map?.(v => {
               let r = getDefaultArticle({
                 textTranslate: v.textCustomTranslate
               })
               checkRiskKey(r, v)
               return r
-            })
+            }) || []
           }
 
           state.myDictList.map((v: any) => {
@@ -116,19 +116,23 @@ export function checkAndUpgradeSaveDict(val: any) {
                   if (v.words.length){
                       if (currentDictId === studyDictId) defaultState.word.studyIndex = 0
                       checkRiskKey(defaultState.word.bookList[0], cloneDeep(v))
+                      defaultState.word.bookList[0].length = v.words.length
                   }
                   if (v.articles.length){
                       if (currentDictId === studyDictId) defaultState.article.studyIndex = 0
                       checkRiskKey(defaultState.article.bookList[0], cloneDeep(v))
+                      defaultState.article.bookList[0].length = v.articles.length
                   }
                 }
                 if (currentType === 'simple' || currentType === 'skip') {
                   if (currentDictId === studyDictId) defaultState.word.studyIndex = 2
                   checkRiskKey(defaultState.word.bookList[2], v)
+                  defaultState.word.bookList[2].length = v.words.length
                 }
                 if (currentType === 'wrong') {
                   if (currentDictId === studyDictId) defaultState.word.studyIndex = 1
                   checkRiskKey(defaultState.word.bookList[1], v)
+                  defaultState.word.bookList[1].length = v.words.length
                 }
               }
               if (currentType === 'word') {
@@ -136,6 +140,7 @@ export function checkAndUpgradeSaveDict(val: any) {
                   formatWord(v)
                   let dict = getDefaultDict({custom: true})
                   checkRiskKey(dict, v)
+                  dict.length = dict.words.length
                   defaultState.word.bookList.push(dict)
                   if (currentDictId === studyDictId) defaultState.word.studyIndex = defaultState.word.bookList.length - 1
                 } else {
@@ -145,6 +150,7 @@ export function checkAndUpgradeSaveDict(val: any) {
                     formatWord(v)
                     let dict = getDefaultDict(r)
                     checkRiskKey(dict, v)
+                    dict.length = dict.words.length
                     dict.id = r.id
                     defaultState.word.bookList.push(dict)
                     if (currentDictId === studyDictId) defaultState.word.studyIndex = defaultState.word.bookList.length - 1
@@ -156,6 +162,7 @@ export function checkAndUpgradeSaveDict(val: any) {
                   formatWord(v)
                   let dict = getDefaultDict({custom: true})
                   checkRiskKey(dict, v)
+                  dict.length = dict.articles.length
                   defaultState.article.bookList.push(dict)
                   if (currentDictId === studyDictId) defaultState.article.studyIndex = defaultState.article.bookList.length - 1
                 } else {
@@ -165,6 +172,7 @@ export function checkAndUpgradeSaveDict(val: any) {
                     formatWord(v)
                     let dict = getDefaultDict(r)
                     checkRiskKey(dict, v)
+                    dict.length = dict.articles.length
                     dict.id = r.id
                     defaultState.article.bookList.push(dict)
                     if (currentDictId === studyDictId) defaultState.article.studyIndex = defaultState.article.bookList.length - 1
