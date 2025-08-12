@@ -51,7 +51,6 @@ export function checkAndUpgradeSaveDict(val: any) {
         return defaultState
       } else {
         if (version === 3) {
-          loc
           let studyDictId = ''
           if (state.current.index >= 0) {
             let dict = state.myDictList[state.current.index]
