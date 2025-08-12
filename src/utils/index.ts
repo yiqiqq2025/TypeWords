@@ -51,6 +51,7 @@ export function checkAndUpgradeSaveDict(val: any) {
         return defaultState
       } else {
         if (version === 3) {
+          loc
           let studyDictId = ''
           if (state.current.index >= 0) {
             let dict = state.myDictList[state.current.index]
@@ -113,10 +114,16 @@ export function checkAndUpgradeSaveDict(val: any) {
                 delete v.id
                 delete v.name
                 if (currentType === 'collect') {
-                  if (currentDictId === studyDictId) defaultState.word.studyIndex = 0
-                  checkRiskKey(defaultState.word.bookList[0], v)
+                  if (v.words.length){
+                      if (currentDictId === studyDictId) defaultState.word.studyIndex = 0
+                      checkRiskKey(defaultState.word.bookList[0], cloneDeep(v))
+                  }
+                  if (v.articles.length){
+                      if (currentDictId === studyDictId) defaultState.article.studyIndex = 0
+                      checkRiskKey(defaultState.article.bookList[0], cloneDeep(v))
+                  }
                 }
-                if (currentType === 'simple') {
+                if (currentType === 'simple' || currentType === 'skip') {
                   if (currentDictId === studyDictId) defaultState.word.studyIndex = 2
                   checkRiskKey(defaultState.word.bookList[2], v)
                 }
