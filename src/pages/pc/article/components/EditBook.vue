@@ -11,6 +11,8 @@ import {useBaseStore} from "@/stores/base.ts";
 import BaseButton from "@/components/BaseButton.vue";
 import {getDefaultDict} from "@/types/func.ts";
 import {Option, Select} from "@/pages/pc/components/base/select";
+import Input from "@/pages/pc/components/Input.vue";
+import BaseInput from "@/pages/pc/components/base/BaseInput.vue";
 
 const props = defineProps<{
   isAdd: boolean,
@@ -99,10 +101,10 @@ onMounted(() => {
         :model="dictForm"
         label-width="8rem">
       <ElFormItem label="名称" prop="name">
-        <ElInput v-model="dictForm.name"/>
+        <BaseInput v-model="dictForm.name"/>
       </ElFormItem>
       <ElFormItem label="描述">
-        <ElInput v-model="dictForm.description" type="textarea"/>
+        <BaseInput v-model="dictForm.description" textarea/>
       </ElFormItem>
       <ElFormItem label="原文语言">
         <Select v-model="dictForm.language" placeholder="请选择选项">

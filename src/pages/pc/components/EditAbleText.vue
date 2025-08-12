@@ -4,6 +4,7 @@ import BaseButton from "@/components/BaseButton.vue";
 import {ElInput} from "element-plus";
 
 import {watchEffect} from "vue";
+import BaseInput from "@/pages/pc/components/base/BaseInput.vue";
 
 interface IProps {
   value: string,
@@ -38,9 +39,10 @@ function toggle() {
   <div
       v-if="edit"
       class="edit-text">
-    <ElInput
+    <BaseInput
         v-model="editVal"
         ref="inputRef"
+        textarea
         autosize
         autofocus
         type="textarea"

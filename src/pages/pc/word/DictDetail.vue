@@ -19,6 +19,7 @@ import {useRoute, useRouter} from "vue-router";
 import {useBaseStore} from "@/stores/base.ts";
 import EditBook from "@/pages/pc/article/components/EditBook.vue";
 import {getDefaultDict} from "@/types/func.ts";
+import BaseInput from "@/pages/pc/components/base/BaseInput.vue";
 
 const runtimeStore = useRuntimeStore()
 const base = useBaseStore()
@@ -268,19 +269,19 @@ defineRender(() => {
                               model={wordForm}
                               label-width="7rem">
                             <ElFormItem label="单词" prop="word">
-                              <ElInput
+                              <BaseInput
                                   modelValue={wordForm.word}
                                   onUpdate:modelValue={e => wordForm.word = e}
                               />
                             </ElFormItem>
                             <ElFormItem label="英音音标">
-                              <ElInput
+                              <BaseInput
                                   modelValue={wordForm.phonetic0}
                                   onUpdate:modelValue={e => wordForm.phonetic0 = e}
                               />
                             </ElFormItem>
                             <ElFormItem label="美音音标">
-                              <ElInput
+                              <BaseInput
                                   modelValue={wordForm.phonetic1}
                                   onUpdate:modelValue={e => wordForm.phonetic1 = e}/>
                             </ElFormItem>

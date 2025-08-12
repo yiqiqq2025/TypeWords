@@ -12,11 +12,11 @@ import {getCurrentStudyWord} from "@/hooks/dict.ts";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 import Book from "@/pages/pc/components/Book.vue";
 import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
-import {ElSlider} from 'element-plus';
 import Progress from '@/pages/pc/components/base/Progress.vue';
 import Toast from '@/pages/pc/components/base/toast/Toast.ts';
 import BaseButton from "@/components/BaseButton.vue";
 import {getDefaultDict} from "@/types/func.ts";
+import Slider from "@/pages/pc/components/base/Slider.vue";
 
 const store = useBaseStore()
 const router = useRouter()
@@ -224,9 +224,13 @@ const progressTextRight = $computed(() => {
         <div class="center text-sm" :style="{ opacity: tempPerDayStudyNumber === 20 ? 1 : 0 }">
           推荐
         </div>
-        <ElSlider :min="10" :step="10" show-stops :marks="{ 10: '10', 200: '200' }" size="small" class="my-6"
-                  :max="200" v-model="tempPerDayStudyNumber"/>
-        <div class="flex gap-2 mb-2 mt-10 items-center">
+        <Slider :min="10"
+                :step="10"
+                show-stops
+                class="mt-3"
+                show-text
+                :max="200" v-model="tempPerDayStudyNumber"/>
+        <div class="flex gap-2 mb-2 mt-2 items-center">
           <div>预计</div>
           <span class="text-2xl" style="color:rgb(176,116,211)">{{
               _getAccomplishDays(store.sdict.words.length, tempPerDayStudyNumber)

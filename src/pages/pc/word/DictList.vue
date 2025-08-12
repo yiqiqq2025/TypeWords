@@ -80,7 +80,7 @@ const searchList = computed<any[]>(() => {
       <div class="flex items-center relative gap-2">
         <BackIcon class="z-2" @Click='router.back()'/>
         <div class="flex flex-1 gap-4" v-if="showSearchInput">
-          <Input placeholder="请输入词典名称/缩写/类别" v-model="searchKey" class="flex-1" autofocus/>
+          <Input prefix-icon placeholder="请输入词典名称/缩写/类别" v-model="searchKey" class="flex-1" autofocus/>
           <BaseButton @click="showSearchInput = false, searchKey = ''">取消</BaseButton>
         </div>
         <div class="py-1 flex flex-1 justify-end" v-else>

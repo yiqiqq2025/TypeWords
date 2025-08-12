@@ -14,10 +14,11 @@ import {saveAs} from "file-saver";
 import {GITHUB} from "@/config/ENV.ts";
 import dayjs from "dayjs";
 import BasePage from "@/pages/pc/components/BasePage.vue";
-import {ElInputNumber, ElRadio, ElRadioGroup, ElSlider} from 'element-plus'
+import {ElInputNumber, ElRadio, ElRadioGroup} from 'element-plus'
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import {Option, Select} from "@/pages/pc/components/base/select";
 import Switch from "@/pages/pc/components/base/Switch.vue";
+import Slider from "@/pages/pc/components/base/Slider.vue";
 
 const emit = defineEmits<{
   toggleDisabledDialogEscKey: [val: boolean]
@@ -197,14 +198,14 @@ function importData(e) {
           <div class="row">
             <label class="sub-title">音量</label>
             <div class="wrapper">
-              <ElSlider v-model="settingStore.wordSoundVolume"/>
+              <Slider v-model="settingStore.wordSoundVolume"/>
               <span>{{ settingStore.wordSoundVolume }}%</span>
             </div>
           </div>
           <div class="row">
             <label class="sub-title">倍速</label>
             <div class="wrapper">
-              <ElSlider v-model="settingStore.wordSoundSpeed" :step="0.1" :min="0.5" :max="3"/>
+              <Slider v-model="settingStore.wordSoundSpeed" :step="0.1" :min="0.5" :max="3"/>
               <span>{{ settingStore.wordSoundSpeed }}</span>
             </div>
           </div>
@@ -245,7 +246,7 @@ function importData(e) {
           <div class="row">
             <label class="sub-title">音量</label>
             <div class="wrapper">
-              <ElSlider v-model="settingStore.keyboardSoundVolume"/>
+              <Slider v-model="settingStore.keyboardSoundVolume"/>
               <span>{{ settingStore.keyboardSoundVolume }}%</span>
             </div>
           </div>
@@ -263,7 +264,7 @@ function importData(e) {
           <div class="row">
             <label class="sub-title">音量</label>
             <div class="wrapper">
-              <ElSlider v-model="settingStore.effectSoundVolume"/>
+              <Slider v-model="settingStore.effectSoundVolume"/>
               <span>{{ settingStore.effectSoundVolume }}%</span>
             </div>
           </div>
@@ -337,7 +338,7 @@ function importData(e) {
           <div class="row">
             <label class="sub-title">外语字体</label>
             <div class="wrapper">
-              <ElSlider
+              <Slider
                   :min="10"
                   :max="100"
                   v-model="settingStore.fontSize.wordForeignFontSize"/>
@@ -347,7 +348,7 @@ function importData(e) {
           <div class="row">
             <label class="sub-title">中文字体</label>
             <div class="wrapper">
-              <ElSlider
+              <Slider
                   :min="10"
                   :max="100"
                   v-model="settingStore.fontSize.wordTranslateFontSize"/>

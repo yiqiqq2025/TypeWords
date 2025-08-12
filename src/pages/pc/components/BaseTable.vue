@@ -134,6 +134,7 @@ defineRender(
                         class="flex gap-4"
                     >
                       <Input
+                          prefixIcon
                           modelValue={searchKey}
                           onUpdate:modelValue=
                               {debounce(e => searchKey = e)}

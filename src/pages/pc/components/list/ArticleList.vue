@@ -48,7 +48,7 @@ defineExpose({scrollToBottom, scrollToItem})
 <template>
   <div class="list">
     <div class="search">
-      <Input v-model="searchKey"/>
+      <Input prefix-icon v-model="searchKey"/>
     </div>
     <BaseList
         ref="listRef"

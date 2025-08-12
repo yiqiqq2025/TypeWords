@@ -100,7 +100,7 @@ defineExpose({scrollBottom})
        ref="el"
   >
     <div class="search">
-      <Input v-model="searchKey"/>
+      <Input prefix-icon v-model="searchKey"/>
     </div>
     <transition-group name="drag" class="list" tag="div">
       <div class="item"

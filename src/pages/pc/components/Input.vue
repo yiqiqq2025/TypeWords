@@ -8,6 +8,7 @@ defineProps<{
   modelValue: string
   placeholder?: string
   autofocus?: boolean
+  prefixIcon?: boolean
 }>()
 
 defineEmits(['update:modelValue'])
@@ -37,6 +38,7 @@ const vFocus = {
        ref="inputEl"
   >
     <Icon icon="fluent:search-24-regular"
+          v-if="prefixIcon"
           width="20"/>
     <input type="text"
            :value="modelValue"
@@ -61,7 +63,6 @@ const vFocus = {
   transition: all .3s;
   display: flex;
   align-items: center;
-  transition: all .3s;
   background: var(--color-input-bg);
 
   :deep(svg) {

@@ -27,6 +27,7 @@
   --article-panel-margin-left: calc(50% + var(--article-width) / 2 + 1rem);
   --anim-time: 0.3s;
 
+  --color-input-color: black;
   --color-input-bg: white;
   --color-input-border: #bfbfbf;
   --color-input-icon: #d3d4d7;
@@ -98,6 +99,7 @@ html.dark {
 
   --btn-info: transparent;
 
+  --color-input-color:white;
   --color-input-bg: rgba(14, 18, 23, 1);
   --color-input-icon: #383737;
 
