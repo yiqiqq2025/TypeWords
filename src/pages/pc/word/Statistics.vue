@@ -59,6 +59,7 @@ watch(model, (newVal) => {
     }
     window.umami?.track('studyWordEnd', {
       name: store.sdict.name,
+      spend: Number(statStore.spend / 1000 / 60).toFixed(1),
       index: store.sdict.lastLearnIndex,
       perDayStudyNumber:store.sdict.perDayStudyNumber,
       custom: store.sdict.custom,
