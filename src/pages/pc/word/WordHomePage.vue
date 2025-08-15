@@ -182,8 +182,8 @@ const progressTextRight = $computed(() => {
           </div>
           个单词 <span class="color-blue cursor-pointer" @click="setPerDayStudyNumber">更改</span>
         </div>
-        <!--        <BaseButton size="large" :disabled="!store.sdict.name" @click="startStudy">-->
-        <BaseButton size="large" @click="startStudy">
+        <BaseButton size="large" :disabled="!store.sdict.name" @click="startStudy">
+          <!--        <BaseButton size="large" @click="startStudy">-->
           <div class="flex items-center gap-2">
             <span>开始学习</span>
             <Icon icon="icons8:right-round" class="text-2xl"/>
