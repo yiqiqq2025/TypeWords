@@ -82,7 +82,7 @@ jobs:
         run: npm install ali-oss @alicloud/pop-core
 
       - name: Deploy to OSS + Refresh CDN
-        run: node scripts/deploy-oss.js
+        run: node ../scripts/deploy-oss.js
         env:
           OSS_KEY_ID: ${{ secrets.OSS_KEY_ID }}
           OSS_KEY_SECRET: ${{ secrets.OSS_KEY_SECRET }}
