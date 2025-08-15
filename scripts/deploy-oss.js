@@ -45,12 +45,25 @@ function getAllFiles(dir, fileList = []) {
   return fileList
 }
 
-// 上传文件，显示进度
-async function uploadFiles(files, localBase = './dist') {
-  const total = files.length
+// 上传文件，显示进度，可跳过指定目录
+/**
+ * @param {string[]} files - 要上传的所有文件完整路径
+ * @param {string} localBase - 本地基准路径
+ * @param {string[]} ignoreDirs - 相对 localBase 的目录名数组，上传时会跳过这些目录
+ */
+async function uploadFiles(files, localBase = './dist', ignoreDirs = []) {
+  const filteredFiles = files.filter(file => {
+    const relativePath = path.relative(localBase, file)
+    // 获取文件所在目录的第一级
+    const topDir = relativePath.split(path.sep)[0]
+    // 如果在 ignoreDirs 中，就跳过
+    return !ignoreDirs.includes(topDir)
+  })
+
+  const total = filteredFiles.length
   let count = 0
 
-  for (const file of files) {
+  for (const file of filteredFiles) {
     const relativePath = path.relative(localBase, file)
     const remotePath = relativePath.split(path.sep).join('/') // 转 POSIX 路径
     await client.put(remotePath, file)
@@ -60,6 +73,7 @@ async function uploadFiles(files, localBase = './dist') {
   }
   console.log('\n✅ 文件全部上传完成')
 }
+
 
 // 刷新 CDN
 async function refreshCDN() {
@@ -76,7 +90,7 @@ async function refreshCDN() {
 async function main() {
   const files = getAllFiles('./dist')
   console.log(`📁 共找到 ${files.length} 个文件，开始上传...`)
-  await uploadFiles(files)
+  await uploadFiles(files, './dist', ['dicts', 'sound'])
   await refreshCDN()
 }
 

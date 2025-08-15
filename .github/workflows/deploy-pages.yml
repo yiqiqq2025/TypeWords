@@ -49,6 +49,12 @@ jobs:
           OSS_REGION: ${{ secrets.OSS_REGION }}
           CDN_DOMAIN: ${{ secrets.CDN_DOMAIN }}
 
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload dist repository
+          path: './dist'
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
