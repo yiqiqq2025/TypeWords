@@ -68,7 +68,7 @@ async function refreshCDN() {
     ObjectPath: `https://${CDN_DOMAIN}/*`,
     ObjectType: 'File'
   }
-  const requestOption = { method: 'POST' }
+  const requestOption = {method: 'POST'}
   const result = await cdnClient.request('RefreshObjectCaches', params, requestOption)
   console.log('✅ CDN 刷新完成:', result)
 }
