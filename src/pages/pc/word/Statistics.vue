@@ -62,8 +62,9 @@ watch(model, (newVal) => {
       spend: Number(statStore.spend / 1000 / 60).toFixed(1),
       index: store.sdict.lastLearnIndex,
       perDayStudyNumber:store.sdict.perDayStudyNumber,
-      custom: store.sdict.custom,
+      custom: store.sdict.custom,≥
       complete: store.sdict.complete,
+      str:`name:${store.sdict.name},per:${store.sdict.perDayStudyNumber},spend:${Number(statStore.spend / 1000 / 60).toFixed(1)},index:${store.sdict.lastLearnIndex}`
     })
     //这里不知为啥会卡，打开有延迟
     requestIdleCallback(() => {
