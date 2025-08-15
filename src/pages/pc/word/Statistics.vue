@@ -62,7 +62,7 @@ watch(model, (newVal) => {
       spend: Number(statStore.spend / 1000 / 60).toFixed(1),
       index: store.sdict.lastLearnIndex,
       perDayStudyNumber:store.sdict.perDayStudyNumber,
-      custom: store.sdict.custom,≥
+      custom: store.sdict.custom,
       complete: store.sdict.complete,
       str:`name:${store.sdict.name},per:${store.sdict.perDayStudyNumber},spend:${Number(statStore.spend / 1000 / 60).toFixed(1)},index:${store.sdict.lastLearnIndex}`
     })

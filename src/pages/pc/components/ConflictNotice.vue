@@ -41,7 +41,7 @@ onMounted(() => {
         </div>
         <div class="pl-4">
           <div>①：请打开浏览器无痕模式尝试</div>
-          <div>②：无痕模式下无法正常使用，请给<a href="https://github.com/zyronon/TypeWords/issues">给作者提一个 BUG</a>
+          <div>②：无痕模式下无法正常使用，请给<a href="https://github.com/zyronon/TypeWords/issues">作者提一个 BUG</a>
           </div>
         </div>
       </div>
