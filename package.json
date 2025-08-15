@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "commit": "git-cz",
     "prepare": "husky install",
-    "i18n:write": "gulp i18nwrite"
+    "i18n:write": "gulp i18nwrite",
+    "deploy-oss": "node scripts/deploy-oss.js"
   },
   "dependencies": {
     "@imengyu/vue3-context-menu": "^1.5.1",
@@ -39,6 +40,8 @@
     "vue-virtual-scroller": "2.0.0-beta.8"
   },
   "devDependencies": {
+    "@alicloud/pop-core": "^1.8.0",
+    "ali-oss": "^6.23.0",
     "@iconify/vue": "^4.3.0",
     "@types/file-saver": "^2.0.7",
     "@types/lodash-es": "^4.17.12",
