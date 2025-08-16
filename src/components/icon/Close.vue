@@ -13,8 +13,7 @@ defineProps<{
        @click="$emit('click')"
   >
     <Tooltip :title="title">
-      <Icon icon="carbon:close-outline"
-      />
+      <IconCarbonCloseOutline/>
     </Tooltip>
   </div>
 </template>

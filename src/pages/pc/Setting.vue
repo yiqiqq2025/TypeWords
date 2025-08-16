@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import {Icon} from '@iconify/vue';
 import {ref, watch} from "vue";
 import {useSettingStore} from "@/stores/setting.ts";
 import {getAudioFileUrl, useChangeAllSound, usePlayAudio, useWatchAllSound} from "@/hooks/sound.ts";
@@ -136,27 +135,27 @@ function importData(e) {
       <div class="left mt-10">
         <div class="tabs">
           <div class="tab" :class="tabIndex === 0 && 'active'" @click="tabIndex = 0">
-            <Icon icon="bx:headphone" width="20"/>
+            <IconBxHeadphone width="20"/>
             <span>音效设置</span>
           </div>
           <div class="tab" :class="tabIndex === 1 && 'active'" @click="tabIndex = 1">
-            <Icon icon="icon-park-outline:setting-config" width="20"/>
+            <IconIconParkOutlineSettingConfig width="20"/>
             <span>练习设置</span>
           </div>
           <div class="tab" :class="tabIndex === 2 && 'active'" @click="tabIndex = 2">
-            <Icon icon="material-symbols:keyboard-outline" width="20"/>
+            <IconMaterialSymbolsKeyboardOutline width="20"/>
             <span>快捷键设置</span>
           </div>
           <div class="tab" :class="tabIndex === 3 && 'active'" @click="tabIndex = 3">
-            <Icon icon="mdi:database-cog-outline" width="20"/>
+            <IconMdiDatabaseCogOutline width="20"/>
             <span>数据管理</span>
           </div>
           <div class="tab" :class="tabIndex === 4 && 'active'" @click="tabIndex = 4">
-            <Icon icon="mingcute:service-fill" width="20"/>
+            <IconMingcuteServiceFill width="20"/>
             <span>反馈</span>
           </div>
           <div class="tab" :class="tabIndex === 5 && 'active'" @click="tabIndex = 5">
-            <Icon icon="mdi:about-circle-outline" width="20"/>
+            <IconMdiAboutCircleOutline width="20"/>
             <span>关于</span>
           </div>
         </div>

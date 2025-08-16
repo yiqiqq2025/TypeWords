@@ -12,9 +12,9 @@ import {MessageBox} from "@/utils/MessageBox.tsx";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 import {nanoid} from "nanoid";
 import EditArticle from "@/pages/pc/article/components/EditArticle.vue";
-import BaseIcon from "@/components/BaseIcon.vue";
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import {getDefaultArticle} from "@/types/func.ts";
+import BackIcon from "@/pages/pc/components/BackIcon.vue";
 
 const emit = defineEmits<{
   importData: [val: Event]
@@ -161,10 +161,7 @@ useWindowClick(() => showExport = false)
   <div class="add-article">
     <div class="aslide">
       <header class="flex justify-between items-center">
-        <BaseIcon
-            title="返回"
-            @click="$router.back"
-            icon="formkit:left"/>
+        <BackIcon/>
         <div class="text-xl">{{ runtimeStore.editDict.name }}</div>
       </header>
       <List

@@ -6,7 +6,9 @@ import BaseIcon from "@/components/BaseIcon.vue";
 <template>
   <BaseIcon
       title="返回"
-      icon="formkit:left"/>
+      @click="$router.back">
+    <IconFormkitLeft/>
+  </BaseIcon>
 </template>
 
 <style scoped lang="scss">

@@ -1,4 +1,4 @@
-import {defineConfig, UserConfig} from 'vite'
+import {defineConfig} from 'vite'
 import Vue from '@vitejs/plugin-vue'
 import VueJsx from "@vitejs/plugin-vue-jsx";
 import {resolve} from 'path'
@@ -8,6 +8,9 @@ import {getLastCommit} from "git-last-commit";
 import UnoCSS from 'unocss/vite'
 import VueMacros from 'unplugin-vue-macros/vite'
 import {Plugin as importToCDN} from 'vite-plugin-cdn-import'
+import Icons from 'unplugin-icons/vite'
+import Components from 'unplugin-vue-components/vite'
+import IconsResolver from 'unplugin-icons/resolver'
 
 function pathResolve(dir: string) {
   return resolve(__dirname, ".", dir)
@@ -29,6 +32,18 @@ export default defineConfig(() => {
               vueJsx: VueJsx(), // 如果需要
             },
           }),
+          Components({
+            resolvers: [
+              // 自动解析 <IconMdiHome /> 这种组件名
+              IconsResolver({
+                prefix: 'Icon', // 默认前缀
+              }),
+            ],
+          }),
+          Icons({
+            autoInstall: true,
+            compiler: 'vue3',
+          }),
           UnoCSS(),
           lifecycle === 'report' ?
             visualizer({
@@ -39,24 +54,7 @@ export default defineConfig(() => {
               open: true //如果存在本地服务端口，将在打包后自动展示
             }) : null,
           SlidePlugin(),
-          importToCDN({
-            // modules: [
-            //   {
-            //     name: 'vue',
-            //     var: 'Vue',
-            //     path: `https://type-words.oss-cn-shenzhen.aliyuncs.com/vue.global.prod.min.js`
-            //   },
-            //   {
-            //     name: 'vue-router',
-            //     var: 'VueRouter',
-            //     path: `https://type-words.oss-cn-shenzhen.aliyuncs.com/vue-router.global.prod.min.js`
-            //   },
-            //   {
-            //     name: 'axios',
-            //     var: 'axios',
-            //     path: 'https://type-words.oss-cn-shenzhen.aliyuncs.com/axios.min.js'
-            //   },
-            // ]
+          lifecycle === 'build' ? importToCDN({
             modules: [
               {
                 name: 'vue',
@@ -74,11 +72,11 @@ export default defineConfig(() => {
                 path: 'https://2study.top/axios.min.js'
               },
             ]
-          })
+          }) : null
         ],
         build: {
           rollupOptions: {
-            external: ['axios'],// 使用全局的 axios。因为百度翻译库内部用了0.19版本的axios，会被打包到代码里面
+            external: lifecycle === 'build' ? ['axios'] : [],// 使用全局的 axios。因为百度翻译库内部用了0.19版本的axios，会被打包到代码里面
           }
         },
         define: {

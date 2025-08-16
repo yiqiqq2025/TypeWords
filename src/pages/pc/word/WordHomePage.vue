@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {useBaseStore} from "@/stores/base.ts";
-import {Icon} from '@iconify/vue'
 import {useRouter} from "vue-router";
 import BaseIcon from "@/components/BaseIcon.vue";
 import Dialog from "@/pages/pc/components/dialog/Dialog.vue";
@@ -17,6 +16,7 @@ import Toast from '@/pages/pc/components/base/toast/Toast.ts';
 import BaseButton from "@/components/BaseButton.vue";
 import {getDefaultDict} from "@/types/func.ts";
 import Slider from "@/pages/pc/components/base/Slider.vue";
+import DeleteIcon from "@/components/icon/DeleteIcon.vue";
 
 const store = useBaseStore()
 const router = useRouter()
@@ -134,12 +134,15 @@ const progressTextRight = $computed(() => {
         <div class="flex">
           <div class="bg-third px-3 h-14 rounded-md flex items-center ">
             <span @click="goDictDetail(store.sdict)"
-                  class="text-xl font-bold cursor-pointer">{{ store.sdict.name || '请选择词典开始学习' }}</span>
+                  class="text-lg font-bold cursor-pointer">{{ store.sdict.name || '请选择词典开始学习' }}</span>
             <BaseIcon title="切换词典"
-                      :icon="store.sdict.name ? 'gg:arrows-exchange' : 'fluent:add-20-filled'"
-                      class="ml-4"
-                      @click="router.push('/dict-list')"
-            />
+                       class="ml-4"
+                       @click="router.push('/dict-list')"
+
+            >
+              <IconGgArrowsExchange v-if="store.sdict.name"/>
+              <IconFluentAdd20Filled v-else/>
+            </BaseIcon>
           </div>
         </div>
         <div class="">
@@ -152,6 +155,7 @@ const progressTextRight = $computed(() => {
         <div class="text-sm text-align-end">
           预计完成日期：{{ _getAccomplishDate(store.sdict.words.length, store.sdict.perDayStudyNumber) }}
         </div>
+
       </div>
 
       <div class="w-3/10 flex flex-col justify-evenly">
@@ -186,7 +190,7 @@ const progressTextRight = $computed(() => {
           <!--        <BaseButton size="large" @click="startStudy">-->
           <div class="flex items-center gap-2">
             <span>开始学习</span>
-            <Icon icon="icons8:right-round" class="text-2xl"/>
+            <IconIcons8RightRound class="text-2xl"/>
           </div>
         </BaseButton>
       </div>
@@ -197,7 +201,9 @@ const progressTextRight = $computed(() => {
         <div class="title">我的词典</div>
         <div class="flex gap-4 items-center">
           <PopConfirm title="确认删除所有选中词典？" @confirm="handleBatchDel" v-if="selectIds.length">
-            <BaseIcon class="del" title="删除" icon="solar:trash-bin-minimalistic-linear"/>
+            <BaseIcon class="del" title="删除">
+              <DeleteIcon/>
+            </BaseIcon>
           </PopConfirm>
 
           <div class="color-blue cursor-pointer" v-if="store.word.bookList.length > 3"

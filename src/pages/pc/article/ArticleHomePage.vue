@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {useBaseStore} from "@/stores/base.ts";
-import {Icon} from '@iconify/vue'
 import {useRouter} from "vue-router";
 import BasePage from "@/pages/pc/components/BasePage.vue";
 import {_getDictDataByUrl, useNav} from "@/utils";
@@ -14,6 +13,7 @@ import BaseButton from "@/components/BaseButton.vue";
 import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
 import {onMounted, watch} from "vue";
 import {getDefaultDict} from "@/types/func.ts";
+import DeleteIcon from "@/components/icon/DeleteIcon.vue";
 
 const {nav} = useNav()
 const base = useBaseStore()
@@ -95,8 +95,10 @@ async function goBookDetail(val: DictResource) {
                 @click="goBookDetail(base.currentBook)">{{
               base.currentBook.name || '请选择书籍开始学习'
             }}</span>
-          <BaseIcon @click="router.push('/book-list')"
-                    :icon="base.currentBook.name ? 'gg:arrows-exchange':'fluent:add-20-filled'"/>
+          <BaseIcon @click="router.push('/book-list')">
+            <IconGgArrowsExchange v-if="base.currentBook.name"/>
+            <IconFluentAdd20Filled v-else/>
+          </BaseIcon>
         </div>
         <BaseButton
             size="large"
@@ -105,7 +107,7 @@ async function goBookDetail(val: DictResource) {
         >
           <div class="flex items-center gap-2">
             <span>开始学习</span>
-            <Icon icon="icons8:right-round" class="text-2xl"/>
+            <IconIcons8RightRound class="text-2xl"/>
           </div>
         </BaseButton>
       </div>
@@ -118,7 +120,9 @@ async function goBookDetail(val: DictResource) {
         <div class="title">我的书籍</div>
         <div class="flex gap-4 items-center">
           <PopConfirm title="确认删除所有选中书籍？" @confirm="handleBatchDel" v-if="selectIds.length">
-            <BaseIcon class="del" title="删除" icon="solar:trash-bin-minimalistic-linear"/>
+            <BaseIcon class="del" title="删除" >
+              <DeleteIcon/>
+            </BaseIcon>
           </PopConfirm>
 
           <div class="color-blue cursor-pointer" v-if="base.article.bookList.length > 1"

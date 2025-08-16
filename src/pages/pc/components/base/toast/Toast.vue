@@ -3,17 +3,19 @@
     <div v-if="visible" class="message" :class="type" :style="style" @mouseenter="handleMouseEnter"
          @mouseleave="handleMouseLeave">
       <div class="message-content">
-        <Icon v-if="icon" :icon="icon" class="message-icon"/>
+        <IconMdiCheckCircle v-if="props.type === 'success'" class="message-icon"/>
+        <IconMdiAlertCircle v-if="props.type === 'warning'" class="message-icon"/>
+        <IconMdiInformation v-if="props.type === 'info'" class="message-icon"/>
+        <IconMdiCloseCircle v-if="props.type === 'error'" class="message-icon"/>
         <span class="message-text">{{ message }}</span>
-        <Icon v-if="showClose" icon="mdi:close" class="message-close" @click="close"/>
+        <IconMdiClose v-if="showClose" class="message-close" @click="close"/>
       </div>
     </div>
   </Transition>
 </template>
 
 <script setup lang="ts">
-import {ref, computed, onMounted, onBeforeUnmount} from 'vue'
-import {Icon} from '@iconify/vue'
+import {computed, onBeforeUnmount, onMounted, ref} from 'vue'
 
 interface Props {
   message: string
@@ -31,16 +33,6 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(['close'])
 const visible = ref(false)
 let timer = null
-
-const icon = computed(() => {
-  const icons = {
-    success: 'mdi:check-circle',
-    warning: 'mdi:alert-circle',
-    info: 'mdi:information',
-    error: 'mdi:close-circle'
-  }
-  return icons[props.type]
-})
 
 const style = computed(() => ({
   // 移除offset，现在由容器管理位置

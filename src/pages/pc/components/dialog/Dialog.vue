@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {onMounted, onUnmounted, watch} from "vue";
 import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
-import {Icon} from '@iconify/vue';
 import {useEventListener} from "@/hooks/event.ts";
 
 import BaseButton from "@/components/BaseButton.vue";
@@ -158,11 +157,10 @@ async function cancel() {
             ]"
       >
         <Tooltip title="关闭">
-          <Icon @click="close"
+          <IconIonCloseOutline @click="close"
                 v-if="showClose"
                 class="close hvr-grow cursor-pointer"
-                width="24" color="#929596"
-                icon="ion:close-outline"/>
+                width="24" color="#929596"/>
         </Tooltip>
         <div class="modal-header" v-if="header">
           <div class="title">{{ props.title }}</div>

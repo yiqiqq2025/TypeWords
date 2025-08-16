@@ -12,7 +12,6 @@ import useTheme from "@/hooks/theme.ts";
 import {getCurrentStudyWord, useWordOptions} from "@/hooks/dict.ts";
 import {_getDictDataByUrl, cloneDeep, shuffle} from "@/utils";
 import {useRoute, useRouter} from "vue-router";
-import {Icon} from "@iconify/vue";
 import Footer from "@/pages/pc/word/components/Footer.vue";
 import Panel from "@/pages/pc/components/Panel.vue";
 import BaseIcon from "@/components/BaseIcon.vue";
@@ -361,7 +360,7 @@ useEvents([
         <div class="center gap-2 cursor-pointer float-left"
              @click="prev"
              v-if="prevWord">
-          <Icon class="arrow" icon="bi:arrow-left" width="22"/>
+          <IconBiArrowLeft class="arrow" width="22"/>
           <Tooltip
               :title="`上一个(${settingStore.shortcutKeyMap[ShortcutKey.Previous]})`"
           >
@@ -376,7 +375,7 @@ useEvents([
           >
             <div class="word" :class="settingStore.dictation && 'word-shadow'">{{ nextWord.word }}</div>
           </Tooltip>
-          <Icon class="arrow" icon="bi:arrow-right" width="22"/>
+          <IconBiArrowRight class="arrow"  width="22"/>
         </div>
       </div>
       <TypeWord
@@ -411,27 +410,20 @@ useEvents([
           >
             <template v-slot:suffix="{item,index}">
               <BaseIcon
-                  v-if="!isWordCollect(item)"
-                  class="collect"
+                  :class="!isWordCollect(item)?'collect':'fill'"
                   @click.stop="toggleWordCollect(item)"
-                  title="收藏" icon="ph:star"/>
+                  :title="!isWordCollect(item) ? '收藏' : '取消收藏'">
+                <IconPhStar v-if="!isWordCollect(item)"/>
+                <IconPhStarFill v-else/>
+              </BaseIcon>
+
               <BaseIcon
-                  v-else
-                  class="fill"
-                  @click.stop="toggleWordCollect(item)"
-                  title="取消收藏" icon="ph:star-fill"/>
-              <BaseIcon
-                  v-if="!isWordSimple(item)"
-                  class="easy"
+                  :class="!isWordSimple(item)?'collect':'fill'"
                   @click.stop="toggleWordSimple(item)"
-                  title="标记为已掌握"
-                  icon="material-symbols:check-circle-outline-rounded"/>
-              <BaseIcon
-                  v-else
-                  class="fill"
-                  @click.stop="toggleWordSimple(item)"
-                  title="取消标记已掌握"
-                  icon="material-symbols:check-circle-rounded"/>
+                  :title="!isWordSimple(item) ? '标记为已掌握' : '取消标记已掌握'">
+                <IconMaterialSymbolsCheckCircleOutlineRounded v-if="!isWordSimple(item)"/>
+                <IconMaterialSymbolsCheckCircleRounded v-else/>
+              </BaseIcon>
             </template>
           </WordList>
           <Empty v-else/>

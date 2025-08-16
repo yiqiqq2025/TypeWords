@@ -1,9 +1,8 @@
 <script setup lang="ts">
 
-import {Icon} from "@iconify/vue";
 import Close from "@/components/icon/Close.vue";
 import BaseButton from "@/components/BaseButton.vue";
-import {onMounted, watch} from "vue";
+import {watch} from "vue";
 import {useSettingStore} from "@/stores/setting.ts";
 
 import {isMobile} from "@/utils";
@@ -54,16 +53,11 @@ watch(() => settingStore.load, (n) => {
             <div class="href-wrapper">
               <div class="round">
                 <div class="href">2study.top</div>
-                <Icon
-                    width="22"
-                    icon="mdi:star-outline"/>
+                <IconMdiStarOutline width="22"/>
               </div>
               <div class="right">
                 👈
-                <Icon
-                    class="star"
-                    width="22"
-                    icon="mdi:star"/>
+                <IconMdiStar class="star" width="22"/>
                 点亮它!
               </div>
             </div>

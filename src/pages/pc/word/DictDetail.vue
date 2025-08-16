@@ -21,6 +21,7 @@ import BaseInput from "@/pages/pc/components/base/BaseInput.vue";
 import Textarea from "@/pages/pc/components/base/Textarea.vue";
 import FormItem from "@/pages/pc/components/base/form/FormItem.vue";
 import Form from "@/pages/pc/components/base/form/Form.vue";
+import DeleteIcon from "@/components/icon/DeleteIcon.vue";
 
 const runtimeStore = useRuntimeStore()
 const base = useBaseStore()
@@ -241,15 +242,17 @@ defineRender(() => {
                                       <BaseIcon
                                           class="option-icon"
                                           onClick={() => editWord(val.item)}
-                                          title="编辑"
-                                          icon="tabler:edit"/>
+                                          title="编辑">
+                                        <IconTablerEdit/>
+                                      </BaseIcon>
                                       <PopConfirm title="确认删除？"
                                                   onConfirm={() => delWord(val.item.id)}
                                       >
                                         <BaseIcon
                                             class="option-icon"
-                                            title="删除"
-                                            icon="solar:trash-bin-minimalistic-linear"/>
+                                            title="删除">
+                                          <DeleteIcon/>
+                                        </BaseIcon>
                                       </PopConfirm>
 
                                     </div>

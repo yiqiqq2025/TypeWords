@@ -59,8 +59,9 @@ const searchList = computed<any[]>(() => {
         <div class="py-1 flex flex-1 justify-end" v-else>
           <span class="page-title absolute w-full center">书籍列表</span>
           <BaseIcon @click="showSearchInput = true"
-                    class="z-1"
-                    icon="fluent:search-24-regular"/>
+                     class="z-1">
+            <IconFluentSearch24Regular/>
+          </BaseIcon>
         </div>
       </div>
       <div class="mt-4" v-if="searchKey">

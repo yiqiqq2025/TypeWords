@@ -20,7 +20,6 @@ import Panel from "@/pages/pc/components/Panel.vue";
 import ArticleList from "@/pages/pc/components/list/ArticleList.vue";
 import EditSingleArticleModal from "@/pages/pc/article/components/EditSingleArticleModal.vue";
 import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
-import {Icon} from "@iconify/vue";
 import ConflictNotice from "@/pages/pc/components/ConflictNotice.vue";
 
 const store = useBaseStore()
@@ -270,15 +269,12 @@ const {playSentenceAudio} = usePlaySentenceAudio()
                 :list="articleData.list ">
               <template v-slot:suffix="{item,index}">
                 <BaseIcon
-                    v-if="!isArticleCollect(item)"
-                    class="collect"
-                    @click="toggleArticleCollect(item)"
-                    title="收藏" icon="ph:star"/>
-                <BaseIcon
-                    v-else
-                    class="fill"
-                    @click="toggleArticleCollect(item)"
-                    title="取消收藏" icon="ph:star-fill"/>
+                    :class="!isArticleCollect(item) ? 'collect' : 'fill'"
+                    @click.stop="toggleArticleCollect(item)"
+                    :title="!isArticleCollect(item) ? '收藏' : '取消收藏'">
+                  <IconPhStar v-if="!isArticleCollect(item)"/>
+                  <IconPhStarFill v-else/>
+                </BaseIcon>
               </template>
             </ArticleList>
           </div>
@@ -293,7 +289,7 @@ const {playSentenceAudio} = usePlaySentenceAudio()
     </div>
     <div class="footer" :class="!settingStore.showToolbar && 'hide'">
       <Tooltip :title="settingStore.showToolbar?'收起':'展开'">
-        <Icon icon="icon-park-outline:down"
+        <IconIconParkOutlineDown
               @click="settingStore.showToolbar = !settingStore.showToolbar"
               class="arrow"
               :class="!settingStore.showToolbar && 'down'"
@@ -321,21 +317,29 @@ const {playSentenceAudio} = usePlaySentenceAudio()
             <div class="flex gap-2 center">
               <BaseIcon
                   :title="`下一句(${settingStore.shortcutKeyMap[ShortcutKey.Next]})`"
-                  icon="icon-park-outline:go-ahead"
-                  @click="skip"/>
+                  @click="skip">
+                <IconIconParkOutlineGoAhead/>
+              </BaseIcon>
               <BaseIcon
                   :title="`重听(${settingStore.shortcutKeyMap[ShortcutKey.PlayWordPronunciation]})`"
-                  icon="fluent:replay-16-filled"
-                  @click="play"/>
+                  @click="play">
+                <IconFluentReplay16Filled/>
+              </BaseIcon>
 
               <BaseIcon
                   @click="settingStore.dictation = !settingStore.dictation"
                   :title="`开关默写模式(${settingStore.shortcutKeyMap[ShortcutKey.ToggleDictation]})`"
-                  :icon="['majesticons:eye-off-line','mdi:eye-outline'][settingStore.dictation?0:1]"/>
+              >
+                <IconMajesticonsEyeOffLine v-if="settingStore.dictation"/>
+                <IconMdiEyeOutline v-else/>
+              </BaseIcon>
 
-              <BaseIcon :icon="['mdi:translate','mdi:translate-off'][settingStore.translate?0:1]"
-                        :title="`开关释义显示(${settingStore.shortcutKeyMap[ShortcutKey.ToggleShowTranslate]})`"
-                        @click="settingStore.translate = !settingStore.translate"/>
+              <BaseIcon
+                  :title="`开关释义显示(${settingStore.shortcutKeyMap[ShortcutKey.ToggleShowTranslate]})`"
+                  @click="settingStore.translate = !settingStore.translate">
+                <IconMdiTranslate v-if="settingStore.translate"/>
+                <IconMdiTranslateOff v-else/>
+              </BaseIcon>
 
               <!--              <BaseIcon-->
               <!--                  :title="`编辑(${settingStore.shortcutKeyMap[ShortcutKey.EditArticle]})`"-->
@@ -344,8 +348,9 @@ const {playSentenceAudio} = usePlaySentenceAudio()
               <!--              />-->
               <BaseIcon
                   @click="settingStore.showPanel = !settingStore.showPanel"
-                  :title="`面板(${settingStore.shortcutKeyMap[ShortcutKey.TogglePanel]})`"
-                  icon="tdesign:menu-unfold"/>
+                  :title="`面板(${settingStore.shortcutKeyMap[ShortcutKey.TogglePanel]})`">
+                <IconTdesignMenuUnfold/>
+              </BaseIcon>
             </div>
           </div>
         </div>

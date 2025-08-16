@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import {computed, ref, onMounted, onUnmounted} from 'vue';
-import {Icon} from "@iconify/vue";
+import {computed, onMounted, onUnmounted, ref} from 'vue';
 
 interface IProps {
   currentPage?: number;
@@ -190,7 +189,7 @@ function quickNextPage() {
           :disabled="internalCurrentPage <= 1"
           @click="prev"
       >
-        <Icon icon="mingcute:left-line"/>
+        <IconMingcuteLeftLine/>
       </button>
 
       <!-- 页码 -->
@@ -251,7 +250,7 @@ function quickNextPage() {
           :disabled="internalCurrentPage >= pageCount"
           @click="next"
       >
-        <Icon icon="mingcute:right-line"/>
+        <IconMingcuteRightLine/>
       </button>
 
       <!-- 每页条数选择器 -->

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {Dict} from "@/types/types.ts";
-import {Icon} from "@iconify/vue";
 import Progress from '@/pages/pc/components/base/Progress.vue'
 import Checkbox from "@/pages/pc/components/base/checkbox/Checkbox.vue";
 
@@ -49,9 +48,9 @@ const studyProgress = $computed(() => {
       <div class="custom" v-if="item.custom">自定义</div>
     </template>
     <div v-else class="center h-full">
-      <Icon
+      <IconFluentAdd20Filled
           width="40px"
-          icon="fluent:add-20-filled"/>
+        />
     </div>
 
   </div>
