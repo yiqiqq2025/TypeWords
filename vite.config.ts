@@ -64,17 +64,17 @@ export default defineConfig(() => {
             {
               name: 'vue',
               var: 'Vue',
-              path: `http://2study.top/vue.global.prod.min.js`
+              path: `https://2study.top/vue.global.prod.min.js`
             },
             {
               name: 'vue-router',
               var: 'VueRouter',
-              path: `http://2study.top/vue-router.global.prod.min.js`
+              path: `https://2study.top/vue-router.global.prod.min.js`
             },
             {
               name: 'axios',
               var: 'axios',
-              path: 'http://2study.top/axios.min.js'
+              path: 'https://2study.top/axios.min.js'
             },
           ]
         })
