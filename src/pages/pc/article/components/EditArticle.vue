@@ -9,7 +9,7 @@ import {genArticleSectionData, splitCNArticle2, splitEnArticle2, usePlaySentence
 import {_nextTick, _parseLRC, cloneDeep, last} from "@/utils";
 import {watch} from "vue";
 import Empty from "@/components/Empty.vue";
-import {ElInputNumber, ElOption, ElPopover, ElSelect} from "element-plus";
+import {ElInputNumber} from "element-plus";
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import * as Comparison from "string-comparison"
 import BaseIcon from "@/components/BaseIcon.vue";
@@ -17,6 +17,7 @@ import Dialog from "@/pages/pc/components/dialog/Dialog.vue";
 import {getDefaultArticle} from "@/types/func.ts";
 import copy from "copy-to-clipboard";
 import {Option, Select} from "@/pages/pc/components/base/select";
+import Tooltip from "@/pages/pc/components/Tooltip.vue";
 
 interface IProps {
   article?: Article,
@@ -293,25 +294,23 @@ function setStartTime(val: Sentence, i: number, j: number) {
       >
             </textarea>
       <div class="justify-end items-center flex">
-        <ElPopover
-            class="box-item"
-            title="使用方法"
-            placement="top"
-            :width="400"
-        >
-          <ol class="py-0 pl-5 my-0 text-base color-main">
-            <li>复制原文，然后分句</li>
-            <li>点击 <span class="color-red font-bold">分句</span> 按钮进行自动分句<span
-                class="color-red font-bold"> 或</span> 手动编辑分句
-            </li>
-            <li>分句规则：一行一句，段落间空一行</li>
-            <li>修改完成后点击 <span class="color-red font-bold">应用</span> 按钮同步到左侧结果栏
-            </li>
-          </ol>
+        <Tooltip>
+          <Icon icon="ri:question-line" class="mr-3" width="20"/>
           <template #reference>
-            <Icon icon="ri:question-line" class="mr-3" width="20"/>
+            <div>
+              <div class="mb-2">使用方法</div>
+              <ol class="py-0 pl-5 my-0 text-base color-main">
+                <li>复制原文，然后分句</li>
+                <li>点击 <span class="color-red font-bold">分句</span> 按钮进行自动分句<span
+                    class="color-red font-bold"> 或</span> 手动编辑分句
+                </li>
+                <li>分句规则：一行一句，段落间空一行</li>
+                <li>修改完成后点击 <span class="color-red font-bold">应用</span> 按钮同步到左侧结果栏
+                </li>
+              </ol>
+            </div>
           </template>
-        </ElPopover>
+        </Tooltip>
         <BaseButton @click="splitText">分句</BaseButton>
         <BaseButton @click="apply()">应用</BaseButton>
       </div>
@@ -357,25 +356,24 @@ function setStartTime(val: Sentence, i: number, j: number) {
           {{ progress }}%
         </div>
         <div class="flex items-center">
-          <ElPopover
-              class="box-item"
-              title="使用方法"
-              placement="top"
-              :width="400"
-          >
-            <ol class="py-0 pl-5 my-0 text-base color-black/60">
-              <li>复制译文，如果没有请点击 <span class="color-red font-bold">翻译</span> 按钮</li>
-              <li>点击 <span class="color-red font-bold">分句</span> 按钮进行自动分句<span class="color-red font-bold"> 或</span>
-                手动编辑分句
-              </li>
-              <li>分句规则：一行一句，段落间空一行</li>
-              <li>修改完成后点击 <span class="color-red font-bold">应用</span> 按钮同步到左侧结果栏
-              </li>
-            </ol>
+          <Tooltip>
+            <Icon icon="ri:question-line" class="mr-3" width="20"/>
             <template #reference>
-              <Icon icon="ri:question-line" class="mr-3" width="20"/>
+              <div>
+                <div class="mb-2">使用方法</div>
+                <ol class="py-0 pl-5 my-0 text-base color-black/60">
+                  <li>复制译文，如果没有请点击 <span class="color-red font-bold">翻译</span> 按钮</li>
+                  <li>点击 <span class="color-red font-bold">分句</span> 按钮进行自动分句<span
+                      class="color-red font-bold"> 或</span>
+                    手动编辑分句
+                  </li>
+                  <li>分句规则：一行一句，段落间空一行</li>
+                  <li>修改完成后点击 <span class="color-red font-bold">应用</span> 按钮同步到左侧结果栏
+                  </li>
+                </ol>
+              </div>
             </template>
-          </ElPopover>
+          </Tooltip>
           <BaseButton @click="splitTranslateText">分句</BaseButton>
           <BaseButton @click="apply(true)">应用</BaseButton>
         </div>

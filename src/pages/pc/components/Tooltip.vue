@@ -29,7 +29,7 @@ export default {
   methods: {
     showPop(e) {
       if (this.disabled) return
-      if (!this.title) return
+      if (!this.title && !this.$slots?.reference) return;
       e.stopPropagation()
       let rect = e.target.getBoundingClientRect()
       this.show = true
@@ -49,21 +49,20 @@ export default {
     },
   },
   render() {
-    if (!this.title) return this.$slots.default()
-    let Vnode = this.$slots.default()[0]
+    let DefaultNode = this.$slots.default()[0]
+    let ReferenceNode = this.$slots?.reference?.()?.[0]
     return <>
-      <Teleport to="body">
-        <Transition name="fade">
-          {
-              this.show && (
-                  <div ref="tip" class="tip">
-                    {this.title}
-                  </div>
-              )
-          }
-        </Transition>
-      </Teleport>
-      <Vnode
+      <Transition name="fade">
+        <Teleport to="body">
+          {this.show && (
+              <div ref="tip" class="tip">
+                {ReferenceNode ? <ReferenceNode/> : this.title}
+              </div>
+          )}
+        </Teleport>
+      </Transition>
+
+      <DefaultNode
           onClick={() => this.show = false}
           onmouseenter={(e) => this.showPop(e)}
           onmouseleave={() => this.show = false}
@@ -75,13 +74,13 @@ export default {
 <style lang="scss" scoped>
 .tip {
   position: fixed;
-  font-size: 0.9rem;
+  font-size: 1rem;
   z-index: 9999;
   border-radius: .3rem;
   padding: 0.4rem .8rem;
   color: var(--color-font-1);
   background: var(--color-tooltip-bg);
-  //box-shadow: 1px 1px 6px #bbbbbb;
+  max-width: 22rem;
   box-shadow: 0 0 6px 1px var(--color-tooltip-shadow);
 }
 </style>

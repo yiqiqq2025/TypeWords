@@ -3,7 +3,7 @@
 import {Dict, DictId, DictType} from "@/types/types.ts";
 import {cloneDeep} from "@/utils";
 
-import {ElForm, ElFormItem, ElInput, FormInstance, FormRules} from "element-plus";
+import {ElForm, ElFormItem, FormInstance, FormRules} from "element-plus";
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import {onMounted, reactive} from "vue";
 import {useRuntimeStore} from "@/stores/runtime.ts";
@@ -11,7 +11,6 @@ import {useBaseStore} from "@/stores/base.ts";
 import BaseButton from "@/components/BaseButton.vue";
 import {getDefaultDict} from "@/types/func.ts";
 import {Option, Select} from "@/pages/pc/components/base/select";
-import Input from "@/pages/pc/components/Input.vue";
 import BaseInput from "@/pages/pc/components/base/BaseInput.vue";
 
 const props = defineProps<{

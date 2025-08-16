@@ -12,7 +12,6 @@ const pinia = createPinia()
 const app = createApp(App)
 
 app.use(VueVirtualScroller)
-// app.use(ElementPlus)
 app.use(pinia)
 app.use(router)
 
