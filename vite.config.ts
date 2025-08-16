@@ -54,7 +54,7 @@ export default defineConfig(() => {
               open: true //如果存在本地服务端口，将在打包后自动展示
             }) : null,
           SlidePlugin(),
-          lifecycle === 'build' ? importToCDN({
+          ['build', 'report'].includes(lifecycle) ? importToCDN({
             modules: [
               {
                 name: 'vue',
@@ -76,7 +76,7 @@ export default defineConfig(() => {
         ],
         build: {
           rollupOptions: {
-            external: lifecycle === 'build' ? ['axios'] : [],// 使用全局的 axios。因为百度翻译库内部用了0.19版本的axios，会被打包到代码里面
+            external: ['build', 'report'].includes(lifecycle) ? ['axios'] : [],// 使用全局的 axios。因为百度翻译库内部用了0.19版本的axios，会被打包到代码里面
           }
         },
         define: {
