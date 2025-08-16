@@ -8,7 +8,6 @@ import {getLastCommit} from "git-last-commit";
 import UnoCSS from 'unocss/vite'
 import VueMacros from 'unplugin-vue-macros/vite'
 import {Plugin as importToCDN} from 'vite-plugin-cdn-import'
-import ElementPlus from 'unplugin-element-plus/vite'
 
 function pathResolve(dir: string) {
   return resolve(__dirname, ".", dir)
@@ -31,7 +30,6 @@ export default defineConfig(() => {
             },
           }),
           UnoCSS(),
-          ElementPlus(),
           lifecycle === 'report' ?
             visualizer({
               gzipSize: true,

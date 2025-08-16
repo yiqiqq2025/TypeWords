@@ -2,22 +2,22 @@
 // import origin from './data.json'
 import BaseButton from "@/components/BaseButton.vue";
 import {checkAndUpgradeSaveDict} from "@/utils";
-import localforage from "localforage";
 import {SAVE_DICT_KEY} from "@/utils/const.ts";
 import str from './data.json'
+import {get} from 'idb-keyval'
 
 let data = {}
 let origin = {}
 
 
 async function look() {
-  let configStr: string = await localforage.getItem(SAVE_DICT_KEY.key)
+  let configStr: string = await get(SAVE_DICT_KEY.key)
   let obj = JSON.parse(configStr)
   console.log('local', obj)
 
 }
 
-function set() {
+function set1() {
   // localforage.setItem(SAVE_DICT_KEY.key, JSON.stringify({val: shakeCommonDict(origin.val as any), version: 3}))
 }
 

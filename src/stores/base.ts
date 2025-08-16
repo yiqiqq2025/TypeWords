@@ -1,12 +1,10 @@
 import {defineStore} from 'pinia'
 import {Dict, DictId, Word} from "../types/types.ts"
-import {cloneDeep} from "@/utils";
-import * as localforage from "localforage";
-import {nanoid} from "nanoid";
+import {_getStudyProgress, checkAndUpgradeSaveDict} from "@/utils";
 import {SAVE_DICT_KEY} from "@/utils/const.ts";
-import {_getStudyProgress, checkAndUpgradeSaveDict, getDictFile} from "@/utils";
-import {markRaw, shallowReactive} from "vue";
+import {shallowReactive} from "vue";
 import {getDefaultDict} from "@/types/func.ts";
+import {get, set} from 'idb-keyval'
 
 export interface BaseState {
   simpleWords: string[],
@@ -130,11 +128,11 @@ export const useBaseStore = defineStore('base', {
           if (outData) {
             this.setState(outData)
           } else {
-            let configStr: string = await localforage.getItem(SAVE_DICT_KEY.key)
+            let configStr: string = await get(SAVE_DICT_KEY.key)
             let data = checkAndUpgradeSaveDict(configStr)
             this.setState(data)
           }
-          localforage.setItem(SAVE_DICT_KEY.key, JSON.stringify({val: this.$state, version: SAVE_DICT_KEY.version}))
+          set(SAVE_DICT_KEY.key, JSON.stringify({val: this.$state, version: SAVE_DICT_KEY.version}))
         } catch (e) {
           console.error('读取本地dict数据失败', e)
         }
