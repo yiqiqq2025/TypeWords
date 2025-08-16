@@ -10,9 +10,9 @@ import Input from "@/pages/pc/components/Input.vue";
 import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
 import Empty from "@/components/Empty.vue";
 import {Icon} from "@iconify/vue";
-import {ElCheckbox} from 'element-plus'
 import Pagination from '@/pages/pc/components/base/Pagination.vue'
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
+import Checkbox from "@/pages/pc/components/base/checkbox/Checkbox.vue";
 
 let list = defineModel('list')
 
@@ -120,7 +120,7 @@ const s = useSlots()
 
 defineRender(
     () => {
-      const d = (item) => <ElCheckbox
+      const d = (item) => <Checkbox
           modelValue={selectIds.includes(item.id)}
           onChange={() => toggleSelect(item)}
           size="large"/>
@@ -144,9 +144,9 @@ defineRender(
                 ) : (
                     <div class="flex justify-between " v-else>
                       <div class="flex gap-2 items-center">
-                        <ElCheckbox
+                        <Checkbox
                             disabled={!currentList.length}
-                            onClick={() => toggleSelectAll()}
+                            onChange={() => toggleSelectAll()}
                             modelValue={selectAll}
                             size="large"/>
                         <span>{selectIds.length} / {list.value.length}</span>
