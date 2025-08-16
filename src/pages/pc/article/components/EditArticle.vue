@@ -17,7 +17,7 @@ import Dialog from "@/pages/pc/components/dialog/Dialog.vue";
 import {getDefaultArticle} from "@/types/func.ts";
 import copy from "copy-to-clipboard";
 import {Option, Select} from "@/pages/pc/components/base/select";
-import Tooltip from "@/pages/pc/components/Tooltip.vue";
+import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
 
 interface IProps {
   article?: Article,

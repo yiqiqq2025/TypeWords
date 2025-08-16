@@ -19,7 +19,7 @@ import BaseIcon from "@/components/BaseIcon.vue";
 import Panel from "@/pages/pc/components/Panel.vue";
 import ArticleList from "@/pages/pc/components/list/ArticleList.vue";
 import EditSingleArticleModal from "@/pages/pc/article/components/EditSingleArticleModal.vue";
-import Tooltip from "@/pages/pc/components/Tooltip.vue";
+import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
 import {Icon} from "@iconify/vue";
 import ConflictNotice from "@/pages/pc/components/ConflictNotice.vue";
 

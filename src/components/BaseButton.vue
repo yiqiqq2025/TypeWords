@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Tooltip from "@/pages/pc/components/Tooltip.vue";
+import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
 import {Icon} from "@iconify/vue";
 
 interface IProps {

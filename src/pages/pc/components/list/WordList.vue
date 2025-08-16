@@ -4,7 +4,7 @@ import {Word} from "@/types/types.ts";
 import VolumeIcon from "@/components/icon/VolumeIcon.vue";
 import BaseList from "@/pages/pc/components/list/BaseList.vue";
 import {usePlayWordAudio} from "@/hooks/sound.ts";
-import Tooltip from "@/pages/pc/components/Tooltip.vue";
+import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
 
 const props = withDefaults(defineProps<{
   list: Word[],

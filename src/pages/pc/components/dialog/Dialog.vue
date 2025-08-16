@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {onMounted, onUnmounted, watch} from "vue";
-import Tooltip from "@/pages/pc/components/Tooltip.vue";
+import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
 import {Icon} from '@iconify/vue';
 import {useEventListener} from "@/hooks/event.ts";
 

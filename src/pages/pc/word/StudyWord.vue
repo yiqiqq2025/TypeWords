@@ -16,7 +16,7 @@ import {Icon} from "@iconify/vue";
 import Footer from "@/pages/pc/word/components/Footer.vue";
 import Panel from "@/pages/pc/components/Panel.vue";
 import BaseIcon from "@/components/BaseIcon.vue";
-import Tooltip from "@/pages/pc/components/Tooltip.vue";
+import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
 import WordList from "@/pages/pc/components/list/WordList.vue";
 import TypeWord from "@/pages/pc/word/components/TypeWord.vue";
 import Empty from "@/components/Empty.vue";

@@ -5,7 +5,7 @@ import {useSettingStore} from "@/stores/setting.ts";
 import {usePlayBeep, usePlayCorrect, usePlayKeyboardAudio, usePlayWordAudio, useTTsPlayAudio} from "@/hooks/sound.ts";
 import {emitter, EventKey} from "@/utils/eventBus.ts";
 import {nextTick, onMounted, onUnmounted, watch} from "vue";
-import Tooltip from "@/pages/pc/components/Tooltip.vue";
+import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
 import SentenceHightLightWord from "@/pages/pc/word/components/SentenceHightLightWord.vue";
 import {usePracticeStore} from "@/stores/practice.ts";
 import {getDefaultWord} from "@/types/func.ts";
