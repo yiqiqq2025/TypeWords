@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, watch, defineProps, defineEmits, useAttrs} from 'vue';
+import {ref, watch, defineProps, defineEmits, useAttrs, onMounted} from 'vue';
 
 const props = defineProps({
   modelValue: [String, Number],
@@ -70,6 +70,7 @@ const clearInput = () => {
   validate('');
   emit('update:modelValue', '');
 };
+
 </script>
 
 <template>

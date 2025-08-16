@@ -9,8 +9,6 @@ import {nanoid} from "nanoid";
 import BaseIcon from "@/components/BaseIcon.vue";
 import BaseTable from "@/pages/pc/components/BaseTable.vue";
 import WordItem from "@/pages/pc/components/WordItem.vue";
-import type {FormInstance, FormRules} from "element-plus";
-import {ElForm, ElFormItem} from "element-plus";
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
 import BackIcon from "@/pages/pc/components/BackIcon.vue";
@@ -21,6 +19,8 @@ import EditBook from "@/pages/pc/article/components/EditBook.vue";
 import {getDefaultDict} from "@/types/func.ts";
 import BaseInput from "@/pages/pc/components/base/BaseInput.vue";
 import Textarea from "@/pages/pc/components/base/Textarea.vue";
+import FormItem from "@/pages/pc/components/base/form/FormItem.vue";
+import Form from "@/pages/pc/components/base/form/Form.vue";
 
 const runtimeStore = useRuntimeStore()
 const base = useBaseStore()
@@ -54,8 +54,8 @@ const getDefaultFormWord = () => {
 }
 let isOperate = $ref(false)
 let wordForm = $ref(getDefaultFormWord())
-let wordFormRef = $ref<FormInstance>()
-const wordRules = reactive<FormRules>({
+let wordFormRef = $ref()
+const wordRules = reactive({
   word: [
     {required: true, message: '请输入单词', trigger: 'blur'},
     {max: 30, message: '名称不能超过30个字符', trigger: 'blur'},
@@ -83,6 +83,7 @@ function syncDictInMyStudyList(study = false) {
 }
 
 async function onSubmitWord() {
+  // return console.log('wordFormRef',wordFormRef,wordFormRef.validate)
   await wordFormRef.validate((valid) => {
     if (valid) {
       let data: any = convertToWord(wordForm)
@@ -264,72 +265,72 @@ defineRender(() => {
                           <div class="common-title">
                             {wordForm.id ? '修改' : '添加'}单词
                           </div>
-                          <ElForm
+                          <Form
                               class="flex-1 overflow-auto pr-2"
                               ref={e => wordFormRef = e}
                               rules={wordRules}
                               model={wordForm}
                               label-width="7rem">
-                            <ElFormItem label="单词" prop="word">
+                            <FormItem label="单词" prop="word">
                               <BaseInput
                                   modelValue={wordForm.word}
                                   onUpdate:modelValue={e => wordForm.word = e}
                               />
-                            </ElFormItem>
-                            <ElFormItem label="英音音标">
+                            </FormItem>
+                            <FormItem label="英音音标">
                               <BaseInput
                                   modelValue={wordForm.phonetic0}
                                   onUpdate:modelValue={e => wordForm.phonetic0 = e}
                               />
-                            </ElFormItem>
-                            <ElFormItem label="美音音标">
+                            </FormItem>
+                            <FormItem label="美音音标">
                               <BaseInput
                                   modelValue={wordForm.phonetic1}
                                   onUpdate:modelValue={e => wordForm.phonetic1 = e}/>
-                            </ElFormItem>
-                            <ElFormItem label="翻译">
+                            </FormItem>
+                            <FormItem label="翻译">
                               <Textarea
                                   modelValue={wordForm.trans}
                                   onUpdate:modelValue={e => wordForm.trans = e}
                                   placeholder="一行一个翻译，前面词性，后面内容（如n.取消）；多个翻译请换行"
                                   autosize={{minRows: 6, maxRows: 10}}/>
-                            </ElFormItem>
-                            <ElFormItem label="例句">
+                            </FormItem>
+                            <FormItem label="例句">
                               <Textarea
                                   modelValue={wordForm.sentences}
                                   onUpdate:modelValue={e => wordForm.sentences = e}
                                   placeholder="一行原文，一行译文；多个请换两行"
                                   autosize={{minRows: 6, maxRows: 10}}/>
-                            </ElFormItem>
-                            <ElFormItem label="短语">
+                            </FormItem>
+                            <FormItem label="短语">
                               <Textarea
                                   modelValue={wordForm.phrases}
                                   onUpdate:modelValue={e => wordForm.phrases = e}
                                   placeholder="一行原文，一行译文；多个请换两行"
                                   autosize={{minRows: 6, maxRows: 10}}/>
-                            </ElFormItem>
-                            <ElFormItem label="同义词">
+                            </FormItem>
+                            <FormItem label="同义词">
                               <Textarea
                                   modelValue={wordForm.synos}
                                   onUpdate:modelValue={e => wordForm.synos = e}
                                   placeholder="请参考已有单词格式"
                                   autosize={{minRows: 6, maxRows: 20}}/>
-                            </ElFormItem>
-                            <ElFormItem label="同根词">
+                            </FormItem>
+                            <FormItem label="同根词">
                               <Textarea
                                   modelValue={wordForm.relWords}
                                   onUpdate:modelValue={e => wordForm.relWords = e}
                                   placeholder="请参考已有单词格式"
                                   autosize={{minRows: 6, maxRows: 20}}/>
-                            </ElFormItem>
-                            <ElFormItem label="词源">
+                            </FormItem>
+                            <FormItem label="词源">
                               <Textarea
                                   modelValue={wordForm.etymology}
                                   onUpdate:modelValue={e => wordForm.etymology = e}
                                   placeholder="请参考已有单词格式"
                                   autosize={{minRows: 6, maxRows: 10}}/>
-                            </ElFormItem>
-                          </ElForm>
+                            </FormItem>
+                          </Form>
                           <div class="center">
                             <BaseButton
                                 type="info"

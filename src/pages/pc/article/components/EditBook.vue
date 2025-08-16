@@ -2,8 +2,6 @@
 
 import {Dict, DictId, DictType} from "@/types/types.ts";
 import {cloneDeep} from "@/utils";
-
-import {ElForm, ElFormItem, FormInstance, FormRules} from "element-plus";
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import {onMounted, reactive} from "vue";
 import {useRuntimeStore} from "@/stores/runtime.ts";
@@ -12,6 +10,8 @@ import BaseButton from "@/components/BaseButton.vue";
 import {getDefaultDict} from "@/types/func.ts";
 import {Option, Select} from "@/pages/pc/components/base/select";
 import BaseInput from "@/pages/pc/components/base/BaseInput.vue";
+import Form from "@/pages/pc/components/base/form/Form.vue";
+import FormItem from "@/pages/pc/components/base/form/FormItem.vue";
 
 const props = defineProps<{
   isAdd: boolean,
@@ -34,8 +34,8 @@ const DefaultDictForm = {
   type: DictType.article
 }
 let dictForm: any = $ref(cloneDeep(DefaultDictForm))
-const dictFormRef = $ref<FormInstance>()
-const dictRules = reactive<FormRules>({
+const dictFormRef = $ref()
+const dictRules = reactive({
   name: [
     {required: true, message: '请输入名称', trigger: 'blur'},
     {max: 20, message: '名称不能超过20个字符', trigger: 'blur'},
@@ -94,38 +94,38 @@ onMounted(() => {
 
 <template>
   <div class="w-120 mt-4">
-    <ElForm
+    <Form
         ref="dictFormRef"
         :rules="dictRules"
         :model="dictForm"
         label-width="8rem">
-      <ElFormItem label="名称" prop="name">
+      <FormItem label="名称" prop="name">
         <BaseInput v-model="dictForm.name"/>
-      </ElFormItem>
-      <ElFormItem label="描述">
+      </FormItem>
+      <FormItem label="描述">
         <BaseInput v-model="dictForm.description" textarea/>
-      </ElFormItem>
-      <ElFormItem label="原文语言">
+      </FormItem>
+      <FormItem label="原文语言">
         <Select v-model="dictForm.language" placeholder="请选择选项">
           <Option label="英语" value="en"/>
           <Option label="德语" value="de"/>
           <Option label="日语" value="ja"/>
           <Option label="代码" value="code"/>
         </Select>
-      </ElFormItem>
-      <ElFormItem label="译文语言">
+      </FormItem>
+      <FormItem label="译文语言">
         <Select v-model="dictForm.translateLanguage" placeholder="请选择选项">
           <Option label="中文" value="zh-CN"/>
           <Option label="英语" value="en"/>
           <Option label="德语" value="de"/>
           <Option label="日语" value="ja"/>
         </Select>
-      </ElFormItem>
+      </FormItem>
       <div class="center">
         <base-button type="info" @click="emit('close')">关闭</base-button>
         <base-button type="primary" @click="onSubmit">确定</base-button>
       </div>
-    </ElForm>
+    </Form>
   </div>
 </template>
 
