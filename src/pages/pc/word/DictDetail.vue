@@ -10,7 +10,7 @@ import BaseIcon from "@/components/BaseIcon.vue";
 import BaseTable from "@/pages/pc/components/BaseTable.vue";
 import WordItem from "@/pages/pc/components/WordItem.vue";
 import type {FormInstance, FormRules} from "element-plus";
-import {ElForm, ElFormItem, ElInput} from "element-plus";
+import {ElForm, ElFormItem} from "element-plus";
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
 import BackIcon from "@/pages/pc/components/BackIcon.vue";
@@ -20,6 +20,7 @@ import {useBaseStore} from "@/stores/base.ts";
 import EditBook from "@/pages/pc/article/components/EditBook.vue";
 import {getDefaultDict} from "@/types/func.ts";
 import BaseInput from "@/pages/pc/components/base/BaseInput.vue";
+import Textarea from "@/pages/pc/components/base/Textarea.vue";
 
 const runtimeStore = useRuntimeStore()
 const base = useBaseStore()
@@ -208,7 +209,8 @@ defineRender(() => {
                   <BackIcon class="z-2" onClick={() => router.back()}/>
                   <div class="absolute page-title text-align-center w-full">{runtimeStore.editDict.name}</div>
                   <div class="flex">
-                    <BaseButton loading={studyLoading || loading} type="info" onClick={() => isEdit = true}>编辑</BaseButton>
+                    <BaseButton loading={studyLoading || loading} type="info"
+                                onClick={() => isEdit = true}>编辑</BaseButton>
                     <BaseButton loading={studyLoading || loading} onClick={addMyStudyList}>学习</BaseButton>
                   </div>
                 </div>
@@ -286,52 +288,46 @@ defineRender(() => {
                                   onUpdate:modelValue={e => wordForm.phonetic1 = e}/>
                             </ElFormItem>
                             <ElFormItem label="翻译">
-                              <ElInput
+                              <Textarea
                                   modelValue={wordForm.trans}
                                   onUpdate:modelValue={e => wordForm.trans = e}
                                   placeholder="一行一个翻译，前面词性，后面内容（如n.取消）；多个翻译请换行"
-                                  autosize={{minRows: 6, maxRows: 10}}
-                                  type="textarea"/>
+                                  autosize={{minRows: 6, maxRows: 10}}/>
                             </ElFormItem>
                             <ElFormItem label="例句">
-                              <ElInput
+                              <Textarea
                                   modelValue={wordForm.sentences}
                                   onUpdate:modelValue={e => wordForm.sentences = e}
                                   placeholder="一行原文，一行译文；多个请换两行"
-                                  autosize={{minRows: 6, maxRows: 10}}
-                                  type="textarea"/>
+                                  autosize={{minRows: 6, maxRows: 10}}/>
                             </ElFormItem>
                             <ElFormItem label="短语">
-                              <ElInput
+                              <Textarea
                                   modelValue={wordForm.phrases}
                                   onUpdate:modelValue={e => wordForm.phrases = e}
                                   placeholder="一行原文，一行译文；多个请换两行"
-                                  autosize={{minRows: 6, maxRows: 10}}
-                                  type="textarea"/>
+                                  autosize={{minRows: 6, maxRows: 10}}/>
                             </ElFormItem>
                             <ElFormItem label="同义词">
-                              <ElInput
+                              <Textarea
                                   modelValue={wordForm.synos}
                                   onUpdate:modelValue={e => wordForm.synos = e}
                                   placeholder="请参考已有单词格式"
-                                  autosize={{minRows: 6, maxRows: 20}}
-                                  type="textarea"/>
+                                  autosize={{minRows: 6, maxRows: 20}}/>
                             </ElFormItem>
                             <ElFormItem label="同根词">
-                              <ElInput
+                              <Textarea
                                   modelValue={wordForm.relWords}
                                   onUpdate:modelValue={e => wordForm.relWords = e}
                                   placeholder="请参考已有单词格式"
-                                  autosize={{minRows: 6, maxRows: 20}}
-                                  type="textarea"/>
+                                  autosize={{minRows: 6, maxRows: 20}}/>
                             </ElFormItem>
                             <ElFormItem label="词源">
-                              <ElInput
+                              <Textarea
                                   modelValue={wordForm.etymology}
                                   onUpdate:modelValue={e => wordForm.etymology = e}
                                   placeholder="请参考已有单词格式"
-                                  autosize={{minRows: 6, maxRows: 10}}
-                                  type="textarea"/>
+                                  autosize={{minRows: 6, maxRows: 10}}/>
                             </ElFormItem>
                           </ElForm>
                           <div class="center">

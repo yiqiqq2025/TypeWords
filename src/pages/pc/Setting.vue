@@ -14,13 +14,13 @@ import {saveAs} from "file-saver";
 import {GITHUB} from "@/config/ENV.ts";
 import dayjs from "dayjs";
 import BasePage from "@/pages/pc/components/BasePage.vue";
-import {ElInputNumber} from 'element-plus'
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import {Option, Select} from "@/pages/pc/components/base/select";
 import Switch from "@/pages/pc/components/base/Switch.vue";
 import Slider from "@/pages/pc/components/base/Slider.vue";
 import RadioGroup from "@/pages/pc/components/base/radio/RadioGroup.vue";
 import Radio from "@/pages/pc/components/base/radio/Radio.vue";
+import InputNumber from "@/pages/pc/components/base/InputNumber.vue";
 
 const emit = defineEmits<{
   toggleDisabledDialogEscKey: [val: boolean]
@@ -284,7 +284,7 @@ function importData(e) {
               </RadioGroup>
               <div class="mini-row" v-if="settingStore.repeatCount === 100">
                 <label class="item-title">循环次数</label>
-                <ElInputNumber v-model="settingStore.repeatCustomCount"
+                <InputNumber v-model="settingStore.repeatCustomCount"
                                :min="6"
                                :max="15"
                                type="number"
@@ -365,10 +365,10 @@ function importData(e) {
           <div class="row">
             <label class="sub-title">切换下一个单词时间</label>
             <div class="wrapper">
-              <ElInputNumber v-model="settingStore.waitTimeForChangeWord"
-                             :min="6"
-                             :max="100"
-                             type="number"
+              <InputNumber v-model="settingStore.waitTimeForChangeWord"
+                           :min="10"
+                           :max="100"
+                           type="number"
               />
               <span>毫秒</span>
             </div>

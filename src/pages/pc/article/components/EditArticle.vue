@@ -9,7 +9,6 @@ import {genArticleSectionData, splitCNArticle2, splitEnArticle2, usePlaySentence
 import {_nextTick, _parseLRC, cloneDeep, last} from "@/utils";
 import {watch} from "vue";
 import Empty from "@/components/Empty.vue";
-import {ElInputNumber} from "element-plus";
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import * as Comparison from "string-comparison"
 import BaseIcon from "@/components/BaseIcon.vue";
@@ -18,6 +17,7 @@ import {getDefaultArticle} from "@/types/func.ts";
 import copy from "copy-to-clipboard";
 import {Option, Select} from "@/pages/pc/components/base/select";
 import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
+import InputNumber from "@/pages/pc/components/base/InputNumber.vue";
 
 interface IProps {
   article?: Article,
@@ -497,11 +497,7 @@ function setStartTime(val: Sentence, i: number, j: number) {
             <div>开始时间：</div>
             <div class="flex justify-between flex-1">
               <div class="flex items-center gap-2">
-                <ElInputNumber v-model="editSentence.audioPosition[0]" :precision="2" :step="0.1">
-                  <template #suffix>
-                    <span>s</span>
-                  </template>
-                </ElInputNumber>
+                <InputNumber v-model="editSentence.audioPosition[0]" :precision="2" :step="0.1"/>
                 <BaseIcon
                     @click="jumpAudio(editSentence.audioPosition[0])"
                     title="跳转"
@@ -520,11 +516,7 @@ function setStartTime(val: Sentence, i: number, j: number) {
             <div>结束时间：</div>
             <div class="flex justify-between flex-1">
               <div class="flex items-center gap-2">
-                <ElInputNumber v-model="editSentence.audioPosition[1]" :precision="2" :step="0.1">
-                  <template #suffix>
-                    <span>s</span>
-                  </template>
-                </ElInputNumber>
+                <InputNumber v-model="editSentence.audioPosition[1]" :precision="2" :step="0.1"/>
                 <span>或</span>
                 <BaseButton size="small" @click="editSentence.audioPosition[1] = -1">结束</BaseButton>
               </div>

@@ -25,7 +25,7 @@
   --shadow: rgba(0, 0, 0, 0.08) 0px 4px 12px;
   --panel-margin-left: calc(50% + var(--toolbar-width) / 2 + 1rem);
   --article-panel-margin-left: calc(50% + var(--article-width) / 2 + 1rem);
-  --anim-time: 0.3s;
+  --anim-time: 0.5s;
 
   --color-input-color: black;
   --color-input-bg: white;
@@ -409,8 +409,8 @@ a {
   background: var(--color-second);
 }
 
-.center {
-  @apply flex justify-center items-center;
+.inline-center {
+  @apply inline-flex justify-center items-center;
 }
 
 .title {
