@@ -43,40 +43,40 @@ export default defineConfig(() => {
           }) : null,
         SlidePlugin(),
         importToCDN({
-          modules: [
-            {
-              name: 'vue',
-              var: 'Vue',
-              path: `https://type-words.oss-cn-shenzhen.aliyuncs.com/vue.global.prod.min.js`
-            },
-            {
-              name: 'vue-router',
-              var: 'VueRouter',
-              path: `https://type-words.oss-cn-shenzhen.aliyuncs.com/vue-router.global.prod.min.js`
-            },
-            {
-              name: 'axios',
-              var: 'axios',
-              path: 'https://type-words.oss-cn-shenzhen.aliyuncs.com/axios.min.js'
-            },
-          ]
           // modules: [
           //   {
           //     name: 'vue',
           //     var: 'Vue',
-          //     path: `http://2study.top/vue.global.prod.min.js`
+          //     path: `https://type-words.oss-cn-shenzhen.aliyuncs.com/vue.global.prod.min.js`
           //   },
           //   {
           //     name: 'vue-router',
           //     var: 'VueRouter',
-          //     path: `http://2study.top/vue-router.global.prod.min.js`
+          //     path: `https://type-words.oss-cn-shenzhen.aliyuncs.com/vue-router.global.prod.min.js`
           //   },
           //   {
           //     name: 'axios',
           //     var: 'axios',
-          //     path: 'http://2study.top/axios.min.js'
+          //     path: 'https://type-words.oss-cn-shenzhen.aliyuncs.com/axios.min.js'
           //   },
           // ]
+          modules: [
+            {
+              name: 'vue',
+              var: 'Vue',
+              path: `http://2study.top/vue.global.prod.min.js`
+            },
+            {
+              name: 'vue-router',
+              var: 'VueRouter',
+              path: `http://2study.top/vue-router.global.prod.min.js`
+            },
+            {
+              name: 'axios',
+              var: 'axios',
+              path: 'http://2study.top/axios.min.js'
+            },
+          ]
         })
       ],
       define: {
