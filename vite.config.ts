@@ -7,16 +7,17 @@ import SlidePlugin from './src/components/slide/data.js';
 import {getLastCommit} from "git-last-commit";
 import UnoCSS from 'unocss/vite'
 import VueMacros from 'unplugin-vue-macros/vite'
-import cdn from 'vite-plugin-cdn-import'
 import Icons from 'unplugin-icons/vite'
 import Components from 'unplugin-vue-components/vite'
 import IconsResolver from 'unplugin-icons/resolver'
+import {viteExternalsPlugin} from 'vite-plugin-externals'
 
 function pathResolve(dir: string) {
   return resolve(__dirname, ".", dir)
 }
 
 const lifecycle = process.env.npm_lifecycle_event;
+let isBuild = ['build', 'report'].includes(lifecycle)
 
 // https://vitejs.dev/config/
 export default defineConfig(() => {
@@ -55,29 +56,30 @@ export default defineConfig(() => {
               open: true //如果存在本地服务端口，将在打包后自动展示
             }) : null,
           SlidePlugin(),
-          ['build', 'report'].includes(lifecycle) ? cdn({
-            modules: [
-              {
-                name: 'vue',
-                var: 'Vue',
-                path: `https://2study.top/vue.global.prod.min.js`
+          isBuild ? [
+            //这里不要用vite-plugin-cdn-import，他里面使用了rollup-plugin-external-globals插件，会导致自动加载components.d.ts里面的组件全部没引入，也不报错
+            {
+              name: 'inject-cdn-head',
+              enforce: 'pre',
+              transformIndexHtml(html) {
+                const scripts = `
+<script src="https://2study.top/vue.global.prod.min.js" crossorigin="anonymous"></script>
+<script src="https://2study.top/vue-router.global.prod.min.js" crossorigin="anonymous"></script>
+<script src="https://2study.top/axios.min.js" crossorigin="anonymous"></script>
+`
+                return html.replace('<head>', `<head>${scripts}`)
               },
-              {
-                name: 'vue-router',
-                var: 'VueRouter',
-                path: `https://2study.top/vue-router.global.prod.min.js`
-              },
-              {
-                name: 'axios',
-                var: 'axios',
-                path: 'https://2study.top/axios.min.js'
-              },
-            ],
-          }) : null
+            },
+            viteExternalsPlugin({
+              vue: 'Vue',
+              'vue-router': 'VueRouter',
+              axios: 'axios',
+            })
+          ] : null,
         ],
         build: {
           rollupOptions: {
-            external: ['build', 'report'].includes(lifecycle) ? ['axios'] : [],// 使用全局的 axios。因为百度翻译库内部用了0.19版本的axios，会被打包到代码里面
+            external: isBuild ? ['axios'] : [],// 使用全局的 axios。因为百度翻译库内部用了0.19版本的axios，会被打包到代码里面
           }
         },
         define: {
