@@ -9,10 +9,10 @@ import {cloneDeep, debounce, reverse, shuffle} from "@/utils";
 import Input from "@/pages/pc/components/Input.vue";
 import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
 import Empty from "@/components/Empty.vue";
-import {Icon} from "@iconify/vue";
 import Pagination from '@/pages/pc/components/base/Pagination.vue'
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import Checkbox from "@/pages/pc/components/base/checkbox/Checkbox.vue";
+import DeleteIcon from "@/components/icon/DeleteIcon.vue";
 
 let list = defineModel('list')
 
@@ -161,26 +161,32 @@ defineRender(
                               >
                                 <BaseIcon
                                     class="del"
-                                    title="删除"
-                                    icon="solar:trash-bin-minimalistic-linear"/>
+                                    title="删除">
+                                  <DeleteIcon/>
+                                </BaseIcon>
                               </PopConfirm>
                               : null
                         }
                         <BaseIcon
                             onClick={props.add}
                             icon="fluent:add-20-filled"
-                            title="添加单词"/>
+                            title="添加单词">
+                          <IconFluentAdd20Filled/>
+                        </BaseIcon>
                         <BaseIcon
                             disabled={!currentList.length}
                             title="改变顺序"
                             icon="icon-park-outline:sort-two"
                             onClick={() => showSortDialog = !showSortDialog}
-                        />
+                        >
+                         <IconIconParkOutlineSortTwo/>
+                        </BaseIcon>
                         <BaseIcon
                             disabled={!currentList.length}
                             onClick={() => showSearchInput = !showSearchInput}
-                            title="搜索"
-                            icon="fluent:search-24-regular"/>
+                            title="搜索">
+                            <IconFluentSearch24Regular/>
+                        </BaseIcon>
                         <MiniDialog
                             modelValue={showSortDialog}
                             onUpdate:modelValue={e => showSortDialog = e}
@@ -203,8 +209,7 @@ defineRender(
             {
               props.loading ?
                   <div class="h-full w-full center text-4xl">
-                    <Icon
-                        icon="eos-icons:loading"
+                    <IconEosIconsLoading
                         color="gray"
                     />
                   </div>

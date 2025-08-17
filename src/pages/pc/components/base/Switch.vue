@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, computed, defineProps, defineEmits, watch} from 'vue';
+import {ref, computed, watch} from 'vue';
 
 const props = defineProps<{
   modelValue: boolean;

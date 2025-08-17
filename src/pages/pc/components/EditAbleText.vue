@@ -3,7 +3,6 @@
 import BaseButton from "@/components/BaseButton.vue";
 
 import {watchEffect} from "vue";
-import BaseInput from "@/pages/pc/components/base/BaseInput.vue";
 import Textarea from "@/pages/pc/components/base/Textarea.vue";
 
 interface IProps {

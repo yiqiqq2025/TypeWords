@@ -3,7 +3,6 @@
 import {Article, Sentence, TranslateEngine} from "@/types/types.ts";
 import BaseButton from "@/components/BaseButton.vue";
 import EditAbleText from "@/pages/pc/components/EditAbleText.vue";
-import {Icon} from "@iconify/vue";
 import {getNetworkTranslate, getSentenceAllText, getSentenceAllTranslateText} from "@/hooks/translate.ts";
 import {genArticleSectionData, splitCNArticle2, splitEnArticle2, usePlaySentenceAudio} from "@/hooks/article.ts";
 import {_nextTick, _parseLRC, cloneDeep, last} from "@/utils";
@@ -295,7 +294,7 @@ function setStartTime(val: Sentence, i: number, j: number) {
             </textarea>
       <div class="justify-end items-center flex">
         <Tooltip>
-          <Icon icon="ri:question-line" class="mr-3" width="20"/>
+          <IconRiQuestionLine class="mr-3" width="20"/>
           <template #reference>
             <div>
               <div class="mb-2">使用方法</div>
@@ -357,7 +356,7 @@ function setStartTime(val: Sentence, i: number, j: number) {
         </div>
         <div class="flex items-center">
           <Tooltip>
-            <Icon icon="ri:question-line" class="mr-3" width="20"/>
+            <IconRiQuestionLine class="mr-3" width="20"/>
             <template #reference>
               <div>
                 <div class="mb-2">使用方法</div>
@@ -421,9 +420,11 @@ function setStartTime(val: Sentence, i: number, j: number) {
                       <div>{{ sentence.audioPosition?.[0] ?? 0 }}s</div>
                       <BaseIcon
                           @click="setStartTime(sentence,indexI,indexJ)"
-                          :icon="indexI === 0 && indexJ === 0 ?'ic:sharp-my-location':'twemoji:end-arrow'"
                           :title="indexI === 0 && indexJ === 0 ?'设置开始时间':'使用前一句的结束时间'"
-                      />
+                      >
+                        <IconIcSharpMyLocation v-if="indexI === 0 && indexJ === 0"/>
+                        <IconTwemojiEndArrow v-else/>
+                      </BaseIcon>
                     </div>
                     <div>-</div>
                     <div class="flex flex-col items-center justify-center">
@@ -432,15 +433,21 @@ function setStartTime(val: Sentence, i: number, j: number) {
                       <BaseIcon
                           @click="sentence.audioPosition[1] = Number(Number(audioRef.currentTime).toFixed(2))"
                           title="设置结束时间"
-                          icon="ic:sharp-my-location"
-                      />
+                      >
+                        <IconIcSharpMyLocation/>
+                      </BaseIcon>
                     </div>
                   </div>
                   <div class="flex flex-col">
                     <BaseIcon :icon="sentence.audioPosition?.length ? 'basil:edit-outline' : 'basil:add-outline'"
-                              @click="handleShowEditAudioDialog(sentence,indexI,indexJ)"/>
-                    <BaseIcon v-if="sentence.audioPosition?.length" icon="hugeicons:play"
-                              @click="playSentenceAudio(sentence,audioRef,editArticle)"/>
+                               @click="handleShowEditAudioDialog(sentence,indexI,indexJ)">
+                      <IconBasilEditOutline v-if="sentence.audioPosition?.length"/>
+                      <IconBasilAddOutline v-else/>
+                    </BaseIcon>
+                    <BaseIcon v-if="sentence.audioPosition?.length"
+                              @click="playSentenceAudio(sentence,audioRef,editArticle)">
+                      <IconHugeiconsPlay/>
+                    </BaseIcon>
                   </div>
                 </div>
               </div>
@@ -451,11 +458,11 @@ function setStartTime(val: Sentence, i: number, j: number) {
           <div class="status">
             <span>状态：</span>
             <div class="warning" v-if="failCount">
-              <Icon icon="typcn:warning-outline"/>
+              <IconTypcnWarningOutline/>
               共有{{ failCount }}句没有翻译！
             </div>
             <div class="success" v-else>
-              <Icon icon="mdi:success-circle-outline"/>
+              <IconMdiSuccessCircleOutline/>
               翻译完成！
             </div>
           </div>
@@ -487,9 +494,11 @@ function setStartTime(val: Sentence, i: number, j: number) {
               <span v-if="editSentence.audioPosition?.[1] !== -1"> - {{ editSentence.audioPosition?.[1] }}s</span>
               <span v-else> - 结束</span>
             </div>
-            <BaseIcon icon="hugeicons:play"
+            <BaseIcon2
                       title="试听"
-                      @click="playSentenceAudio(editSentence,sentenceAudioRef,editArticle)"/>
+                      @click="playSentenceAudio(editSentence,sentenceAudioRef,editArticle)">
+              <IconHugeiconsPlay/>
+            </BaseIcon2>
           </div>
         </div>
         <div class="flex flex-col gap-2">
@@ -498,16 +507,18 @@ function setStartTime(val: Sentence, i: number, j: number) {
             <div class="flex justify-between flex-1">
               <div class="flex items-center gap-2">
                 <InputNumber v-model="editSentence.audioPosition[0]" :precision="2" :step="0.1"/>
-                <BaseIcon
+                <BaseIcon2
                     @click="jumpAudio(editSentence.audioPosition[0])"
                     title="跳转"
-                    icon="ic:sharp-my-location"
-                />
-                <BaseIcon
+                >
+                  <IconIcSharpMyLocation/>
+                </BaseIcon2>
+                <BaseIcon2
                     @click="setPreEndTimeToCurrentStartTime"
                     title="使用前一句的结束时间"
-                    icon="twemoji:end-arrow"
-                />
+                >
+                  <IconTwemojiEndArrow/>
+                </BaseIcon2>
               </div>
               <BaseButton @click="recordStart">记录</BaseButton>
             </div>

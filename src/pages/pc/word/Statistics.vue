@@ -4,7 +4,6 @@ import {useBaseStore} from "@/stores/base.ts";
 import BaseButton from "@/components/BaseButton.vue";
 import {ShortcutKey, Statistics} from "@/types/types.ts";
 import {emitter, EventKey, useEvents} from "@/utils/eventBus.ts";
-import {Icon} from '@iconify/vue';
 import {useSettingStore} from "@/stores/setting.ts";
 import {usePracticeStore} from "@/stores/practice.ts";
 import dayjs from "dayjs";
@@ -131,7 +130,7 @@ function options(emitType: string) {
              style="background: rgb(254,236,236)">
           <div class="text-3xl">{{ statStore.wrong }}</div>
           <div class="center gap-2">
-            <Icon icon="iconamoon:close" class="text-2xl"/>
+            <IconIconamoonClose class="text-2xl"/>
             错词
           </div>
         </div>
@@ -139,7 +138,7 @@ function options(emitType: string) {
              style="background: rgb(231,248,241)">
           <div class="text-3xl">{{ statStore.total - statStore.wrong }}</div>
           <div class="center gap-2">
-            <Icon icon="tabler:check" class="text-2xl"/>
+            <IconTablerCheck class="text-2xl"/>
             正确
           </div>
         </div>

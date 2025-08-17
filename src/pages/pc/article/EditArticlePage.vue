@@ -1,15 +1,12 @@
 <script setup lang="ts">
 
 import EditArticle from "@/pages/pc/article/components/EditArticle.vue";
-import BaseIcon from "@/components/BaseIcon.vue";
+import BackIcon from "@/pages/pc/components/BackIcon.vue";
 </script>
 
 <template>
   <div class="h-screen">
-    <BaseIcon
-        title="返回"
-        @click="$router.back"
-        icon="formkit:left"/>
+    <BackIcon/>
     <EditArticle class="vue"></EditArticle>
   </div>
 

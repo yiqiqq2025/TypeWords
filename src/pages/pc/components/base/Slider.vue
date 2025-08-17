@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, computed, watch, defineProps, defineEmits, onMounted, nextTick} from 'vue';
+import {nextTick, onMounted, ref, watch} from 'vue';
 
 const props = defineProps<{
   modelValue: number;

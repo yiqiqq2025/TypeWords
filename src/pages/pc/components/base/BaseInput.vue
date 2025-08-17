@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, watch, defineProps, defineEmits, useAttrs, onMounted} from 'vue';
+import {ref, useAttrs, watch} from 'vue';
 
 const props = defineProps({
   modelValue: [String, Number],

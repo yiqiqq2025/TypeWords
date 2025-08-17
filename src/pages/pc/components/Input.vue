@@ -1,6 +1,5 @@
 <script setup lang="ts">
 
-import {Icon} from "@iconify/vue";
 import Close from "@/components/icon/Close.vue";
 import {useDisableEventListener, useWindowClick} from "@/hooks/event.ts";
 
@@ -37,7 +36,7 @@ const vFocus = {
        :class="{focus}"
        ref="inputEl"
   >
-    <Icon icon="fluent:search-24-regular"
+    <IconFluentSearch24Regular
           v-if="prefixIcon"
           width="20"/>
     <input type="text"

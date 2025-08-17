@@ -2,7 +2,6 @@
 
 import {ShortcutKey} from "@/types/types.ts";
 import Logo from "@/pages/pc/components/Logo.vue";
-import {Icon} from "@iconify/vue";
 import {useSettingStore} from "@/stores/setting.ts";
 import {useRouter} from "vue-router";
 import useTheme from "@/hooks/theme.ts";
@@ -23,41 +22,33 @@ const {toggleTheme} = useTheme()
     <div class="aside anim fixed" :class="{'expand':settingStore.sideExpand}">
       <div class="top">
         <Logo v-if="settingStore.sideExpand"/>
-<!--        <div class="row" @click="router.push('/home')">-->
-<!--          <Icon icon="iconoir:home"/>-->
-<!--          <span v-if="settingStore.sideExpand">主页</span>-->
-<!--        </div>-->
         <div class="row" @click="router.push('/word')">
-          <Icon icon="material-symbols-light:dictionary-outline-sharp"/>
-          <!--          <Icon icon="streamline:dictionary-language-book"/>-->
+          <IconMaterialSymbolsLightDictionaryOutlineSharp/>
           <span v-if="settingStore.sideExpand">单词</span>
         </div>
         <div class="row" @click="router.push('/article')">
-          <Icon icon="ph:article-ny-times"/>
+          <IconPhArticleNyTimes/>
           <span v-if="settingStore.sideExpand">文章</span>
         </div>
         <div class="row" @click="router.push('/setting')">
-          <Icon icon="uil:setting"/>
+          <IconUilSetting/>
           <span v-if="settingStore.sideExpand">设置</span>
         </div>
-        <!--        <div class="row" @click="router.push('/article2')">-->
-        <!--          <Icon icon="healthicons:i-exam-multiple-choice-outline"/>-->
-        <!--          <span v-if="settingStore.sideExpand">试卷</span>-->
-        <!--        </div>-->
-        <!--        <div class="row">-->
-        <!--          <Icon icon="mdi-light:forum"/>-->
-        <!--          <span v-if="settingStore.sideExpand">社区</span>-->
-        <!--        </div>-->
       </div>
       <div class="bottom flex justify-evenly ">
         <BaseIcon
-            @click="settingStore.sideExpand = !settingStore.sideExpand"
-            :icon="settingStore.sideExpand?'formkit:left':'formkit:right'"/>
+            @click="settingStore.sideExpand = !settingStore.sideExpand">
+          <IconFormkitLeft v-if="settingStore.sideExpand"/>
+          <IconFormkitRight v-else/>
+        </BaseIcon>
         <BaseIcon
             v-if="settingStore.sideExpand"
             :title="`切换主题(${settingStore.shortcutKeyMap[ShortcutKey.ToggleTheme]})`"
             @click="toggleTheme"
-            :icon="settingStore.theme === 'light' ? 'ep:moon' : 'tabler:sun'"/>
+        >
+          <IconEpMoon v-if="settingStore.theme === 'light'"/>
+          <IconTablerSun v-else/>
+        </BaseIcon>
       </div>
     </div>
     <div class="flex-1 z-1 relative">

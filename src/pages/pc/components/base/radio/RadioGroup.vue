@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import {defineEmits, defineProps, provide, ref, watch} from 'vue'
+import {provide, ref, watch} from 'vue'
 
 const props = defineProps({
   modelValue: [String, Number, Boolean],

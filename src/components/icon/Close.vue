@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import {Icon} from "@iconify/vue";
 import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
 
 defineEmits(['click'])
@@ -13,8 +12,7 @@ defineProps<{
        @click="$emit('click')"
   >
     <Tooltip :title="title">
-      <Icon icon="carbon:close-outline"
-      />
+      <IconCarbonCloseOutline/>
     </Tooltip>
   </div>
 </template>

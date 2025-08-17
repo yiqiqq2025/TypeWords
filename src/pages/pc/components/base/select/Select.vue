@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {computed, nextTick, onBeforeUnmount, onMounted, provide, ref, useAttrs, useSlots, VNode, watch} from 'vue';
-import {Icon} from "@iconify/vue";
 import {useWindowClick} from "@/hooks/event.ts";
 
 interface Option {
@@ -161,8 +160,7 @@ onBeforeUnmount(() => {
         {{ displayValue }}
       </div>
       <div class="custom-select__suffix">
-        <Icon
-            icon="mdi:chevron-down"
+        <IconMdiChevronDown
             :class="{ 'is-reverse': isOpen }"
             width="16"
         />

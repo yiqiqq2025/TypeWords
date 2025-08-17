@@ -1,9 +1,7 @@
 <script setup lang="ts">
 
-import BaseButton from "@/components/BaseButton.vue";
 import {onMounted, watch} from "vue";
 import {useSettingStore} from "@/stores/setting.ts";
-import {Icon} from "@iconify/vue";
 import Dialog from "@/pages/pc/components/dialog/Dialog.vue";
 
 let settingStore = useSettingStore()

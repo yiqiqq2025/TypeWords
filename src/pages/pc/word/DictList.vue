@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useNav} from "@/utils";
+import {groupBy, useNav} from "@/utils";
 import BasePage from "@/pages/pc/components/BasePage.vue";
 import {DictResource} from "@/types/types.ts";
 import {useRuntimeStore} from "@/stores/runtime.ts";
@@ -12,7 +12,6 @@ import BackIcon from "@/pages/pc/components/BackIcon.vue";
 import DictGroup from "@/pages/pc/components/list/DictGroup.vue";
 import {useBaseStore} from "@/stores/base.ts";
 import {useRouter} from "vue-router";
-import {groupBy} from "@/utils";
 import {dictionaryResources} from "@/assets/dictionary.ts";
 import {computed} from "vue";
 import {getDefaultDict} from "@/types/func.ts";
@@ -87,7 +86,9 @@ const searchList = computed<any[]>(() => {
           <span class="page-title absolute w-full center">词典列表</span>
           <BaseIcon @click="showSearchInput = true"
                     class="z-1"
-                    icon="fluent:search-24-regular"/>
+                    icon="fluent:search-24-regular">
+            <IconFluentSearch24Regular/>
+          </BaseIcon>
         </div>
       </div>
       <div class="mt-4" v-if="searchKey">
