@@ -6,17 +6,17 @@ import EditAbleText from "@/pages/pc/components/EditAbleText.vue";
 import {getNetworkTranslate, getSentenceAllText, getSentenceAllTranslateText} from "@/hooks/translate.ts";
 import {genArticleSectionData, splitCNArticle2, splitEnArticle2, usePlaySentenceAudio} from "@/hooks/article.ts";
 import {_nextTick, _parseLRC, cloneDeep, last} from "@/utils";
-import {watch} from "vue";
+import {defineAsyncComponent, watch} from "vue";
 import Empty from "@/components/Empty.vue";
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import * as Comparison from "string-comparison"
 import BaseIcon from "@/components/BaseIcon.vue";
-import Dialog from "@/pages/pc/components/dialog/Dialog.vue";
 import {getDefaultArticle} from "@/types/func.ts";
 import copy from "copy-to-clipboard";
 import {Option, Select} from "@/pages/pc/components/base/select";
 import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
 import InputNumber from "@/pages/pc/components/base/InputNumber.vue";
+const Dialog = defineAsyncComponent(() => import('@/pages/pc/components/dialog/Dialog.vue'))
 
 interface IProps {
   article?: Article,
@@ -38,8 +38,8 @@ let progress = $ref(0)
 let failCount = $ref(0)
 let textareaRef = $ref<HTMLTextAreaElement>()
 const TranslateEngineOptions = [
-  {value: 'baidu', label: '百度'},
   {value: 'youdao', label: '有道'},
+  {value: 'baidu', label: '百度'},
 ]
 
 let editArticle = $ref<Article>(getDefaultArticle())
@@ -494,11 +494,11 @@ function setStartTime(val: Sentence, i: number, j: number) {
               <span v-if="editSentence.audioPosition?.[1] !== -1"> - {{ editSentence.audioPosition?.[1] }}s</span>
               <span v-else> - 结束</span>
             </div>
-            <BaseIcon2
+            <BaseIcon
                       title="试听"
                       @click="playSentenceAudio(editSentence,sentenceAudioRef,editArticle)">
               <IconHugeiconsPlay/>
-            </BaseIcon2>
+            </BaseIcon>
           </div>
         </div>
         <div class="flex flex-col gap-2">
@@ -507,18 +507,18 @@ function setStartTime(val: Sentence, i: number, j: number) {
             <div class="flex justify-between flex-1">
               <div class="flex items-center gap-2">
                 <InputNumber v-model="editSentence.audioPosition[0]" :precision="2" :step="0.1"/>
-                <BaseIcon2
+                <BaseIcon
                     @click="jumpAudio(editSentence.audioPosition[0])"
                     title="跳转"
                 >
                   <IconIcSharpMyLocation/>
-                </BaseIcon2>
-                <BaseIcon2
+                </BaseIcon>
+                <BaseIcon
                     @click="setPreEndTimeToCurrentStartTime"
                     title="使用前一句的结束时间"
                 >
                   <IconTwemojiEndArrow/>
-                </BaseIcon2>
+                </BaseIcon>
               </div>
               <BaseButton @click="recordStart">记录</BaseButton>
             </div>

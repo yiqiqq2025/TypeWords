@@ -2,6 +2,7 @@ import {defineStore} from "pinia"
 import {checkAndUpgradeSaveSetting, cloneDeep} from "@/utils";
 import {DefaultShortcutKeyMap} from "@/types/types.ts";
 import {SAVE_SETTING_KEY} from "@/utils/const.ts";
+import {get} from "idb-keyval";
 
 export interface SettingState {
   showToolbar: boolean,
@@ -97,8 +98,11 @@ export const useSettingStore = defineStore('setting', {
       this.$patch(obj)
     },
     init() {
-      return new Promise(resolve => {
+      return new Promise(async resolve => {
         let configStr = localStorage.getItem(SAVE_SETTING_KEY.key)
+        if (!configStr) {
+          configStr = await get(SAVE_SETTING_KEY.key)
+        }
         let data = checkAndUpgradeSaveSetting(configStr)
         this.setState(data)
         this.load = true

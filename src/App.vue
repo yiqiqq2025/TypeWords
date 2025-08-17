@@ -22,6 +22,7 @@ watch(store.$state, (n: BaseState) => {
 })
 
 watch(settingStore.$state, (n) => {
+  console.log('watch',settingStore.$state)
   set(SAVE_SETTING_KEY.key, JSON.stringify({val: n, version: SAVE_SETTING_KEY.version}))
 })
 

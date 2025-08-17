@@ -2,11 +2,10 @@
 import {useBaseStore} from "@/stores/base.ts";
 import {useRouter} from "vue-router";
 import BaseIcon from "@/components/BaseIcon.vue";
-import Dialog from "@/pages/pc/components/dialog/Dialog.vue";
 import {_getAccomplishDate, _getAccomplishDays, _getDictDataByUrl, useNav} from "@/utils";
 import BasePage from "@/pages/pc/components/BasePage.vue";
 import {DictResource} from "@/types/types.ts";
-import {onMounted, watch} from "vue";
+import {defineAsyncComponent, onMounted, watch} from "vue";
 import {getCurrentStudyWord} from "@/hooks/dict.ts";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 import Book from "@/pages/pc/components/Book.vue";
@@ -17,6 +16,9 @@ import BaseButton from "@/components/BaseButton.vue";
 import {getDefaultDict} from "@/types/func.ts";
 import Slider from "@/pages/pc/components/base/Slider.vue";
 import DeleteIcon from "@/components/icon/DeleteIcon.vue";
+
+const Dialog = defineAsyncComponent(() => import('@/pages/pc/components/dialog/Dialog.vue'))
+
 
 const store = useBaseStore()
 const router = useRouter()
@@ -136,8 +138,8 @@ const progressTextRight = $computed(() => {
             <span @click="goDictDetail(store.sdict)"
                   class="text-lg font-bold cursor-pointer">{{ store.sdict.name || '请选择词典开始学习' }}</span>
             <BaseIcon title="切换词典"
-                       class="ml-4"
-                       @click="router.push('/dict-list')"
+                      class="ml-4"
+                      @click="router.push('/dict-list')"
 
             >
               <IconGgArrowsExchange v-if="store.sdict.name"/>

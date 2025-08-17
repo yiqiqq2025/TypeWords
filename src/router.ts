@@ -1,6 +1,5 @@
 import * as VueRouter from 'vue-router'
 import {RouteRecordRaw} from 'vue-router'
-import Test from "@/pages/test/test.vue";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 import WordHomePage from "@/pages/pc/word/WordHomePage.vue";
 import PC from "@/pages/pc/index.vue";
@@ -10,8 +9,8 @@ import DictDetail from "@/pages/pc/word/DictDetail.vue";
 import StudyWord from "@/pages/pc/word/StudyWord.vue";
 import BookDetail from "@/pages/pc/article/BookDetail.vue";
 import DictList from "@/pages/pc/word/DictList.vue";
-import Setting from "@/pages/pc/Setting.vue";
 import BookList from "@/pages/pc/article/BookList.vue";
+import Setting from "@/pages/pc/Setting.vue";
 
 export const routes: RouteRecordRaw[] = [
   {
@@ -27,15 +26,15 @@ export const routes: RouteRecordRaw[] = [
 
       {path: 'article', component: ArticleHomePage},
       {path: 'study-article', component: StudyArticle},
-      {path: 'edit-article', component: () => import("@/pages/pc/article/EditArticlePage.vue")},
-      {path: 'batch-edit-article', component: () => import("@/pages/pc/article/BatchEditArticlePage.vue")},
       {path: 'book-detail', component: BookDetail},
       {path: 'book-list', component: BookList},
+      {path: 'edit-article', component: () => import("@/pages/pc/article/EditArticlePage.vue")},
+      {path: 'batch-edit-article', component: () => import("@/pages/pc/article/BatchEditArticlePage.vue")},
 
       {path: 'setting', component: Setting},
     ]
   },
-  {path: '/test', component: Test},
+  {path: '/test', component: () => import("@/pages/test/test.vue")},
   {path: '/:pathMatch(.*)*', redirect: '/word'},
 ]
 

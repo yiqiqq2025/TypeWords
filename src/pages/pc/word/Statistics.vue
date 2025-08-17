@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Dialog from "@/pages/pc/components/dialog/Dialog.vue";
 import {useBaseStore} from "@/stores/base.ts";
 import BaseButton from "@/components/BaseButton.vue";
 import {ShortcutKey, Statistics} from "@/types/types.ts";
@@ -8,7 +7,8 @@ import {useSettingStore} from "@/stores/setting.ts";
 import {usePracticeStore} from "@/stores/practice.ts";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
-import {watch} from "vue";
+import {defineAsyncComponent, watch} from "vue";
+const Dialog = defineAsyncComponent(() => import('@/pages/pc/components/dialog/Dialog.vue'))
 
 dayjs.extend(isBetween);
 

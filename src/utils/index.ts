@@ -11,6 +11,7 @@ import {nextTick} from "vue";
 import {dictionaryResources, enArticle} from "@/assets/dictionary.ts";
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import {getDefaultArticle, getDefaultDict, getDefaultWord} from "@/types/func.ts";
+import {set} from "idb-keyval";
 
 export function no() {
   Toast.warning('未现实')
@@ -50,7 +51,8 @@ export function checkAndUpgradeSaveDict(val: any) {
         return defaultState
       } else {
         if (version === 3) {
-          localStorage.setItem('type-word-dict-v3',JSON.stringify(state))
+          localStorage.setItem('type-word-dict-v3', JSON.stringify(state))
+          set('type-word-dict-v3', JSON.stringify(state))
 
           let studyDictId = ''
           if (state.current.index >= 0) {
@@ -114,15 +116,15 @@ export function checkAndUpgradeSaveDict(val: any) {
                 delete v.id
                 delete v.name
                 if (currentType === 'collect') {
-                  if (v.words.length){
-                      if (currentDictId === studyDictId) defaultState.word.studyIndex = 0
-                      checkRiskKey(defaultState.word.bookList[0], cloneDeep(v))
-                      defaultState.word.bookList[0].length = v.words.length
+                  if (v.words.length) {
+                    if (currentDictId === studyDictId) defaultState.word.studyIndex = 0
+                    checkRiskKey(defaultState.word.bookList[0], cloneDeep(v))
+                    defaultState.word.bookList[0].length = v.words.length
                   }
-                  if (v.articles.length){
-                      if (currentDictId === studyDictId) defaultState.article.studyIndex = 0
-                      checkRiskKey(defaultState.article.bookList[0], cloneDeep(v))
-                      defaultState.article.bookList[0].length = v.articles.length
+                  if (v.articles.length) {
+                    if (currentDictId === studyDictId) defaultState.article.studyIndex = 0
+                    checkRiskKey(defaultState.article.bookList[0], cloneDeep(v))
+                    defaultState.article.bookList[0].length = v.articles.length
                   }
                 }
                 if (currentType === 'simple' || currentType === 'skip') {

@@ -158,9 +158,9 @@ async function cancel() {
       >
         <Tooltip title="关闭">
           <IconIonCloseOutline @click="close"
-                v-if="showClose"
-                class="close hvr-grow cursor-pointer"
-                width="24" color="#929596"/>
+                               v-if="showClose"
+                               class="close hvr-grow cursor-pointer"
+                               width="24" color="#929596"/>
         </Tooltip>
         <div class="modal-header" v-if="header">
           <div class="title">{{ props.title }}</div>

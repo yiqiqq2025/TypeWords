@@ -1,8 +1,8 @@
 <script setup lang="ts">
 
-import {onMounted, watch} from "vue";
+import {defineAsyncComponent, onMounted, watch} from "vue";
 import {useSettingStore} from "@/stores/setting.ts";
-import Dialog from "@/pages/pc/components/dialog/Dialog.vue";
+const Dialog = defineAsyncComponent(() => import('@/pages/pc/components/dialog/Dialog.vue'))
 
 let settingStore = useSettingStore()
 let show = $ref(false)
