@@ -2,7 +2,7 @@
 import {ref, watch} from "vue";
 import {useSettingStore} from "@/stores/setting.ts";
 import {getAudioFileUrl, useChangeAllSound, usePlayAudio, useWatchAllSound} from "@/hooks/sound.ts";
-import {getShortcutKey, useDisableEventListener, useEventListener} from "@/hooks/event.ts";
+import {getShortcutKey, useEventListener} from "@/hooks/event.ts";
 import {checkAndUpgradeSaveDict, checkAndUpgradeSaveSetting, cloneDeep, shakeCommonDict} from "@/utils";
 import {DefaultShortcutKeyMap, ShortcutKey} from "@/types/types.ts";
 import BaseButton from "@/components/BaseButton.vue";
@@ -31,7 +31,6 @@ const store = useBaseStore()
 //@ts-ignore
 const gitLastCommitHash = ref(LATEST_COMMIT_HASH);
 
-useDisableEventListener(() => undefined)
 useWatchAllSound()
 
 let editShortcutKey = $ref('')

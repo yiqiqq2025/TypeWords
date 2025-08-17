@@ -2,23 +2,24 @@
 
 import {defineAsyncComponent, onMounted, watch} from "vue";
 import {useSettingStore} from "@/stores/setting.ts";
+
 const Dialog = defineAsyncComponent(() => import('@/pages/pc/components/dialog/Dialog.vue'))
 
 let settingStore = useSettingStore()
 let show = $ref(false)
 
 watch(() => settingStore.load, (n) => {
-  show = settingStore.conflictNotice
-})
-onMounted(() => {
-  if (settingStore.load) {
-    show = settingStore.conflictNotice
+  if (n && settingStore.conflictNotice) {
+    setTimeout(() => {
+      show = true
+    }, 300)
   }
-})
+}, {immediate: true})
+
 </script>
 
 <template>
-  <Dialog :modelValue="show"
+  <Dialog v-model="show"
           title="提示"
           footer
           cancel-button-text="不再提醒"
@@ -39,7 +40,7 @@ onMounted(() => {
         </div>
         <div class="pl-4">
           <div>①：请打开浏览器无痕模式尝试</div>
-          <div>②：无痕模式下无法正常使用，请给<a href="https://github.com/zyronon/TypeWords/issues">作者提一个 BUG</a>
+          <div>②：无痕模式下无法正常使用，请给<a href="https://github.com/zyronon/TypeWords/issues">作者提 BUG</a>
           </div>
         </div>
       </div>

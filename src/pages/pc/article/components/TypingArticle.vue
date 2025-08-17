@@ -41,7 +41,6 @@ const emit = defineEmits<{
   edit: [val: Article]
 }>()
 
-let isPlay = $ref(false)
 let typeArticleRef = $ref<HTMLInputElement>(null)
 let articleWrapperRef = $ref<HTMLInputElement>(null)
 let sectionIndex = $ref(0)
@@ -93,7 +92,6 @@ watch(() => settingStore.translate, () => {
   checkTranslateLocation().then(() => checkCursorPosition())
 })
 
-
 function checkCursorPosition(a = sectionIndex, b = sentenceIndex, c = wordIndex) {
   // console.log('checkCursorPosition')
   _nextTick(() => {
@@ -142,7 +140,6 @@ function checkTranslateLocation() {
     }, 300)
   })
 }
-
 
 let lockNextSentence = false
 

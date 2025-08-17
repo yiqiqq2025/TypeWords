@@ -17,6 +17,7 @@ export const EventKey = {
   write: 'write',
   editDict: 'editDict',
   openMyDictDialog: 'openMyDictDialog',
+  stateInitEnd: 'stateInitEnd',
 }
 
 export function useEvent(key: string, func: any) {

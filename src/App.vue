@@ -6,8 +6,8 @@ import {useSettingStore} from "@/stores/setting.ts";
 import useTheme from "@/hooks/theme.ts";
 import CollectNotice from "@/pages/pc/components/CollectNotice.vue";
 import {SAVE_DICT_KEY, SAVE_SETTING_KEY} from "@/utils/const.ts";
-import {isMobile, shakeCommonDict} from "@/utils";
-import router, {routes} from "@/router.ts";
+import {shakeCommonDict} from "@/utils";
+import {routes} from "@/router.ts";
 import {set} from 'idb-keyval'
 
 import {useRoute} from "vue-router";
@@ -22,29 +22,18 @@ watch(store.$state, (n: BaseState) => {
 })
 
 watch(settingStore.$state, (n) => {
-  console.log('watch',settingStore.$state)
   set(SAVE_SETTING_KEY.key, JSON.stringify({val: n, version: SAVE_SETTING_KEY.version}))
 })
 
 async function init() {
-  // console.time()
-  store.init().then(() => {
-    store.load = true
-    // console.timeEnd()
-  })
+  await store.init()
   await settingStore.init()
+  store.load = true
   setTheme(settingStore.theme)
 }
 
-onMounted(() => {
-  init()
+onMounted(init)
 
-  if (isMobile()) {
-    // 当前设备是移动设备
-    console.log('当前设备是移动设备')
-    router.replace('/mobile')
-  }
-})
 let transitionName = $ref('go')
 const route = useRoute()
 watch(() => route.path, (to, from) => {

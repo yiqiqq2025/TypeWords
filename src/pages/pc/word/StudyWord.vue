@@ -6,8 +6,8 @@ import Statistics from "@/pages/pc/word/Statistics.vue";
 import {emitter, EventKey, useEvents} from "@/utils/eventBus.ts";
 import {useSettingStore} from "@/stores/setting.ts";
 import {useRuntimeStore} from "@/stores/runtime.ts";
-import {ShortcutKey, StudyData, Word} from "@/types/types.ts";
-import {useOnKeyboardEventListener, useStartKeyboardEventListener} from "@/hooks/event.ts";
+import {Dict, ShortcutKey, StudyData, Word} from "@/types/types.ts";
+import {useDisableEventListener, useOnKeyboardEventListener, useStartKeyboardEventListener} from "@/hooks/event.ts";
 import useTheme from "@/hooks/theme.ts";
 import {getCurrentStudyWord, useWordOptions} from "@/hooks/dict.ts";
 import {_getDictDataByUrl, cloneDeep, shuffle} from "@/utils";
@@ -23,7 +23,7 @@ import {useBaseStore} from "@/stores/base.ts";
 import {usePracticeStore} from "@/stores/practice.ts";
 import {dictionaryResources} from "@/assets/dictionary.ts";
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
-import {getDefaultWord} from "@/types/func.ts";
+import {getDefaultDict, getDefaultWord} from "@/types/func.ts";
 import ConflictNotice from "@/pages/pc/components/ConflictNotice.vue";
 
 interface IProps {
@@ -61,26 +61,48 @@ let data = $ref<StudyData>({
   wrongWords: [],
 })
 
+watch(() => store.load, (n) => {
+  if (n && loading && runtimeStore.editDict.id) {
+    console.log('load好了开始加载')
+    store.changeDict(runtimeStore.editDict)
+    studyData = getCurrentStudyWord()
+    loading = false
+  }
+}, {immediate: true})
+
+useStartKeyboardEventListener()
+useDisableEventListener(() => loading)
+
 onMounted(() => {
-  let dictId = route.query.q
-  //如果url里有词典id，那么直接请求词典数据，并加到bookList里面进行学习
-  if (dictId) {
-    let dictResource = dictionaryResources.find(v => v.id === dictId)
-    if (dictResource) {
-      loading = true
-      requestIdleCallback(() => {
-        _getDictDataByUrl(dictResource).then(r => {
-          store.changeDict(r)
-          studyData = getCurrentStudyWord()
-          loading = false
-        })
-      })
-    } else {
-      router.push('/word')
-    }
+  if (runtimeStore.routeData) {
+    studyData = runtimeStore.routeData
   } else {
-    if (runtimeStore.routeData) {
-      studyData = runtimeStore.routeData
+    let dictName = route.query.name
+    let dictId = route.query.id
+    //如果url里有词典id或name，那么直接请求词典数据，并加到bookList里面进行学习
+    //todo 这里要处理自定义词典的问题
+    if (dictName || dictId) {
+      let dictResource = getDefaultDict()
+      if (dictId) dictResource = dictionaryResources.find(v => v.id === dictId) as Dict
+      else if (dictName) dictResource = dictionaryResources.find(v => v.name === dictName) as Dict
+      if (dictResource.id) {
+        loading = true
+        _getDictDataByUrl(dictResource).then(r => {
+          if (!r.words.length) {
+            router.push('/word')
+            return Toast.warning('没有单词可学习！')
+          }
+          runtimeStore.editDict = r
+          if (store.load) {
+            console.log('直接加载')
+            store.changeDict(r)
+            studyData = getCurrentStudyWord()
+            loading = false
+          }
+        })
+      } else {
+        router.push('/word')
+      }
     } else {
       router.push('/word')
     }
@@ -124,9 +146,6 @@ watch(() => studyData, () => {
 
 provide('studyData', data)
 
-const dictIsEnd = $computed(() => {
-  return store.sdict.lastLearnIndex === store.sdict.length
-})
 const word = $computed(() => {
   return data.words[data.index] ?? getDefaultWord()
 })
@@ -248,7 +267,6 @@ async function onKeyDown(e: KeyboardEvent) {
   }
 }
 
-useStartKeyboardEventListener()
 
 useOnKeyboardEventListener(onKeyDown, onKeyUp)
 
@@ -354,7 +372,7 @@ useEvents([
 </script>
 
 <template>
-  <div class="practice-wrapper">
+  <div class="practice-wrapper" v-loading="loading">
     <div class="practice-word">
       <div class="absolute z-1 top-4   w-full" v-if="settingStore.showNearWord">
         <div class="center gap-2 cursor-pointer float-left"
@@ -375,7 +393,7 @@ useEvents([
           >
             <div class="word" :class="settingStore.dictation && 'word-shadow'">{{ nextWord.word }}</div>
           </Tooltip>
-          <IconBiArrowRight class="arrow"  width="22"/>
+          <IconBiArrowRight class="arrow" width="22"/>
         </div>
       </div>
       <TypeWord

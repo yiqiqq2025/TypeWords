@@ -49,11 +49,23 @@ defineExpose({play})
 </script>
 
 <template>
-  <BaseIcon @click.stop="click"
-            v-if="props.simple"
-            no-bg
-            :icon="iconList[step]"/>
-  <BaseIcon @click.stop="click" v-else :icon="iconList[step]"/>
+  <template v-if="props.simple">
+    <BaseIcon @click.stop="click"
+              no-bg
+    >
+      <IconBxVolume v-if="step === 0"/>
+      <IconBxVolumeLow v-if="step === 1"/>
+      <IconBxVolumeFull v-if="step === 2"/>
+    </BaseIcon>
+  </template>
+  <template v-else>
+    <BaseIcon @click.stop="click"
+    >
+      <IconBxVolume v-if="step === 0"/>
+      <IconBxVolumeLow v-if="step === 1"/>
+      <IconBxVolumeFull v-if="step === 2"/>
+    </BaseIcon>
+  </template>
 </template>
 
 <style scoped lang="scss">

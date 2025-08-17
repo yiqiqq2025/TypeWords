@@ -43,7 +43,7 @@ function startStudy() {
       custom: base.sbook.custom,
       complete: base.sbook.complete,
     })
-    nav('/study-article')
+    nav('/study-article', {name: store.sbook.name, id: store.sbook.id})
   } else {
     window.umami?.track('no-book')
     Toast.warning('请先选择一本书籍')
@@ -120,7 +120,7 @@ async function goBookDetail(val: DictResource) {
         <div class="title">我的书籍</div>
         <div class="flex gap-4 items-center">
           <PopConfirm title="确认删除所有选中书籍？" @confirm="handleBatchDel" v-if="selectIds.length">
-            <BaseIcon class="del" title="删除" >
+            <BaseIcon class="del" title="删除">
               <DeleteIcon/>
             </BaseIcon>
           </PopConfirm>

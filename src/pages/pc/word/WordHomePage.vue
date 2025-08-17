@@ -24,7 +24,7 @@ const store = useBaseStore()
 const router = useRouter()
 const {nav} = useNav()
 const runtimeStore = useRuntimeStore()
-
+let loading = $ref(true)
 let currentStudy = $ref({
   new: [],
   review: [],
@@ -45,6 +45,7 @@ async function init() {
   if (!currentStudy.new.length && store.sdict.words.length) {
     currentStudy = getCurrentStudyWord()
   }
+  loading = false
 }
 
 function startStudy() {
@@ -59,7 +60,7 @@ function startStudy() {
       custom: store.sdict.custom,
       complete: store.sdict.complete,
     })
-    nav('study-word', {}, currentStudy)
+    nav('study-word', {name: store.sdict.name, id: store.sdict.id}, currentStudy)
   } else {
     window.umami?.track('no-dict')
     Toast.warning('请先选择一本词典')
@@ -188,7 +189,9 @@ const progressTextRight = $computed(() => {
           </div>
           个单词 <span class="color-blue cursor-pointer" @click="setPerDayStudyNumber">更改</span>
         </div>
-        <BaseButton size="large" :disabled="!store.sdict.name" @click="startStudy">
+        <BaseButton size="large" :disabled="!store.sdict.name"
+                    :loading="loading"
+                    @click="startStudy">
           <!--        <BaseButton size="large" @click="startStudy">-->
           <div class="flex items-center gap-2">
             <span>开始学习</span>

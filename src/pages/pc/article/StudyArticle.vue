@@ -1,19 +1,18 @@
 <script setup lang="ts">
 
-import {onMounted, onUnmounted} from "vue";
+import {onMounted, onUnmounted, watch} from "vue";
 import {useBaseStore} from "@/stores/base.ts";
 import {emitter, EventKey, useEvents} from "@/utils/eventBus.ts";
 import {useSettingStore} from "@/stores/setting.ts";
-import {Article, ArticleItem, ArticleWord, ShortcutKey, Word} from "@/types/types.ts";
-import {useOnKeyboardEventListener, useStartKeyboardEventListener} from "@/hooks/event.ts";
+import {Article, ArticleItem, ArticleWord, Dict, DictType, ShortcutKey, Word} from "@/types/types.ts";
+import {useDisableEventListener, useOnKeyboardEventListener, useStartKeyboardEventListener} from "@/hooks/event.ts";
 import useTheme from "@/hooks/theme.ts";
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
-import {cloneDeep} from "@/utils";
+import {_getDictDataByUrl, cloneDeep} from "@/utils";
 import {usePracticeStore} from "@/stores/practice.ts";
 import {useArticleOptions} from "@/hooks/dict.ts";
 import {genArticleSectionData, usePlaySentenceAudio} from "@/hooks/article.ts";
-import router from "@/router.ts";
-import {getDefaultArticle} from "@/types/func.ts";
+import {getDefaultArticle, getDefaultDict} from "@/types/func.ts";
 import TypingArticle from "@/pages/pc/article/components/TypingArticle.vue";
 import BaseIcon from "@/components/BaseIcon.vue";
 import Panel from "@/pages/pc/components/Panel.vue";
@@ -21,6 +20,9 @@ import ArticleList from "@/pages/pc/components/list/ArticleList.vue";
 import EditSingleArticleModal from "@/pages/pc/article/components/EditSingleArticleModal.vue";
 import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
 import ConflictNotice from "@/pages/pc/components/ConflictNotice.vue";
+import {enArticle} from "@/assets/dictionary.ts";
+import {useRoute, useRouter} from "vue-router";
+import {useRuntimeStore} from "@/stores/runtime.ts";
 
 const store = useBaseStore()
 const settingStore = useSettingStore()
@@ -37,9 +39,8 @@ let articleData = $ref({
 })
 let showEditArticle = $ref(false)
 let typingArticleRef = $ref<any>()
+let loading = $ref<boolean>(true)
 let editArticle = $ref<Article>(getDefaultArticle())
-
-useStartKeyboardEventListener()
 
 function write() {
   // console.log('write')
@@ -84,14 +85,61 @@ function next() {
   getCurrentPractice()
 }
 
-function init() {
-  if (!store.sbook?.articles?.length) {
-    router.push('/article')
-    return
+const router = useRouter()
+const route = useRoute()
+const runtimeStore = useRuntimeStore()
+
+
+watch(() => store.load, (n) => {
+  if (n && loading && runtimeStore.editDict.id) {
+    console.log('load好了开始加载')
+    store.changeBook(runtimeStore.editDict)
+    articleData.list = cloneDeep(store.sbook.articles)
+    getCurrentPractice()
+    loading = false
   }
-  articleData.list = cloneDeep(store.sbook.articles)
-  getCurrentPractice()
-  console.log('init', articleData.article)
+},{immediate: true})
+
+useStartKeyboardEventListener()
+useDisableEventListener(() => loading)
+
+function init() {
+  if (store.sbook?.articles?.length) {
+    articleData.list = cloneDeep(store.sbook.articles)
+    getCurrentPractice()
+    loading = false
+  } else {
+    let dictName = route.query.name
+    let dictId = route.query.id
+    //如果url里有词典id或name，那么直接请求词典数据，并加到bookList里面进行学习
+    //todo 这里要处理自定义词典的问题
+    if (dictName || dictId) {
+      let dictResource = getDefaultDict()
+      if (dictId) dictResource = enArticle.find(v => v.id === dictId) as Dict
+      else if (dictName) dictResource = enArticle.find(v => v.name === dictName) as Dict
+      if (dictResource.id) {
+        loading = true
+        _getDictDataByUrl(dictResource, DictType.article).then(r => {
+          if (!r.articles.length) {
+            router.push('/article')
+            return Toast.warning('没有文章可学习！')
+          }
+          runtimeStore.editDict = r
+          if (store.load) {
+            console.log('直接加载')
+            store.changeBook(r)
+            articleData.list = cloneDeep(store.sbook.articles)
+            getCurrentPractice()
+            loading = false
+          }
+        })
+      } else {
+        router.push('/article')
+      }
+    } else {
+      router.push('/article')
+    }
+  }
 }
 
 function setArticle(val: Article) {
@@ -183,7 +231,6 @@ function show() {
   typingArticleRef?.showSentence()
 }
 
-
 function onKeyUp() {
   typingArticleRef.hideSentence()
 }
@@ -198,7 +245,6 @@ async function onKeyDown(e: KeyboardEvent) {
 }
 
 useOnKeyboardEventListener(onKeyDown, onKeyUp)
-
 
 onMounted(init)
 
@@ -240,7 +286,7 @@ const {playSentenceAudio} = usePlaySentenceAudio()
 
 </script>
 <template>
-  <div class="practice-wrapper">
+  <div class="practice-wrapper" v-loading="loading">
     <div class="practice-article">
       <TypingArticle
           ref="typingArticleRef"
@@ -290,11 +336,11 @@ const {playSentenceAudio} = usePlaySentenceAudio()
     <div class="footer" :class="!settingStore.showToolbar && 'hide'">
       <Tooltip :title="settingStore.showToolbar?'收起':'展开'">
         <IconIconParkOutlineDown
-              @click="settingStore.showToolbar = !settingStore.showToolbar"
-              class="arrow"
-              :class="!settingStore.showToolbar && 'down'"
-              width="24"
-              color="#999"/>
+            @click="settingStore.showToolbar = !settingStore.showToolbar"
+            class="arrow"
+            :class="!settingStore.showToolbar && 'down'"
+            width="24"
+            color="#999"/>
       </Tooltip>
 
       <div class="bottom">

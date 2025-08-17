@@ -7,7 +7,7 @@ import {useBaseStore} from "@/stores/base.ts";
 
 import List from "@/pages/pc/components/list/List.vue";
 import {emitter, EventKey} from "@/utils/eventBus.ts";
-import {useDisableEventListener, useWindowClick} from "@/hooks/event.ts";
+import {useWindowClick} from "@/hooks/event.ts";
 import {MessageBox} from "@/utils/MessageBox.tsx";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 import {nanoid} from "nanoid";
@@ -41,8 +41,6 @@ onMounted(() => {
 onUnmounted(() => {
   emitter.off(EventKey.openArticleListModal)
 })
-
-useDisableEventListener(() => show)
 
 async function selectArticle(item: Article) {
   let r = await checkDataChange()

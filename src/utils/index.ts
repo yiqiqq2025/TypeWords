@@ -408,7 +408,12 @@ export function _parseLRC(lrc: string): { start: number, end: number, text: stri
   return parsed;
 }
 
+export async function sleep(time: number) {
+  return new Promise(resolve => setTimeout(resolve, time));
+}
+
 export async function _getDictDataByUrl(val: DictResource, type: DictType = DictType.word): Promise<Dict> {
+  // await sleep(2000);
   let dictResourceUrl = `./dicts/${val.language}/word/${val.url}`
   if (type === DictType.article) {
     dictResourceUrl = `./dicts/${val.language}/${val.type}/${val.url}`;

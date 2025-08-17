@@ -112,20 +112,10 @@ export function useOnKeyboardEventListener(onKeyDown: (e: KeyboardEvent) => void
   })
 }
 
+//因为如果用useStartKeyboardEventListener局部变量控制，当出现多个hooks时就不行了，所以用全局变量来控制
 export function useDisableEventListener(watchVal: any) {
   const runtimeStore = useRuntimeStore()
   watch(watchVal, (n: any) => {
-    if (n === true) runtimeStore.disableEventListener = true
-    if (n === false) runtimeStore.disableEventListener = false
-  })
-  onMounted(() => {
-    if (watchVal() === undefined) {
-      runtimeStore.disableEventListener = true
-    }
-  })
-  onUnmounted(() => {
-    if (watchVal() === undefined) {
-      runtimeStore.disableEventListener = false
-    }
+    runtimeStore.disableEventListener = n
   })
 }

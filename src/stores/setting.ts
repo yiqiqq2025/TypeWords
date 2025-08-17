@@ -99,13 +99,16 @@ export const useSettingStore = defineStore('setting', {
     },
     init() {
       return new Promise(async resolve => {
+        //TODO 后面记得删除了
         let configStr = localStorage.getItem(SAVE_SETTING_KEY.key)
-        if (!configStr) {
-          configStr = await get(SAVE_SETTING_KEY.key)
+        let configStr2 = await get(SAVE_SETTING_KEY.key)
+        if (configStr2) {
+          //兼容localStorage.getItem
+          configStr = configStr2
         }
         let data = checkAndUpgradeSaveSetting(configStr)
-        this.setState(data)
-        this.load = true
+        this.setState({...data, load: true})
+        // this.load = true
         resolve(true)
       })
     }

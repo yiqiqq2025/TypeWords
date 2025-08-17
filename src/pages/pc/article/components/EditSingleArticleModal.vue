@@ -5,6 +5,7 @@ import {useDisableEventListener} from "@/hooks/event.ts";
 import EditArticle from "@/pages/pc/article/components/EditArticle.vue";
 import {getDefaultArticle} from "@/types/func.ts";
 import {defineAsyncComponent} from "vue";
+
 const Dialog = defineAsyncComponent(() => import('@/pages/pc/components/dialog/Dialog.vue'))
 
 interface IProps {
