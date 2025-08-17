@@ -7,7 +7,7 @@ import SlidePlugin from './src/components/slide/data.js';
 import {getLastCommit} from "git-last-commit";
 import UnoCSS from 'unocss/vite'
 import VueMacros from 'unplugin-vue-macros/vite'
-import {Plugin as importToCDN} from 'vite-plugin-cdn-import'
+import cdn from 'vite-plugin-cdn-import'
 import Icons from 'unplugin-icons/vite'
 import Components from 'unplugin-vue-components/vite'
 import IconsResolver from 'unplugin-icons/resolver'
@@ -26,11 +26,10 @@ export default defineConfig(() => {
       if (!err) latestCommitHash = commit.shortHash
       resolve({
         plugins: [
-          VueMacros({
-            plugins: {
-              vue: Vue(),
-              vueJsx: VueJsx(), // 如果需要
-            },
+          Icons({
+            //自动安装@iconify-json/xx
+            autoInstall: true,
+            compiler: 'vue3',
           }),
           Components({
             resolvers: [
@@ -40,9 +39,11 @@ export default defineConfig(() => {
               }),
             ],
           }),
-          Icons({
-            autoInstall: true,
-            compiler: 'vue3',
+          VueMacros({
+            plugins: {
+              vue: Vue(),
+              vueJsx: VueJsx(), // 如果需要
+            },
           }),
           UnoCSS(),
           lifecycle === 'report' ?
@@ -54,7 +55,7 @@ export default defineConfig(() => {
               open: true //如果存在本地服务端口，将在打包后自动展示
             }) : null,
           SlidePlugin(),
-          ['build', 'report'].includes(lifecycle) ? importToCDN({
+          ['build', 'report'].includes(lifecycle) ? cdn({
             modules: [
               {
                 name: 'vue',
@@ -71,7 +72,7 @@ export default defineConfig(() => {
                 var: 'axios',
                 path: 'https://2study.top/axios.min.js'
               },
-            ]
+            ],
           }) : null
         ],
         build: {

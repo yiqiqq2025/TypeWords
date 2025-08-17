@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import {inject, computed, defineProps} from 'vue'
+import {inject, computed} from 'vue'
 
 const props = defineProps({
   value: [String, Number, Boolean],
@@ -92,7 +92,7 @@ function onClick() {
       background-color: #409eff;
     }
 
-    .radio__label{
+    .radio__label {
       color: #409eff;
     }
 

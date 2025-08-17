@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import {Icon} from "@iconify/vue";
 import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
 
 defineEmits(['click'])
