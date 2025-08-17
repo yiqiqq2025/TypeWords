@@ -17,7 +17,7 @@ function pathResolve(dir: string) {
 }
 
 const lifecycle = process.env.npm_lifecycle_event;
-let isBuild = ['build', 'report'].includes(lifecycle)
+let isCdnBuild = ['build', 'report'].includes(lifecycle)
 
 // https://vitejs.dev/config/
 export default defineConfig(() => {
@@ -56,7 +56,7 @@ export default defineConfig(() => {
               open: true //如果存在本地服务端口，将在打包后自动展示
             }) : null,
           SlidePlugin(),
-          isBuild ? [
+          isCdnBuild ? [
             //这里不要用vite-plugin-cdn-import，他里面使用了rollup-plugin-external-globals插件，会导致自动加载components.d.ts里面的组件全部没引入，也不报错
             {
               name: 'inject-cdn-head',
@@ -80,11 +80,11 @@ export default defineConfig(() => {
         build: {
           rollupOptions: {
             // 因为已经把包复制过来了，里面的axios实例用的项目的，所以这行代码可以不要了
-            // external: isBuild ? ['axios'] : [],// 使用全局的 axios。因为百度翻译库内部用了0.19版本的axios，会被打包到代码里面
+            // external: isCdnBuild ? ['axios'] : [],// 使用全局的 axios。因为百度翻译库内部用了0.19版本的axios，会被打包到代码里面
             output: {
               manualChunks(id) {
-                if (id.includes('dialog')) {
-                  return 'dialog'
+                if (id.includes('node_modules/@iconify') || id.includes('~icons')) {
+                  return 'icons';
                 }
                 if (id.includes('utils')
                   || id.includes('hooks')
@@ -93,8 +93,10 @@ export default defineConfig(() => {
                 ) {
                   return 'utils'
                 }
-                if (id.includes('node_modules/@iconify') || id.includes('~icons')) {
-                  return 'icons';
+                if (!isCdnBuild) return
+                //不知为何不引入cdn之后，这里分包会报错
+                if (id.includes('dialog')) {
+                  return 'dialog'
                 }
               }
             }

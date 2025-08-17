@@ -7,7 +7,7 @@
     "dev": "vite",
     "test": "",
     "build": "vite build",
-    "build-local": "vite build",
+    "build-nocdn": "vite build",
     "build-tsc": "vue-tsc && vite build",
     "report": "vite build",
     "preview": "vite preview",

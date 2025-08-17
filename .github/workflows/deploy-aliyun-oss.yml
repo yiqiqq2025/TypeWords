@@ -38,14 +38,13 @@ jobs:
         run: pnpm install
 
       - name: Build
-        run: pnpm run build-nocdn
+        run: pnpm run build
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Upload dist repository
-          path: './dist'
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Deploy to OSS + Refresh CDN
+        run: pnpm run deploy-oss
+        env:
+          OSS_KEY_ID: ${{ secrets.OSS_KEY_ID }}
+          OSS_KEY_SECRET: ${{ secrets.OSS_KEY_SECRET }}
+          OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
+          OSS_REGION: ${{ secrets.OSS_REGION }}
+          CDN_DOMAIN: ${{ secrets.CDN_DOMAIN }}
