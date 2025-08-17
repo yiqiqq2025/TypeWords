@@ -62,8 +62,21 @@ async function uploadFilesWithClean(files, localBase = './dist', ignoreDirs = []
 
   // 2️⃣ 获取远端已有文件列表
   console.log('📄 获取远端文件列表...')
-  const remoteList = await client.list({prefix: ''}) // 返回 { name, size, ... } 数组
-  const remoteFiles = remoteList.map(f => f.name)
+  let remoteFiles = []
+  let marker = ''
+  do {
+    const result = await client.list({
+      prefix: '',
+      'max-keys': 1000,
+      marker,
+    })
+
+    if (result.objects) {
+      remoteFiles.push(...result.objects.map(f => f.name))
+    }
+
+    marker = result.nextMarker || ''
+  } while (marker)
 
   // 3️⃣ 上传文件
   const total = filteredFiles.length

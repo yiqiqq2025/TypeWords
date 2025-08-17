@@ -63,9 +63,9 @@ export default defineConfig(() => {
               enforce: 'pre',
               transformIndexHtml(html) {
                 const scripts = `
-<script src="https://2study.top/vue.global.prod.min.js" crossorigin="anonymous"></script>
-<script src="https://2study.top/vue-router.global.prod.min.js" crossorigin="anonymous"></script>
-<script src="https://2study.top/axios.min.js" crossorigin="anonymous"></script>
+<script src="https://2study.top/libs/vue.global.prod.min.js" crossorigin="anonymous"></script>
+<script src="https://2study.top/libs/vue-router.global.prod.min.js" crossorigin="anonymous"></script>
+<script src="https://2study.top/libs/axios.min.js" crossorigin="anonymous"></script>
 `
                 return html.replace('<head>', `<head>${scripts}`)
               },
