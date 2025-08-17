@@ -22,8 +22,8 @@
 
 ## 在线访问
 
-Github Pages: <https://2study.top>   
-Vercel: <https://vercel.2study.top>
+中国: <https://2study.top>   
+其他: <https://vercel.2study.top> or <https://tw.2study.top>
 
 ## 功能列表
 
