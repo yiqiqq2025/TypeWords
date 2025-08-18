@@ -208,7 +208,7 @@ defineRender(() => {
         {
           showBookDetail.value ? <div className="card mb-0 h-[95vh] flex flex-col">
                 <div class="flex justify-between items-center relative">
-                  <BackIcon class="z-2" onClick={() => router.back()}/>
+                  <BackIcon class="z-2" onClick={router.back}/>
                   <div class="absolute page-title text-align-center w-full">{runtimeStore.editDict.name}</div>
                   <div class="flex">
                     <BaseButton loading={studyLoading || loading} type="info"
