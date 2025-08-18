@@ -1,25 +1,27 @@
 <script setup lang="ts">
-import {ref, watch} from "vue";
-import {useSettingStore} from "@/stores/setting.ts";
-import {getAudioFileUrl, useChangeAllSound, usePlayAudio, useWatchAllSound} from "@/hooks/sound.ts";
-import {getShortcutKey, useEventListener} from "@/hooks/event.ts";
-import {checkAndUpgradeSaveDict, checkAndUpgradeSaveSetting, cloneDeep, shakeCommonDict} from "@/utils";
-import {DefaultShortcutKeyMap, ShortcutKey} from "@/types/types.ts";
+import { ref, watch } from "vue";
+import { useSettingStore } from "@/stores/setting.ts";
+import { getAudioFileUrl, useChangeAllSound, usePlayAudio, useWatchAllSound } from "@/hooks/sound.ts";
+import { getShortcutKey, useEventListener } from "@/hooks/event.ts";
+import { checkAndUpgradeSaveDict, checkAndUpgradeSaveSetting, cloneDeep, shakeCommonDict } from "@/utils";
+import { DefaultShortcutKeyMap, ShortcutKey } from "@/types/types.ts";
 import BaseButton from "@/components/BaseButton.vue";
-import {APP_NAME, EXPORT_DATA_KEY, SAVE_DICT_KEY, SAVE_SETTING_KEY, SoundFileOptions} from "@/utils/const.ts";
+import { APP_NAME, EXPORT_DATA_KEY, SAVE_DICT_KEY, SAVE_SETTING_KEY, SoundFileOptions } from "@/utils/const.ts";
 import VolumeIcon from "@/components/icon/VolumeIcon.vue";
-import {useBaseStore} from "@/stores/base.ts";
-import {saveAs} from "file-saver";
-import {GITHUB} from "@/config/ENV.ts";
+import { useBaseStore } from "@/stores/base.ts";
+import { saveAs } from "file-saver";
+import { GITHUB } from "@/config/ENV.ts";
 import dayjs from "dayjs";
 import BasePage from "@/pages/pc/components/BasePage.vue";
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
-import {Option, Select} from "@/pages/pc/components/base/select";
+import { Option, Select } from "@/pages/pc/components/base/select";
 import Switch from "@/pages/pc/components/base/Switch.vue";
 import Slider from "@/pages/pc/components/base/Slider.vue";
 import RadioGroup from "@/pages/pc/components/base/radio/RadioGroup.vue";
 import Radio from "@/pages/pc/components/base/radio/Radio.vue";
 import InputNumber from "@/pages/pc/components/base/InputNumber.vue";
+import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
+import { get, set } from "idb-keyval";
 
 const emit = defineEmits<{
   toggleDisabledDialogEscKey: [val: boolean]
@@ -77,7 +79,7 @@ function resetShortcutKeyMap() {
   Toast.success('恢复成功')
 }
 
-function exportData() {
+function exportData(notice = '导出成功！') {
   let data = {
     version: EXPORT_DATA_KEY.version,
     val: {
@@ -91,9 +93,9 @@ function exportData() {
       }
     }
   }
-  let blob = new Blob([JSON.stringify(data)], {type: "text/plain;charset=utf-8"});
+  let blob = new Blob([JSON.stringify(data)], { type: "text/plain;charset=utf-8" });
   saveAs(blob, `${APP_NAME}-User-Data-${dayjs().format('YYYY-MM-DD HH-mm-ss')}.json`);
-  Toast.success('导出成功！')
+  Toast.success(notice)
 }
 
 function importData(e) {
@@ -125,6 +127,27 @@ function importData(e) {
     }
   }
   reader.readAsText(file);
+}
+
+function importOldData() {
+  exportData('已为您自动保存当前数据！稍后将进行老数据导入操作')
+  setTimeout(() => {
+    let oldDataStr = localStorage.getItem('type-word-dict-v3')
+    if (oldDataStr) {
+      try {
+        let obj = JSON.parse(oldDataStr)
+        let data  = {
+          version: 3,
+          val: obj
+        }
+        let baseState = checkAndUpgradeSaveDict(data)
+        store.setState(baseState)
+        Toast.success('导入成功')
+      } catch (err) {
+        Toast.error('导入失败')
+      }
+    }
+  }, 1000)
 }
 </script>
 
@@ -283,9 +306,9 @@ function importData(e) {
               <div class="mini-row" v-if="settingStore.repeatCount === 100">
                 <label class="item-title">循环次数</label>
                 <InputNumber v-model="settingStore.repeatCustomCount"
-                               :min="6"
-                               :max="15"
-                               type="number"
+                             :min="6"
+                             :max="15"
+                             type="number"
                 />
               </div>
             </div>
@@ -429,6 +452,18 @@ function importData(e) {
               <input type="file"
                      accept="application/json"
                      @change="importData">
+            </div>
+          </div>
+          <div class="row">
+            <div class="main-title">老版本数据导入</div>
+          </div>
+          <div class="row">
+            <div class="import hvr-grow">
+              <PopConfirm
+                  title="导入老版本数据前，请先备份当前数据。确定要导入老版本数据吗？"
+                  @confirm="importOldData">
+                <BaseButton>老版本数据导入</BaseButton>
+              </PopConfirm>
             </div>
           </div>
         </div>
