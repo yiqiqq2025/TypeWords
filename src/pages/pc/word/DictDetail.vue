@@ -350,7 +350,7 @@ defineRender(() => {
               </div> :
               <div class="card mb-0 h-[95vh]">
                 <div class="flex justify-between items-center relative">
-                  <BackIcon class="z-2" onClick={() => isAdd ? router.back() : (isEdit = false)}/>
+                  <BackIcon class="z-2" onClick={isAdd ? router.back : (isEdit = false)}/>
                   <div class="absolute page-title text-align-center w-full">
                     {runtimeStore.editDict.id ? '修改' : '创建'}词典
                   </div>

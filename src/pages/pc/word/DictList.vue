@@ -77,7 +77,7 @@ const searchList = computed<any[]>(() => {
   <BasePage>
     <div class="card">
       <div class="flex items-center relative gap-2">
-        <BackIcon class="z-2" @Click='router.back()'/>
+        <BackIcon class="z-2" @click='router.back'/>
         <div class="flex flex-1 gap-4" v-if="showSearchInput">
           <Input prefix-icon placeholder="请输入词典名称/缩写/类别" v-model="searchKey" class="flex-1" autofocus/>
           <BaseButton @click="showSearchInput = false, searchKey = ''">取消</BaseButton>
