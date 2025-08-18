@@ -146,6 +146,8 @@ function importOldData() {
       } catch (err) {
         Toast.error('导入失败')
       }
+    } else {
+      Toast.error('导入失败！原因：本地无老数据备份')
     }
   }, 1000)
 }
