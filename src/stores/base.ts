@@ -77,8 +77,8 @@ export const useBaseStore = defineStore('base', {
     knownWords(): string[] {
       return this.known.words.map((v: Word) => v.word.toLowerCase())
     },
-    knownWordsWithSimpleWords() {
-      return this.known.words.map((v: Word) => v.word.toLowerCase()).concat(this.simpleWords)
+    allIgnoreWords() {
+      return this.known.words.map((v: Word) => v.word.toLowerCase()).concat(this.simpleWords.map((v: string) => v.toLowerCase()))
     },
     currentStudyWordDict(): Dict {
       if (this.word.studyIndex >= 0) {

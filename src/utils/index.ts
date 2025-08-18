@@ -587,3 +587,30 @@ export function groupBy<T extends Record<string, any>>(array: T[], key: string) 
     return result;
   }, {});
 }
+
+//随机取N个
+export function getRandomN(arr: any[], n: number) {
+  const copy = [...arr]
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]] // 交换
+  }
+  return copy.slice(0, n)
+}
+
+//数组分成N份
+export function splitIntoN(arr: any[], n: number) {
+  const result = []
+  const len = arr.length
+  const base = Math.floor(len / n)  // 每份至少这么多
+  let extra = len % n               // 前几份多 1 个
+
+  let index = 0
+  for (let i = 0; i < n; i++) {
+    const size = base + (extra > 0 ? 1 : 0)
+    result.push(arr.slice(index, index + size))
+    index += size
+    if (extra > 0) extra--
+  }
+  return result
+}

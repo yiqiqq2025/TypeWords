@@ -22,7 +22,6 @@ export interface SettingState {
   repeatCustomCount?: number,
   dictation: boolean,
   translate: boolean,
-  detail: boolean,
   showNearWord: boolean
   ignoreCase: boolean
   allowWordTip: boolean
@@ -36,16 +35,13 @@ export interface SettingState {
   showPanel: boolean,
   sideExpand: boolean,
   theme: string,
-  collapse: boolean,
-  chapterWordNumber: number,
   shortcutKeyMap: Record<string, string>,
   first: boolean
   firstTime: number
   load: boolean
   conflictNotice: boolean // 其他脚本/插件冲突提示
+  ignoreSimpleWord: boolean // 忽略简单词
 }
-
-export const DefaultChapterWordNumber = 30
 
 export const getDefaultSettingState = (): SettingState => ({
   showToolbar: true,
@@ -67,7 +63,6 @@ export const getDefaultSettingState = (): SettingState => ({
   repeatCustomCount: null,
   dictation: false,
   translate: true,
-  detail: false,
 
   showNearWord: true,
   ignoreCase: true,
@@ -80,13 +75,12 @@ export const getDefaultSettingState = (): SettingState => ({
   },
   waitTimeForChangeWord: 300,
   theme: 'auto',
-  collapse: false,
-  chapterWordNumber: DefaultChapterWordNumber,
   shortcutKeyMap: cloneDeep(DefaultShortcutKeyMap),
   first: true,
   firstTime: Date.now(),
   load: false,
-  conflictNotice: true
+  conflictNotice: true,
+  ignoreSimpleWord: false
 })
 
 export const useSettingStore = defineStore('setting', {

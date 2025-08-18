@@ -14,7 +14,7 @@ export const SAVE_DICT_KEY = {
 }
 export const SAVE_SETTING_KEY = {
     key: 'typing-word-setting',
-    version: 9
+    version: 10
 }
 export const EXPORT_DATA_KEY = {
     key: 'typing-word-export',

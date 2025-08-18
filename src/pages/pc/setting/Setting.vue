@@ -1,27 +1,30 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import { useSettingStore } from "@/stores/setting.ts";
-import { getAudioFileUrl, useChangeAllSound, usePlayAudio, useWatchAllSound } from "@/hooks/sound.ts";
-import { getShortcutKey, useEventListener } from "@/hooks/event.ts";
-import { checkAndUpgradeSaveDict, checkAndUpgradeSaveSetting, cloneDeep, shakeCommonDict } from "@/utils";
-import { DefaultShortcutKeyMap, ShortcutKey } from "@/types/types.ts";
+import {computed, ref, watch} from "vue";
+import {useSettingStore} from "@/stores/setting.ts";
+import {getAudioFileUrl, useChangeAllSound, usePlayAudio, useWatchAllSound} from "@/hooks/sound.ts";
+import {getShortcutKey, useEventListener} from "@/hooks/event.ts";
+import {checkAndUpgradeSaveDict, checkAndUpgradeSaveSetting, cloneDeep, shakeCommonDict} from "@/utils";
+import {DefaultShortcutKeyMap, ShortcutKey} from "@/types/types.ts";
 import BaseButton from "@/components/BaseButton.vue";
-import { APP_NAME, EXPORT_DATA_KEY, SAVE_DICT_KEY, SAVE_SETTING_KEY, SoundFileOptions } from "@/utils/const.ts";
+import {APP_NAME, EXPORT_DATA_KEY, SAVE_DICT_KEY, SAVE_SETTING_KEY, SoundFileOptions} from "@/utils/const.ts";
 import VolumeIcon from "@/components/icon/VolumeIcon.vue";
-import { useBaseStore } from "@/stores/base.ts";
-import { saveAs } from "file-saver";
-import { GITHUB } from "@/config/ENV.ts";
+import {useBaseStore} from "@/stores/base.ts";
+import {saveAs} from "file-saver";
+import {GITHUB} from "@/config/ENV.ts";
 import dayjs from "dayjs";
 import BasePage from "@/pages/pc/components/BasePage.vue";
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
-import { Option, Select } from "@/pages/pc/components/base/select";
+import {Option, Select} from "@/pages/pc/components/base/select";
 import Switch from "@/pages/pc/components/base/Switch.vue";
 import Slider from "@/pages/pc/components/base/Slider.vue";
 import RadioGroup from "@/pages/pc/components/base/radio/RadioGroup.vue";
 import Radio from "@/pages/pc/components/base/radio/Radio.vue";
 import InputNumber from "@/pages/pc/components/base/InputNumber.vue";
 import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
-import { get, set } from "idb-keyval";
+import {get, set} from "idb-keyval";
+import BaseInput from "@/pages/pc/components/base/BaseInput.vue";
+import Textarea from "@/pages/pc/components/base/Textarea.vue";
+import SettingItem from "@/pages/pc/setting/SettingItem.vue";
 
 const emit = defineEmits<{
   toggleDisabledDialogEscKey: [val: boolean]
@@ -32,7 +35,16 @@ const settingStore = useSettingStore()
 const store = useBaseStore()
 //@ts-ignore
 const gitLastCommitHash = ref(LATEST_COMMIT_HASH);
+const simpleWords = $computed({
+  get: () => store.simpleWords.join(','),
+  set: v => {
+    try {
+      store.simpleWords = v.split(',');
+    } catch (e) {
 
+    }
+  }
+})
 useWatchAllSound()
 
 let editShortcutKey = $ref('')
@@ -93,7 +105,7 @@ function exportData(notice = '导出成功！') {
       }
     }
   }
-  let blob = new Blob([JSON.stringify(data)], { type: "text/plain;charset=utf-8" });
+  let blob = new Blob([JSON.stringify(data)], {type: "text/plain;charset=utf-8"});
   saveAs(blob, `${APP_NAME}-User-Data-${dayjs().format('YYYY-MM-DD HH-mm-ss')}.json`);
   Toast.success(notice)
 }
@@ -117,8 +129,10 @@ function importData(e) {
         obj = JSON.parse(str)
         let data = obj.val
         let settingState = checkAndUpgradeSaveSetting(data.setting)
+        settingState.load = true
         settingStore.setState(settingState)
         let baseState = checkAndUpgradeSaveDict(data.dict)
+        baseState.load = true
         store.setState(baseState)
         Toast.success('导入成功！')
       } catch (err) {
@@ -136,7 +150,7 @@ function importOldData() {
     if (oldDataStr) {
       try {
         let obj = JSON.parse(oldDataStr)
-        let data  = {
+        let data = {
           version: 3,
           val: obj
         }
@@ -187,215 +201,151 @@ function importOldData() {
       <div class="content">
         <div class="page-title text-align-center">设置</div>
         <div v-if="tabIndex === 0">
-          <div class="row">
-            <label class="main-title">所有音效</label>
-            <div class="wrapper">
-              <Switch v-model="settingStore.allSound"
-                      @change="useChangeAllSound"
-                      active-text="开"
-                      inactive-text="关"
-              />
-            </div>
-          </div>
-          <div class="line"></div>
-          <div class="row">
-            <label class="item-title">单词/句子自动发音</label>
-            <div class="wrapper">
-              <Switch v-model="settingStore.wordSound"
-                      inline-prompt
-                      active-text="开"
-                      inactive-text="关"
-              />
-            </div>
-          </div>
-          <div class="row">
-            <label class="sub-title">单词/句子发音口音</label>
-            <div class="wrapper">
-              <Select v-model="settingStore.wordSoundType"
-                      placeholder="请选择"
-                      class="w-50!"
-              >
-                <Option label="美音" value="us"/>
-                <Option label="英音" value="uk"/>
-              </Select>
-            </div>
-          </div>
-          <div class="row">
-            <label class="sub-title">音量</label>
-            <div class="wrapper">
-              <Slider v-model="settingStore.wordSoundVolume"/>
-              <span>{{ settingStore.wordSoundVolume }}%</span>
-            </div>
-          </div>
-          <div class="row">
-            <label class="sub-title">倍速</label>
-            <div class="wrapper">
-              <Slider v-model="settingStore.wordSoundSpeed" :step="0.1" :min="0.5" :max="3"/>
-              <span>{{ settingStore.wordSoundSpeed }}</span>
-            </div>
-          </div>
-          <div class="line"></div>
-          <div class="row">
-            <label class="item-title">按键音</label>
-            <div class="wrapper">
-              <Switch v-model="settingStore.keyboardSound"
-                      inline-prompt
-                      active-text="开"
-                      inactive-text="关"
-              />
-            </div>
-          </div>
-          <div class="row">
-            <label class="item-title">按键音效</label>
-            <div class="wrapper">
-              <Select v-model="settingStore.keyboardSoundFile"
-                      placeholder="请选择"
-                      class="w-50!"
-              >
-                <Option
-                    v-for="item in SoundFileOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                >
-                  <div class="el-option-row">
-                    <span>{{ item.label }}</span>
-                    <VolumeIcon
-                        :time="100"
-                        @click="usePlayAudio(getAudioFileUrl(item.value)[0])"/>
-                  </div>
-                </Option>
-              </Select>
-            </div>
-          </div>
-          <div class="row">
-            <label class="sub-title">音量</label>
-            <div class="wrapper">
-              <Slider v-model="settingStore.keyboardSoundVolume"/>
-              <span>{{ settingStore.keyboardSoundVolume }}%</span>
-            </div>
-          </div>
-          <div class="line"></div>
-          <div class="row">
-            <label class="item-title">效果音（输入错误、完成时的音效）</label>
-            <div class="wrapper">
-              <Switch v-model="settingStore.effectSound"
-                      inline-prompt
-                      active-text="开"
-                      inactive-text="关"
-              />
-            </div>
-          </div>
-          <div class="row">
-            <label class="sub-title">音量</label>
-            <div class="wrapper">
-              <Slider v-model="settingStore.effectSoundVolume"/>
-              <span>{{ settingStore.effectSoundVolume }}%</span>
-            </div>
-          </div>
-        </div>
-        <div v-if="tabIndex === 1">
-          <div class="row">
-            <label class="item-title">单词循环设置</label>
-            <div class="wrapper">
-              <RadioGroup v-model="settingStore.repeatCount">
-                <Radio :value="1" size="default">1</Radio>
-                <Radio :value="2" size="default">2</Radio>
-                <Radio :value="3" size="default">3</Radio>
-                <Radio :value="5" size="default">5</Radio>
-                <Radio :value="100" size="default">自定义</Radio>
-              </RadioGroup>
-              <div class="mini-row" v-if="settingStore.repeatCount === 100">
-                <label class="item-title">循环次数</label>
-                <InputNumber v-model="settingStore.repeatCustomCount"
-                             :min="6"
-                             :max="15"
-                             type="number"
-                />
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <label class="item-title">显示上一个/下一个单词</label>
-            <div class="wrapper">
-              <Switch v-model="settingStore.showNearWord"
-                      inline-prompt
-                      active-text="开"
-                      inactive-text="关"
-              />
-            </div>
-          </div>
-          <div class="desc">
-            开启后，练习中会在上方显示上一个/下一个单词
-          </div>
-          <div class="line"></div>
-          <div class="row">
-            <label class="item-title">忽略大小写</label>
-            <div class="wrapper">
-              <Switch v-model="settingStore.ignoreCase"
-                      inline-prompt
-                      active-text="开"
-                      inactive-text="关"
-              />
-            </div>
-          </div>
-          <div class="desc">
-            开启后，输入时不区分大小写，如输入“hello”和“Hello”都会被认为是正确的
-          </div>
-          <div class="line"></div>
-          <div class="row">
-            <label class="item-title">允许默写模式下显示提示</label>
-            <div class="wrapper">
-              <Switch v-model="settingStore.allowWordTip"
-                      inline-prompt
-                      active-text="开"
-                      inactive-text="关"
-              />
-            </div>
-          </div>
-          <div class="desc">
-            开启后，可以通过鼠标 hover 单词或者按 {{ settingStore.shortcutKeyMap[ShortcutKey.ShowWord] }} 显示正确答案
-          </div>
-          <div class="line"></div>
-          <div class="row">
-            <label class="item-title">字体设置(仅可调整单词练习)</label>
-          </div>
-          <div class="row">
-            <label class="sub-title">外语字体</label>
-            <div class="wrapper">
-              <Slider
-                  :min="10"
-                  :max="100"
-                  v-model="settingStore.fontSize.wordForeignFontSize"/>
-              <span>{{ settingStore.fontSize.wordForeignFontSize }}</span>
-            </div>
-          </div>
-          <div class="row">
-            <label class="sub-title">中文字体</label>
-            <div class="wrapper">
-              <Slider
-                  :min="10"
-                  :max="100"
-                  v-model="settingStore.fontSize.wordTranslateFontSize"/>
-              <span>{{ settingStore.fontSize.wordTranslateFontSize }}</span>
-            </div>
-          </div>
+          <SettingItem mainTitle="所有音效">
+            <Switch v-model="settingStore.allSound" @change="useChangeAllSound"/>
+          </SettingItem>
 
           <div class="line"></div>
-          <div class="row">
-            <label class="item-title">其他设置</label>
-          </div>
-          <div class="row">
-            <label class="sub-title">切换下一个单词时间</label>
-            <div class="wrapper">
-              <InputNumber v-model="settingStore.waitTimeForChangeWord"
-                           :min="10"
-                           :max="100"
+          <SettingItem title="单词/句子自动发音">
+            <Switch v-model="settingStore.wordSound"/>
+          </SettingItem>
+          <SettingItem title="单词/句子发音口音">
+            <Select v-model="settingStore.wordSoundType"
+                    placeholder="请选择"
+                    class="w-50!"
+            >
+              <Option label="美音" value="us"/>
+              <Option label="英音" value="uk"/>
+            </Select>
+          </SettingItem>
+          <SettingItem title="音量">
+            <Slider v-model="settingStore.wordSoundVolume"/>
+            <span class="w-10 pl-5">{{ settingStore.wordSoundVolume }}%</span>
+          </SettingItem>
+          <SettingItem title="倍速">
+            <Slider v-model="settingStore.wordSoundSpeed" :step="0.1" :min="0.5" :max="3"/>
+            <span class="w-10 pl-5">{{ settingStore.wordSoundSpeed }}</span>
+          </SettingItem>
+
+          <div class="line"></div>
+          <SettingItem title="按键音">
+            <Switch v-model="settingStore.keyboardSound"/>
+          </SettingItem>
+          <SettingItem title="按键音效">
+            <Select v-model="settingStore.keyboardSoundFile"
+                    placeholder="请选择"
+                    class="w-50!"
+            >
+              <Option
+                  v-for="item in SoundFileOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+              >
+                <div class="flex justify-between items-center w-full">
+                  <span>{{ item.label }}</span>
+                  <VolumeIcon
+                      :time="100"
+                      @click="usePlayAudio(getAudioFileUrl(item.value)[0])"/>
+                </div>
+              </Option>
+            </Select>
+          </SettingItem>
+          <SettingItem title="音量">
+            <Slider v-model="settingStore.keyboardSoundVolume"/>
+            <span class="w-10 pl-5">{{ settingStore.keyboardSoundVolume }}%</span>
+          </SettingItem>
+
+          <div class="line"></div>
+          <SettingItem title="效果音（输入错误、完成时的音效）">
+            <Switch v-model="settingStore.effectSound"/>
+          </SettingItem>
+          <SettingItem title="音量">
+            <Slider v-model="settingStore.effectSoundVolume"/>
+            <span class="w-10 pl-5">{{ settingStore.effectSoundVolume }}%</span>
+          </SettingItem>
+        </div>
+        <div v-if="tabIndex === 1">
+          <SettingItem title="单词循环设置" class="gap-0!">
+            <RadioGroup v-model="settingStore.repeatCount">
+              <Radio :value="1" size="default">1</Radio>
+              <Radio :value="2" size="default">2</Radio>
+              <Radio :value="3" size="default">3</Radio>
+              <Radio :value="5" size="default">5</Radio>
+              <Radio :value="100" size="default">自定义</Radio>
+            </RadioGroup>
+            <div class="ml-2 center gap-space" v-if="settingStore.repeatCount === 100">
+              <span>循环次数</span>
+              <InputNumber v-model="settingStore.repeatCustomCount"
+                           :min="6"
+                           :max="15"
                            type="number"
               />
-              <span>毫秒</span>
             </div>
-          </div>
+          </SettingItem>
+
+          <SettingItem title="显示上一个/下一个单词"
+                       desc="开启后，练习中会在上方显示上一个/下一个单词"
+          >
+            <Switch v-model="settingStore.showNearWord"/>
+          </SettingItem>
+
+          <SettingItem title="忽略大小写"
+                       desc="开启后，输入时不区分大小写，如输入“hello”和“Hello”都会被认为是正确的"
+          >
+            <Switch v-model="settingStore.ignoreCase"/>
+          </SettingItem>
+
+          <SettingItem title="允许默写模式下显示提示"
+                       :desc="`开启后，可以通过鼠标 hover 单词或者按快捷键 ${settingStore.shortcutKeyMap[ShortcutKey.ShowWord]} 显示正确答案`"
+          >
+            <Switch v-model="settingStore.allowWordTip"/>
+          </SettingItem>
+
+          <div class="line"></div>
+          <SettingItem title="字体设置(仅可调整单词练习)"/>
+          <SettingItem title="外语字体">
+            <Slider
+                :min="10"
+                :max="100"
+                v-model="settingStore.fontSize.wordForeignFontSize"/>
+            <span class="w-10 pl-5">{{ settingStore.fontSize.wordForeignFontSize }}px</span>
+          </SettingItem>
+          <SettingItem title="中文字体">
+            <Slider
+                :min="10"
+                :max="100"
+                v-model="settingStore.fontSize.wordTranslateFontSize"/>
+            <span class="w-10 pl-5">{{ settingStore.fontSize.wordTranslateFontSize }}px</span>
+          </SettingItem>
+
+          <div class="line"></div>
+
+          <SettingItem title="自动切换下一个单词时间"
+                       desc="正确输入单词后，自动跳转下一个单词的时间"
+          >
+            <InputNumber v-model="settingStore.waitTimeForChangeWord"
+                         :min="10"
+                         :max="100"
+                         type="number"
+            />
+            <span class="ml-4">毫秒</span>
+          </SettingItem>
+
+          <div class="line"></div>
+          <SettingItem title="简单词过滤"
+                       desc="开启后，练习的单词中不会再出现简单词"
+          >
+            <Switch v-model="settingStore.ignoreSimpleWord"/>
+          </SettingItem>
+
+          <SettingItem title="简单词列表"
+                       class="items-start!"
+          >
+            <Textarea
+                placeholder="多个单词用英文逗号隔号"
+                v-model="simpleWords" :autosize="{minRows: 6, maxRows: 10}"/>
+          </SettingItem>
         </div>
         <div class="body" v-if="tabIndex === 2">
           <div class="row">
@@ -425,55 +375,35 @@ function importOldData() {
           </div>
         </div>
         <div v-if="tabIndex === 3">
-          <div class="row">
-            <div class="main-title">数据导出</div>
+          <div>
+            目前用户的所有数据(自定义设置、自定义词典、自定义文章、学习进度等)
+            <b class="text-red">仅保存在本地</b>。如果您需要在不同的设备、浏览器或者其他非官方部署上使用 {{ APP_NAME }}，
+            您需要手动进行数据同步和保存。
           </div>
-          <div class="row">
-            <label class="sub-title">
-              目前用户的所有数据(自定义设置、自定义词典、练习进度等)
-              <b>仅保存在本地</b>
-              。如果您需要在不同的设备、浏览器或者其他非官方部署上使用 {{ APP_NAME }}， 您需要手动进行数据同步和保存。
-            </label>
+          <BaseButton class="mt-3" @click="exportData()">导出数据</BaseButton>
+
+          <div class="line my-3"></div>
+
+          <div>请注意，导入数据后将<b class="text-red"> 完全覆盖 </b>当前所有数据(自定义设置、自定义词典、自定义文章、学习进度等)，请谨慎操作。
           </div>
-          <div class="row mt-2">
-            <BaseButton @click="exportData">数据导出</BaseButton>
-          </div>
-          <div class="row">
-            <div class="main-title">数据导入</div>
-          </div>
-          <div class="row">
-            <label class="sub-title">
-              请注意，导入数据将
-              <b style="color: red"> 完全覆盖 </b>
-              当前数据。请谨慎操作。
-            </label>
-          </div>
-          <div class="row">
+          <div class="flex gap-space mt-3">
             <div class="import hvr-grow">
-              <BaseButton>数据导入</BaseButton>
+              <BaseButton>导入数据</BaseButton>
               <input type="file"
                      accept="application/json"
                      @change="importData">
             </div>
-          </div>
-          <div class="row">
-            <div class="main-title">老版本数据导入</div>
-          </div>
-          <div class="row">
-            <div class="import hvr-grow">
-              <PopConfirm
-                  title="导入老版本数据前，请先备份当前数据。确定要导入老版本数据吗？"
-                  @confirm="importOldData">
-                <BaseButton>老版本数据导入</BaseButton>
-              </PopConfirm>
-            </div>
+            <PopConfirm
+                title="导入老版本数据前，请先备份当前数据，确定要导入老版本数据吗？"
+                @confirm="importOldData">
+              <BaseButton>老版本数据导入</BaseButton>
+            </PopConfirm>
           </div>
         </div>
-        <div v-if="tabIndex === 4" class="feedback-modal">
+        <div v-if="tabIndex === 4">
           <div>
             给我发Email：<a href="mailto:zyronon@163.com">zyronon@163.com</a>
           </div>
-          <p>or</p>
           <span>在<a :href="GITHUB" target="_blank"> Github </a>上给作者提一个
             <a :href="`${GITHUB}/issues`" target="_blank"> Issue </a>
             </span>
@@ -493,7 +423,6 @@ function importOldData() {
           <div class="text-md color-gray">
             Build {{ gitLastCommitHash }}
           </div>
-
         </div>
       </div>
     </div>
@@ -501,7 +430,9 @@ function importOldData() {
 </template>
 
 <style scoped lang="scss">
+
 .setting {
+  @apply text-lg;
   display: flex;
   color: var(--color-font-1);
 
@@ -533,7 +464,6 @@ function importOldData() {
         }
       }
     }
-
   }
 
   .content {
@@ -609,25 +539,9 @@ function importOldData() {
       overflow: auto;
     }
 
-    .desc {
-      margin-bottom: .6rem;
-      font-size: .8rem;
-    }
-
     .line {
       border-bottom: 1px solid #c4c3c3;
     }
-  }
-}
-
-.el-option-row {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  .icon-wrapper {
-    transform: translateX(10rem);
   }
 }
 
@@ -642,23 +556,4 @@ function importOldData() {
     opacity: 0;
   }
 }
-
-.feedback-modal {
-  //height: 80vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: var(--space);
-  //justify-content: center;
-  color: var(--color-font-1);
-
-  p {
-    font-size: 2.4rem;
-  }
-}
-
-.about {
-  text-align: center;
-}
-
 </style>

@@ -52,6 +52,7 @@ function onClick() {
   align-items: center;
   cursor: pointer;
   user-select: none;
+  flex-shrink: 0;
 
   &.is-disabled {
     cursor: not-allowed;

@@ -23,17 +23,15 @@
 <script setup lang="ts">
 import {ref, watch, computed, nextTick} from "vue"
 
-const props = defineProps({
-  modelValue: String,
-  placeholder: String,
-  maxlength: Number,
-  rows: {type: Number, default: 1},
-  autosize: {
-    type: [Boolean, Object] as () => boolean | { minRows?: number; maxRows?: number },
-    default: false
-  },
-  showWordLimit: Boolean
-})
+
+const props = defineProps<{
+  modelValue: string,
+  placeholder?: string,
+  maxlength?: number,
+  rows?: number,
+  autosize: boolean | { minRows?: number; maxRows?: number }
+  showWordLimit?: boolean
+}>()
 
 const emit = defineEmits(["update:modelValue"])
 
@@ -44,7 +42,7 @@ const textareaRef = ref<HTMLTextAreaElement>()
 
 // 样式（用于控制高度）
 const textareaStyle = computed(() => {
-  return props.autosize ? { height: "auto" } : {}
+  return props.autosize ? {height: "auto"} : {}
 })
 
 // 输入处理
@@ -64,7 +62,7 @@ const resizeTextarea = () => {
   let overflow = "hidden"
 
   if (typeof props.autosize === "object") {
-    const { minRows, maxRows } = props.autosize
+    const {minRows, maxRows} = props.autosize
     const lineHeight = 24 // 行高约等于 24px
     if (minRows) height = Math.max(height, minRows * lineHeight)
     if (maxRows) {
@@ -90,6 +88,7 @@ textarea {
   font-family: var(--font-family);
   color: var(--color-input-color);
   background: var(--color-input-bg);
+  @apply text-base;
 
   &:focus {
     outline: none;

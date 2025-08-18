@@ -30,7 +30,7 @@ watch(() => props.value, () => {}, { immediate: true });
 
 <template>
   <li
-    class="el-option"
+    class="option"
     :class="{
       'is-selected': isSelected,
       'is-disabled': disabled
@@ -38,13 +38,13 @@ watch(() => props.value, () => {}, { immediate: true });
     @click="handleClick"
   >
     <slot>
-      <span class="el-option__label">{{ label }}</span>
+      <span class="option__label">{{ label }}</span>
     </slot>
   </li>
 </template>
 
 <style scoped lang="scss">
-.el-option {
+.option {
   display: flex;
   align-items: center;
   padding: 0.2rem 1rem;

@@ -10,7 +10,7 @@ import StudyWord from "@/pages/pc/word/StudyWord.vue";
 import BookDetail from "@/pages/pc/article/BookDetail.vue";
 import DictList from "@/pages/pc/word/DictList.vue";
 import BookList from "@/pages/pc/article/BookList.vue";
-import Setting from "@/pages/pc/Setting.vue";
+import Setting from "@/pages/pc/setting/Setting.vue";
 
 export const routes: RouteRecordRaw[] = [
   {

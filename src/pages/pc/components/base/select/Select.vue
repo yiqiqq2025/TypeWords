@@ -150,16 +150,16 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-      class="custom-select"
+      class="select"
       v-bind="attrs"
       :class="{ 'is-disabled': disabled, 'is-active': isOpen, 'is-reverse': isReverse }"
       ref="selectRef"
   >
-    <div class="custom-select__wrapper" @click="toggleDropdown">
-      <div class="custom-select__label" :class="{ 'is-placeholder': !selectedOption }">
+    <div class="select__wrapper" @click="toggleDropdown">
+      <div class="select__label" :class="{ 'is-placeholder': !selectedOption }">
         {{ displayValue }}
       </div>
-      <div class="custom-select__suffix">
+      <div class="select__suffix">
         <IconMdiChevronDown
             :class="{ 'is-reverse': isOpen }"
             width="16"
@@ -170,17 +170,17 @@ onBeforeUnmount(() => {
     <teleport to="body">
       <transition :name="isReverse ? 'zoom-in-bottom' : 'zoom-in-top'" :key="isReverse ? 'bottom' : 'top'">
         <div
-            class="custom-select__dropdown"
+            class="select__dropdown"
             v-if="isOpen"
             ref="dropdownRef"
             :style="dropdownStyle"
         >
-          <ul class="custom-select__options">
+          <ul class="select__options">
             <li
                 v-if="options"
                 v-for="(option, index) in options"
                 :key="index"
-                class="custom-select__option"
+                class="select__option"
                 :class="{
             'is-selected': option.value === modelValue,
             'is-disabled': option.disabled
@@ -198,7 +198,7 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped lang="scss">
-.custom-select {
+.select {
   position: relative;
   width: 100%;
   font-size: 1rem;
@@ -243,7 +243,7 @@ onBeforeUnmount(() => {
   }
 }
 
-.custom-select__dropdown {
+.select__dropdown {
   max-height: 200px;
   overflow-y: auto;
   background-color: #fff;
@@ -252,13 +252,13 @@ onBeforeUnmount(() => {
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
-.custom-select__options {
+.select__options {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.custom-select__option {
+.select__option {
   padding: 0.5rem;
   cursor: pointer;
   transition: background-color 0.3s;

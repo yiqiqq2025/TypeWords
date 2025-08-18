@@ -160,7 +160,7 @@ function nextSentence() {
   input = wrong = ''
 
   //todo 计得把略过的单词加上统计里面去
-  // if (!store.knownWordsWithSimpleWords.includes(currentWord.word.toLowerCase()) && !currentWord.isSymbol) {
+  // if (!store.allIgnoreWords.includes(currentWord.word.toLowerCase()) && !currentWord.isSymbol) {
   //   statisticsStore.inputNumber++
   // }
 

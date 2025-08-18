@@ -1,15 +1,20 @@
 <script setup lang="ts">
 import {ref, computed, watch} from 'vue';
 
-const props = defineProps<{
+interface IProps {
   modelValue: boolean;
   disabled?: boolean;
   width?: number;       // 开关宽度，默认 40px
   activeText?: string;  // 开启状态显示文字
   inactiveText?: string;// 关闭状态显示文字
-}>();
+}
 
-const emit = defineEmits(['update:modelValue']);
+const props = withDefaults(defineProps<IProps>(), {
+  activeText: '开',
+  inactiveText: '关',
+})
+
+const emit = defineEmits(['update:modelValue', 'change']);
 
 const isChecked = ref(props.modelValue);
 
@@ -21,6 +26,7 @@ const toggle = () => {
   if (props.disabled) return;
   isChecked.value = !isChecked.value;
   emit('update:modelValue', isChecked.value);
+  emit('change', isChecked.value);
 };
 
 const onKeydown = (e: KeyboardEvent) => {
@@ -96,7 +102,6 @@ const ballSize = computed(() => switchHeight.value - 4);
     font-size: 0.75rem;
     color: #fff;
     user-select: none;
-    top: 0;
 
     &.left {
       margin-left: 6px;
