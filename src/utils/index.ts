@@ -111,7 +111,7 @@ export function checkAndUpgradeSaveDict(val: any) {
               let currentDictId = v.id
               let currentType = v.type
               delete v.type
-              if (['collect', 'simple', 'wrong'].includes(v.type)) {
+              if (['collect', 'simple', 'wrong'].includes(currentType)) {
                 formatWord(v)
                 delete v.id
                 delete v.name
