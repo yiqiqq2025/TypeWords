@@ -3,12 +3,15 @@
 </h1>
 
 <p align="center">
- <a href="docs/README.en.md">English</a> | <a href="README.md">简体中文</a> 
+ <a href="/docs/README.en.md">English</a> | <a href="/README.md">简体中文</a> 
 </p>
 
-<p align="center">
-  练习英语，一次敲击，一点进步；一个可以在网页上背单词、背文章的网站，
-</p> 
+<div align="center">
+Practice English, one strike, one step forward
+</div> 
+<div align="center">
+ A website where one can memorize words and articles on web pages
+</div> 
 
 <p align="center">
   <a href="https://github.com/zyronon/type-word/blob/master/LICENSE"><img src="https://img.shields.io/github/license/zyronon/type-word" alt="License"></a>
@@ -21,47 +24,54 @@
 <a href="https://trendshift.io/repositories/14139" target="_blank" class="trendshift-badge"><img src="https://trendshift.io/api/badge/repositories/14139" alt="TypeWords | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 </div>
 
-![image](/docs/word.png)
-![image](/docs/article.png)
+![image](/docs/word.png)![image](/docs/article.png)
 
-## 在线访问
+## Online visit
 
-中国: <https://2study.top>   
-其他: <https://vercel.2study.top> or <https://tw.2study.top>
+China:<https://2study.top>  
+other:<https://vercel.2study.top> or <https://tw.2study.top>
 
-## 功能列表
+## Feature list
 
-### 背单词
+### Memorize words
 
-根据记忆曲线自动计算学习单词，并通过默写加深记忆；提供了音标、发音（美音、英音）、例句、短语、近义词、同根词、词源、错误统计等功能
+Automatically calculate the learning words based on the memory curve, and deepen memory through dictation; it provides
+functions such as phonetic symbols, pronunciation (American, English), examples, phrases, synonyms, same root words,
+etymology, error statistics, etc.
 
-### 背文章
+### Memorize the article
 
-内置经典教材书籍，练习和背诵文章，逐句输入，自动发音。可以自行添加、导入文章，提供一键翻译、译文对照功能
+Built-in classic textbooks, practice and recite articles, enter sentence by sentence, and automatically pronounce it.
+You can add and import articles by yourself, providing one-click translation and translation comparison functions
 
-### 收藏、错词本、已掌握
+### Favorite, wrong word book, mastered
 
-学习单词时输入错误会自动添加到错词本，方便后续复习。也可以添加到已掌握，以后再遇到这个词会自动跳过，同时也可以将其添加到收藏中，以便巩固复习
+Incorrect input when learning words will be automatically added to the wrong word book for easier subsequent review. It
+can also be added to mastered, and will automatically skip this word when you encounter it later. It can also be added
+to your favorites to consolidate the review.
 
-### 词库
+### Thesaurus
 
-内置了常用的 CET-4 、CET-6 、GMAT 、GRE 、IELTS 、SAT 、TOEFL 、考研英语、专业四级英语、专业八级英语等词库。
-尽可能满足大部分用户对背单词的需求，也非常欢迎社区贡献更多的词库。
+It has built-in commonly used CET-4, CET-6, GMAT, GRE, IELTS, SAT, TOEFL, postgraduate entrance examination English,
+professional level 4 English, professional level 8 English and other thesis.
+It meets the needs of most users for memorizing words as much as possible, and it is also very welcome to contribute
+more vocabulary to the community.
 
-## 运行
+## run
 
-本项目是基于`Vue`开发的，需要 node 环境来运行。
+This project is based on`Vue`Developed, the node environment needs to be run.
 
-1. 安装 NodeJS，参考[官方文档](https://nodejs.org/en/download)
-2. 项目文件很大，推荐使用 `git clone --depth 1 https://github.com/zyronon/TypeWords.git` 命令只克隆最近一次提交。直接下载
-   Github 提供的 Download ZIP 功能是无法运行的
-3. 打开命令行，在项目根目录下，运行`npm install`来下载依赖。
-4. 执行`npm start`来启动项目，项目默认地址为[`http://localhost:3000`](http://localhost:3000)
-5. 在浏览器中打开[`http://localhost:3000`](http://localhost:3000)  来访问项目。
+1. Install NodeJS, refer to [Official Documentation](https://nodejs.org/en/download)
+2. The project file is large, recommended`git clone --depth 1 https://github.com/zyronon/TypeWords.git` The command
+   clons only the last commit. Download directly
+   The Download ZIP function provided by Github cannot run
+3. Open the command line, run it in the project root directory`npm install`Come download the dependency.
+4. implement`npm start`To start the project, the default address of the project is[
+   `http://localhost:3000`](http://localhost:3000)
+5. Open in a browser[`http://localhost:3000`](http://localhost:3000)Come to visit the project.
 
-## 功能与建议
+## Features and suggestions
 
-目前项目处于开发初期，新功能正在持续添加中，如果你对软件有任何功能与建议，欢迎在 `Issues` 中提出
-如果你也喜欢本软件的设计思想，欢迎提交 `pr`，非常感谢你对我们的支持！
- 
- 
+The project is currently in the early stage of development and new functions are being added. If you have any functions
+and suggestions for the software, please feel free to`Issues`Proposed in
+If you also like the design ideas of this software, please submit it`pr`Thank you very much for your support!
