@@ -3,18 +3,20 @@
 import {Article, Sentence, TranslateEngine} from "@/types/types.ts";
 import BaseButton from "@/components/BaseButton.vue";
 import EditAbleText from "@/pages/pc/components/EditAbleText.vue";
-import {Icon} from "@iconify/vue";
 import {getNetworkTranslate, getSentenceAllText, getSentenceAllTranslateText} from "@/hooks/translate.ts";
 import {genArticleSectionData, splitCNArticle2, splitEnArticle2, usePlaySentenceAudio} from "@/hooks/article.ts";
 import {_nextTick, _parseLRC, cloneDeep, last} from "@/utils";
-import {watch} from "vue";
+import {defineAsyncComponent, watch} from "vue";
 import Empty from "@/components/Empty.vue";
-import {ElInputNumber, ElMessage, ElOption, ElPopover, ElSelect, ElUpload, UploadProps} from "element-plus";
+import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import * as Comparison from "string-comparison"
 import BaseIcon from "@/components/BaseIcon.vue";
-import Dialog from "@/pages/pc/components/dialog/Dialog.vue";
 import {getDefaultArticle} from "@/types/func.ts";
 import copy from "copy-to-clipboard";
+import {Option, Select} from "@/pages/pc/components/base/select";
+import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
+import InputNumber from "@/pages/pc/components/base/InputNumber.vue";
+const Dialog = defineAsyncComponent(() => import('@/pages/pc/components/dialog/Dialog.vue'))
 
 interface IProps {
   article?: Article,
@@ -36,8 +38,8 @@ let progress = $ref(0)
 let failCount = $ref(0)
 let textareaRef = $ref<HTMLTextAreaElement>()
 const TranslateEngineOptions = [
-  {value: 'baidu', label: '百度'},
   {value: 'youdao', label: '有道'},
+  {value: 'baidu', label: '百度'},
 ]
 
 let editArticle = $ref<Article>(getDefaultArticle())
@@ -62,7 +64,7 @@ function apply(isHandle: boolean = true) {
     // text = `While it is yet to be seen what direction the second Trump administration will take globally in its China policy, VOA traveled to the main island of Mahe in Seychelles to look at how China and the U.S. have impacted the country, and how each is fairing in that competition for influence there.`
     // text = "It was Sunday. I never get up early on Sundays. I sometimes stay in bed until lunchtime. Last Sunday I got up very late. I looked out of the window. It was dark outside. 'What a day!' I thought. 'It's raining again.' Just then, the telephone rang. It was my aunt Lucy. 'I've just arrived by train,' she said. 'I'm coming to see you.'\n\n     'But I'm still having breakfast,' I said.\n\n     'What are you doing?' she asked.\n\n     'I'm having breakfast,' I repeated.\n\n     'Dear me,' she said. 'Do you always get up so late? It's one o'clock!'"
     editArticle.sections = []
-    ElMessage.error('请填写原文！')
+    Toast.error('请填写原文！')
     return
   }
   failCount = genArticleSectionData(editArticle)
@@ -91,10 +93,10 @@ function splitTranslateText() {
 //TODO
 async function startNetworkTranslate() {
   if (!editArticle.title.trim()) {
-    return ElMessage.error('请填写标题！')
+    return Toast.error('请填写标题！')
   }
   if (!editArticle.text.trim()) {
-    return ElMessage.error('请填写正文！')
+    return Toast.error('请填写正文！')
   }
   apply()
   //注意！！！
@@ -132,11 +134,11 @@ function save(option: 'save' | 'saveAndNext') {
     editArticle.textTranslate = editArticle.textTranslate.trim()
 
     if (!editArticle.title) {
-      ElMessage.error('请填写标题！')
+      Toast.error('请填写标题！')
       return resolve(false)
     }
     if (!editArticle.text) {
-      ElMessage.error('请填写正文！')
+      Toast.error('请填写正文！')
       return resolve(false)
     }
 
@@ -155,10 +157,11 @@ function save(option: 'save' | 'saveAndNext') {
 //不知道为什么直接用editArticle，取到是空的默认值
 defineExpose({save, getEditArticle: () => cloneDeep(editArticle)})
 
-const handleChange: UploadProps['onChange'] = (uploadFile, uploadFiles) => {
-  console.log(uploadFile)
+function handleChange(e: any) {
+  let uploadFile = e.target?.files?.[0]
+  if (!uploadFile) return
   let reader = new FileReader();
-  reader.readAsText(uploadFile.raw, 'UTF-8');
+  reader.readAsText(uploadFile, 'UTF-8');
   reader.onload = function (e) {
     let lrc: string = e.target.result as string;
     console.log(lrc)
@@ -290,25 +293,23 @@ function setStartTime(val: Sentence, i: number, j: number) {
       >
             </textarea>
       <div class="justify-end items-center flex">
-        <ElPopover
-            class="box-item"
-            title="使用方法"
-            placement="top"
-            :width="400"
-        >
-          <ol class="py-0 pl-5 my-0 text-base color-main">
-            <li>复制原文，然后分句</li>
-            <li>点击 <span class="color-red font-bold">分句</span> 按钮进行自动分句<span
-                class="color-red font-bold"> 或</span> 手动编辑分句
-            </li>
-            <li>分句规则：一行一句，段落间空一行</li>
-            <li>修改完成后点击 <span class="color-red font-bold">应用</span> 按钮同步到左侧结果栏
-            </li>
-          </ol>
+        <Tooltip>
+          <IconRiQuestionLine class="mr-3" width="20"/>
           <template #reference>
-            <Icon icon="ri:question-line" class="mr-3" width="20"/>
+            <div>
+              <div class="mb-2">使用方法</div>
+              <ol class="py-0 pl-5 my-0 text-base color-main">
+                <li>复制原文，然后分句</li>
+                <li>点击 <span class="color-red font-bold">分句</span> 按钮进行自动分句<span
+                    class="color-red font-bold"> 或</span> 手动编辑分句
+                </li>
+                <li>分句规则：一行一句，段落间空一行</li>
+                <li>修改完成后点击 <span class="color-red font-bold">应用</span> 按钮同步到左侧结果栏
+                </li>
+              </ol>
+            </div>
           </template>
-        </ElPopover>
+        </Tooltip>
         <BaseButton @click="splitText">分句</BaseButton>
         <BaseButton @click="apply()">应用</BaseButton>
       </div>
@@ -342,37 +343,36 @@ function setStartTime(val: Sentence, i: number, j: number) {
           <BaseButton @click="startNetworkTranslate"
                       :loading="progress!==0 && progress !== 100">翻译
           </BaseButton>
-          <ElSelect v-model="networkTranslateEngine"
+          <Select v-model="networkTranslateEngine"
           >
-            <ElOption
+            <Option
                 v-for="item in TranslateEngineOptions"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
             />
-          </ElSelect>
+          </Select>
           {{ progress }}%
         </div>
         <div class="flex items-center">
-          <ElPopover
-              class="box-item"
-              title="使用方法"
-              placement="top"
-              :width="400"
-          >
-            <ol class="py-0 pl-5 my-0 text-base color-black/60">
-              <li>复制译文，如果没有请点击 <span class="color-red font-bold">翻译</span> 按钮</li>
-              <li>点击 <span class="color-red font-bold">分句</span> 按钮进行自动分句<span class="color-red font-bold"> 或</span>
-                手动编辑分句
-              </li>
-              <li>分句规则：一行一句，段落间空一行</li>
-              <li>修改完成后点击 <span class="color-red font-bold">应用</span> 按钮同步到左侧结果栏
-              </li>
-            </ol>
+          <Tooltip>
+            <IconRiQuestionLine class="mr-3" width="20"/>
             <template #reference>
-              <Icon icon="ri:question-line" class="mr-3" width="20"/>
+              <div>
+                <div class="mb-2">使用方法</div>
+                <ol class="py-0 pl-5 my-0 text-base color-black/60">
+                  <li>复制译文，如果没有请点击 <span class="color-red font-bold">翻译</span> 按钮</li>
+                  <li>点击 <span class="color-red font-bold">分句</span> 按钮进行自动分句<span
+                      class="color-red font-bold"> 或</span>
+                    手动编辑分句
+                  </li>
+                  <li>分句规则：一行一句，段落间空一行</li>
+                  <li>修改完成后点击 <span class="color-red font-bold">应用</span> 按钮同步到左侧结果栏
+                  </li>
+                </ol>
+              </div>
             </template>
-          </ElPopover>
+          </Tooltip>
           <BaseButton @click="splitTranslateText">分句</BaseButton>
           <BaseButton @click="apply(true)">应用</BaseButton>
         </div>
@@ -383,14 +383,12 @@ function setStartTime(val: Sentence, i: number, j: number) {
       <div class="center">正文、译文与结果均可编辑，编辑后点击应用按钮会自动同步</div>
       <div class="flex gap-2">
         <BaseButton>添加音频</BaseButton>
-        <ElUpload
-            class="upload-demo"
-            :limit="1"
-            :on-change="handleChange"
-            :auto-upload="false"
-        >
+        <div class="upload relative">
           <BaseButton>添加音频LRC文件</BaseButton>
-        </ElUpload>
+          <input type="file"
+                 @change="handleChange"
+                 class="w-full h-full absolute left-0 top-0 opacity-0"/>
+        </div>
         <audio ref="audioRef" :src="editArticle.audioSrc" controls></audio>
       </div>
       <template v-if="editArticle?.sections?.length">
@@ -422,9 +420,11 @@ function setStartTime(val: Sentence, i: number, j: number) {
                       <div>{{ sentence.audioPosition?.[0] ?? 0 }}s</div>
                       <BaseIcon
                           @click="setStartTime(sentence,indexI,indexJ)"
-                          :icon="indexI === 0 && indexJ === 0 ?'ic:sharp-my-location':'twemoji:end-arrow'"
                           :title="indexI === 0 && indexJ === 0 ?'设置开始时间':'使用前一句的结束时间'"
-                      />
+                      >
+                        <IconIcSharpMyLocation v-if="indexI === 0 && indexJ === 0"/>
+                        <IconTwemojiEndArrow v-else/>
+                      </BaseIcon>
                     </div>
                     <div>-</div>
                     <div class="flex flex-col items-center justify-center">
@@ -433,15 +433,21 @@ function setStartTime(val: Sentence, i: number, j: number) {
                       <BaseIcon
                           @click="sentence.audioPosition[1] = Number(Number(audioRef.currentTime).toFixed(2))"
                           title="设置结束时间"
-                          icon="ic:sharp-my-location"
-                      />
+                      >
+                        <IconIcSharpMyLocation/>
+                      </BaseIcon>
                     </div>
                   </div>
                   <div class="flex flex-col">
                     <BaseIcon :icon="sentence.audioPosition?.length ? 'basil:edit-outline' : 'basil:add-outline'"
-                              @click="handleShowEditAudioDialog(sentence,indexI,indexJ)"/>
-                    <BaseIcon v-if="sentence.audioPosition?.length" icon="hugeicons:play"
-                              @click="playSentenceAudio(sentence,audioRef,editArticle)"/>
+                               @click="handleShowEditAudioDialog(sentence,indexI,indexJ)">
+                      <IconBasilEditOutline v-if="sentence.audioPosition?.length"/>
+                      <IconBasilAddOutline v-else/>
+                    </BaseIcon>
+                    <BaseIcon v-if="sentence.audioPosition?.length"
+                              @click="playSentenceAudio(sentence,audioRef,editArticle)">
+                      <IconHugeiconsPlay/>
+                    </BaseIcon>
                   </div>
                 </div>
               </div>
@@ -452,11 +458,11 @@ function setStartTime(val: Sentence, i: number, j: number) {
           <div class="status">
             <span>状态：</span>
             <div class="warning" v-if="failCount">
-              <Icon icon="typcn:warning-outline"/>
+              <IconTypcnWarningOutline/>
               共有{{ failCount }}句没有翻译！
             </div>
             <div class="success" v-else>
-              <Icon icon="mdi:success-circle-outline"/>
+              <IconMdiSuccessCircleOutline/>
               翻译完成！
             </div>
           </div>
@@ -488,9 +494,11 @@ function setStartTime(val: Sentence, i: number, j: number) {
               <span v-if="editSentence.audioPosition?.[1] !== -1"> - {{ editSentence.audioPosition?.[1] }}s</span>
               <span v-else> - 结束</span>
             </div>
-            <BaseIcon icon="hugeicons:play"
+            <BaseIcon
                       title="试听"
-                      @click="playSentenceAudio(editSentence,sentenceAudioRef,editArticle)"/>
+                      @click="playSentenceAudio(editSentence,sentenceAudioRef,editArticle)">
+              <IconHugeiconsPlay/>
+            </BaseIcon>
           </div>
         </div>
         <div class="flex flex-col gap-2">
@@ -498,21 +506,19 @@ function setStartTime(val: Sentence, i: number, j: number) {
             <div>开始时间：</div>
             <div class="flex justify-between flex-1">
               <div class="flex items-center gap-2">
-                <ElInputNumber v-model="editSentence.audioPosition[0]" :precision="2" :step="0.1">
-                  <template #suffix>
-                    <span>s</span>
-                  </template>
-                </ElInputNumber>
+                <InputNumber v-model="editSentence.audioPosition[0]" :precision="2" :step="0.1"/>
                 <BaseIcon
                     @click="jumpAudio(editSentence.audioPosition[0])"
                     title="跳转"
-                    icon="ic:sharp-my-location"
-                />
+                >
+                  <IconIcSharpMyLocation/>
+                </BaseIcon>
                 <BaseIcon
                     @click="setPreEndTimeToCurrentStartTime"
                     title="使用前一句的结束时间"
-                    icon="twemoji:end-arrow"
-                />
+                >
+                  <IconTwemojiEndArrow/>
+                </BaseIcon>
               </div>
               <BaseButton @click="recordStart">记录</BaseButton>
             </div>
@@ -521,11 +527,7 @@ function setStartTime(val: Sentence, i: number, j: number) {
             <div>结束时间：</div>
             <div class="flex justify-between flex-1">
               <div class="flex items-center gap-2">
-                <ElInputNumber v-model="editSentence.audioPosition[1]" :precision="2" :step="0.1">
-                  <template #suffix>
-                    <span>s</span>
-                  </template>
-                </ElInputNumber>
+                <InputNumber v-model="editSentence.audioPosition[1]" :precision="2" :step="0.1"/>
                 <span>或</span>
                 <BaseButton size="small" @click="editSentence.audioPosition[1] = -1">结束</BaseButton>
               </div>

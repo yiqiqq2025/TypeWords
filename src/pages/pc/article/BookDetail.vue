@@ -52,10 +52,10 @@ async function init() {
     runtimeStore.editDict = getDefaultDict()
   } else {
     if (!runtimeStore.editDict.id) {
-      await router.push("/article")
+      await router.push("/articles")
     } else {
-      if (!runtimeStore.editDict.articles.length
-          && !runtimeStore.editDict.custom
+      if (!runtimeStore.editDict?.articles?.length
+          && !runtimeStore.editDict?.custom
           && ![DictId.articleCollect].includes(runtimeStore.editDict.id)
       ) {
         loading = true
@@ -66,6 +66,7 @@ async function init() {
       if (runtimeStore.editDict.articles.length) {
         selectArticle = runtimeStore.editDict.articles[0]
       }
+      console.log('runtimeStore.editDict',runtimeStore.editDict)
     }
   }
 }
@@ -91,9 +92,9 @@ const {
         <BackIcon class="z-2" @click="$router.back"/>
         <div class="absolute text-2xl text-align-center w-full">{{ runtimeStore.editDict.name }}</div>
         <div class="flex">
-          <BaseButton type="info" @click="isEdit = true">编辑</BaseButton>
+          <BaseButton :loading="studyLoading||loading" type="info" @click="isEdit = true">编辑</BaseButton>
           <BaseButton type="info" @click="router.push('batch-edit-article')">文章管理</BaseButton>
-          <BaseButton :loading="studyLoading" @click="addMyStudyList">学习</BaseButton>
+          <BaseButton :loading="studyLoading||loading" @click="addMyStudyList">学习</BaseButton>
         </div>
       </div>
       <div class="text-lg  ">介绍：{{ runtimeStore.editDict.description }}</div>
@@ -109,15 +110,12 @@ const {
               :active-id="selectArticle.id">
             <template v-slot:suffix="{item,index}">
               <BaseIcon
-                  v-if="!isArticleCollect(item)"
-                  class="collect"
-                  @click="toggleArticleCollect(item)"
-                  title="收藏" icon="ph:star"/>
-              <BaseIcon
-                  v-else
-                  class="fill"
-                  @click="toggleArticleCollect(item)"
-                  title="取消收藏" icon="ph:star-fill"/>
+                  :class="!isArticleCollect(item)?'collect':'fill'"
+                  @click.stop="toggleArticleCollect(item)"
+                  :title="!isArticleCollect(item) ? '收藏' : '取消收藏'">
+                <IconPhStar v-if="!isArticleCollect(item)"/>
+                <IconPhStarFill v-else/>
+              </BaseIcon>
             </template>
           </ArticleList>
           <Empty v-else/>
@@ -148,7 +146,7 @@ const {
 
     <div class="card mb-0 h-[95vh]" v-else>
       <div class="flex justify-between items-center relative">
-        <BackIcon class="z-2" @click="isAdd ? $router.back():(isEdit = false)"/>
+        <BackIcon class="z-2" @click="isAdd ? $router.back:(isEdit = false)"/>
         <div class="absolute text-2xl text-align-center w-full">{{ runtimeStore.editDict.id ? '修改' : '创建' }}书籍
         </div>
       </div>

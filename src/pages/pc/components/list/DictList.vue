@@ -18,7 +18,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="grid grid-cols-6 gap-4 ">
+  <div class="flex gap-4 flex-wrap">
     <Book v-for="(dict,index) in list"
           :is-add="false"
           @click="emit('selectDict',{dict,index})"

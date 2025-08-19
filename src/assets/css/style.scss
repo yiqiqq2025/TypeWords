@@ -17,15 +17,17 @@
 
   --practice-wrapper-translateX: 1px;
   --article-width: 50vw;
+  --article-toolbar-width: 50rem;
   --toolbar-width: 50rem;
   --panel-width: 24rem;
   --space: 1rem;
-  --stat-gap: 2rem;
+  --stat-gap: 1rem;
   --shadow: rgba(0, 0, 0, 0.08) 0px 4px 12px;
   --panel-margin-left: calc(50% + var(--toolbar-width) / 2 + 1rem);
   --article-panel-margin-left: calc(50% + var(--article-width) / 2 + 1rem);
-  --anim-time: 0.3s;
+  --anim-time: 0.5s;
 
+  --color-input-color: black;
   --color-input-bg: white;
   --color-input-border: #bfbfbf;
   --color-input-icon: #d3d4d7;
@@ -60,12 +62,12 @@
 
 
   //修改element-ui的进度条底色
-  --el-border-color-lighter: #d1d5df !important;
+  --color-progress-bar: #d1d5df !important;
 }
 
 .footer {
   &.hide {
-    --el-border-color-lighter: #dbdbdb !important;
+    --color-progress-bar: #dbdbdb !important;
   }
 }
 
@@ -97,22 +99,23 @@ html.dark {
 
   --btn-info: transparent;
 
+  --color-input-color:white;
   --color-input-bg: rgba(14, 18, 23, 1);
   --color-input-icon: #383737;
 
   --color-textarea-bg: rgb(43, 45, 48);
   --color-article: white;
 
-  --el-border-color-lighter: rgb(73, 77, 82) !important;
+  --color-progress-bar: rgb(73, 77, 82) !important;
 
   .footer {
     &.hide {
-      --el-border-color-lighter: var(--color-third) !important;
+      --color-progress-bar: var(--color-third) !important;
     }
   }
 }
 
-@media (max-width: 1680px) {
+@media (max-width: 1720px) {
   :root {
     --toolbar-width: 50vw;
     --article-width: 50vw;
@@ -161,6 +164,7 @@ html, body {
   overflow-x: hidden;
   color: var(--color-main-text);
   font-family: var(--font-family);
+  background: var(--color-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -406,8 +410,8 @@ a {
   background: var(--color-second);
 }
 
-.center {
-  @apply flex justify-center items-center;
+.inline-center {
+  @apply inline-flex justify-center items-center;
 }
 
 .title {
@@ -416,7 +420,10 @@ a {
 
 .book {
   @extend .anim;
-  @apply p-4 rounded-md relative cursor-pointer h-40 bg-third hover:bg-card-active flex flex-col justify-between;
+  @apply p-4 rounded-md relative cursor-pointer bg-third hover:bg-card-active flex flex-col justify-between shrink-0;
+  $w: 6rem;
+  width: $w;
+  height: calc($w * 1.4);
 }
 
 .line {

@@ -8,13 +8,11 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    BackIcon: typeof import('./src/components/icon/BackIcon.vue')['default']
     BaseButton: typeof import('./src/components/BaseButton.vue')['default']
     BaseIcon: typeof import('./src/components/BaseIcon.vue')['default']
     Close: typeof import('./src/components/icon/Close.vue')['default']
     DeleteIcon: typeof import('./src/components/icon/DeleteIcon.vue')['default']
     Empty: typeof import('./src/components/Empty.vue')['default']
-    HostNotice: typeof import('./src/components/HostNotice.vue')['default']
     IconBasilAddOutline: typeof import('~icons/basil/add-outline')['default']
     IconBasilEditOutline: typeof import('~icons/basil/edit-outline')['default']
     IconBiArrowLeft: typeof import('~icons/bi/arrow-left')['default']
@@ -25,9 +23,11 @@ declare module 'vue' {
     IconBxVolumeFull: typeof import('~icons/bx/volume-full')['default']
     IconBxVolumeLow: typeof import('~icons/bx/volume-low')['default']
     IconCarbonCloseOutline: typeof import('~icons/carbon/close-outline')['default']
+    IconCarbonMove: typeof import('~icons/carbon/move')['default']
     IconEosIconsLoading: typeof import('~icons/eos-icons/loading')['default']
     IconEpMoon: typeof import('~icons/ep/moon')['default']
     IconFluentAdd20Filled: typeof import('~icons/fluent/add20-filled')['default']
+    IconFluentDelete24Regular: typeof import('~icons/fluent/delete24-regular')['default']
     IconFluentReplay16Filled: typeof import('~icons/fluent/replay16-filled')['default']
     IconFluentSearch24Regular: typeof import('~icons/fluent/search24-regular')['default']
     IconFormkitLeft: typeof import('~icons/formkit/left')['default']

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 
-import {Icon} from "@iconify/vue";
 import Close from "@/components/icon/Close.vue";
 import {useDisableEventListener, useWindowClick} from "@/hooks/event.ts";
 
@@ -8,6 +7,7 @@ defineProps<{
   modelValue: string
   placeholder?: string
   autofocus?: boolean
+  prefixIcon?: boolean
 }>()
 
 defineEmits(['update:modelValue'])
@@ -36,7 +36,8 @@ const vFocus = {
        :class="{focus}"
        ref="inputEl"
   >
-    <Icon icon="fluent:search-24-regular"
+    <IconFluentSearch24Regular
+          v-if="prefixIcon"
           width="20"/>
     <input type="text"
            :value="modelValue"
@@ -61,7 +62,6 @@ const vFocus = {
   transition: all .3s;
   display: flex;
   align-items: center;
-  transition: all .3s;
   background: var(--color-input-bg);
 
   :deep(svg) {

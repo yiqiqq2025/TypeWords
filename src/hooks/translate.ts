@@ -1,13 +1,13 @@
 import {Article, Sentence, TranslateEngine} from "@/types/types.ts";
-import Baidu from "@opentranslate/baidu";
-import {Translator} from "@opentranslate/translator/src/translator.ts";
+import Baidu from "@/libs/translate/baidu";
+import {Translator} from "@/libs/translate/translator/index.ts";
 
 export function getSentenceAllTranslateText(article: Article) {
-  return article.sections.map(v => v.map(s => s.translate.trim()).filter(v=>v).join(' \n')).filter(v=>v).join(' \n\n');
+  return article.sections.map(v => v.map(s => s.translate.trim()).filter(v => v).join(' \n')).filter(v => v).join(' \n\n');
 }
 
 export function getSentenceAllText(article: Article) {
-  return article.sections.map(v => v.map(s => s.text.trim()).filter(v=>v).join(' \n')).filter(v=>v).join(' \n\n');
+  return article.sections.map(v => v.map(s => s.text.trim()).filter(v => v).join(' \n')).filter(v => v).join(' \n\n');
 }
 
 /***
@@ -48,6 +48,8 @@ export async function getNetworkTranslate(
     const translate = async (sentence: Sentence) => {
       try {
         let r = await translator.translate(sentence.text, 'en', 'zh-CN')
+        console.log(r)
+
         if (r) {
           const cb = () => {
             sentence.translate = r.trans.paragraphs[0]

@@ -7,14 +7,14 @@ import {useBaseStore} from "@/stores/base.ts";
 
 import List from "@/pages/pc/components/list/List.vue";
 import {emitter, EventKey} from "@/utils/eventBus.ts";
-import {useDisableEventListener, useWindowClick} from "@/hooks/event.ts";
+import {useWindowClick} from "@/hooks/event.ts";
 import {MessageBox} from "@/utils/MessageBox.tsx";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 import {nanoid} from "nanoid";
 import EditArticle from "@/pages/pc/article/components/EditArticle.vue";
-import BaseIcon from "@/components/BaseIcon.vue";
-import {ElMessage} from "element-plus";
+import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import {getDefaultArticle} from "@/types/func.ts";
+import BackIcon from "@/pages/pc/components/BackIcon.vue";
 
 const emit = defineEmits<{
   importData: [val: Event]
@@ -41,8 +41,6 @@ onMounted(() => {
 onUnmounted(() => {
   emitter.off(EventKey.openArticleListModal)
 })
-
-useDisableEventListener(() => show)
 
 async function selectArticle(item: Article) {
   let r = await checkDataChange()
@@ -111,7 +109,7 @@ function saveArticle(val: Article): boolean {
   } else {
     let has = runtimeStore.editDict.articles.find((item: Article) => item.title === val.title)
     if (has) {
-      ElMessage.error('已存在同名文章！')
+      Toast.error('已存在同名文章！')
       return false
     }
     val.id = nanoid(6)
@@ -122,7 +120,7 @@ function saveArticle(val: Article): boolean {
   }
   article = cloneDeep(val)
   //TODO 保存完成后滚动到对应位置
-  ElMessage.success('保存成功！')
+  Toast.success('保存成功！')
   syncBookInMyStudyList()
   return true
 }
@@ -161,10 +159,7 @@ useWindowClick(() => showExport = false)
   <div class="add-article">
     <div class="aslide">
       <header class="flex justify-between items-center">
-        <BaseIcon
-            title="返回"
-            @click="$router.back"
-            icon="formkit:left"/>
+        <BackIcon/>
         <div class="text-xl">{{ runtimeStore.editDict.name }}</div>
       </header>
       <List

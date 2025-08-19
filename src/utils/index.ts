@@ -4,17 +4,18 @@ import {getDefaultSettingState} from "@/stores/setting.ts";
 import {Dict, DictId, DictResource, DictType} from "@/types/types.ts";
 import {useRouter} from "vue-router";
 import {useRuntimeStore} from "@/stores/runtime.ts";
-import {nanoid} from "nanoid";
 import dayjs from 'dayjs'
 import axios from "axios";
 import {env} from "@/config/ENV.ts";
 import {nextTick} from "vue";
-import {dictionaryResources, enArticle} from "@/assets/dictionary.ts";
-import {ElMessage} from "element-plus";
+import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import {getDefaultArticle, getDefaultDict, getDefaultWord} from "@/types/func.ts";
+import {set} from "idb-keyval";
+import book_list from "@/assets/book-list.json";
+import dict_list from "@/assets/dict-list.json";
 
 export function no() {
-  ElMessage.warning('未现实')
+  Toast.warning('未现实')
 }
 
 //检测多余字段，防止人为删除数据，导致数据不完整报错
@@ -51,6 +52,9 @@ export function checkAndUpgradeSaveDict(val: any) {
         return defaultState
       } else {
         if (version === 3) {
+          localStorage.setItem('type-word-dict-v3', JSON.stringify(state))
+          set('type-word-dict-v3', JSON.stringify(state))
+
           let studyDictId = ''
           if (state.current.index >= 0) {
             let dict = state.myDictList[state.current.index]
@@ -62,7 +66,7 @@ export function checkAndUpgradeSaveDict(val: any) {
           const safeString = (str) => (typeof str === 'string' ? str.trim() : '');
 
           function formatWord(dict) {
-            dict.words = dict.words.map(v => {
+            dict.words = dict.words?.map?.(v => {
               return getDefaultWord({
                 word: v.name,
                 phonetic0: v.usphone,
@@ -84,8 +88,8 @@ export function checkAndUpgradeSaveDict(val: any) {
                   return {pos: '', cn: safeString(line)};
                 })
               })
-            })
-            dict.statistics = dict.statistics.map(v => {
+            }) || []
+            dict.statistics = dict.statistics?.map?.(v => {
               return {
                 startDate: v.startDate,
                 spend: v.endDate - v.startDate,
@@ -93,14 +97,14 @@ export function checkAndUpgradeSaveDict(val: any) {
                 new: v.total,
                 wrong: v.wrongWordNumber
               }
-            })
-            dict.articles = dict.articles.map(v => {
+            }) || []
+            dict.articles = dict.articles?.map?.(v => {
               let r = getDefaultArticle({
                 textTranslate: v.textCustomTranslate
               })
               checkRiskKey(r, v)
               return r
-            })
+            }) || []
           }
 
           state.myDictList.map((v: any) => {
@@ -108,21 +112,31 @@ export function checkAndUpgradeSaveDict(val: any) {
               let currentDictId = v.id
               let currentType = v.type
               delete v.type
-              if (['collect', 'simple', 'wrong'].includes(v.type)) {
+              if (['collect', 'simple', 'wrong'].includes(currentType)) {
                 formatWord(v)
                 delete v.id
                 delete v.name
                 if (currentType === 'collect') {
-                  if (currentDictId === studyDictId) defaultState.word.studyIndex = 0
-                  checkRiskKey(defaultState.word.bookList[0], v)
+                  if (v.words.length) {
+                    if (currentDictId === studyDictId) defaultState.word.studyIndex = 0
+                    checkRiskKey(defaultState.word.bookList[0], cloneDeep(v))
+                    defaultState.word.bookList[0].length = v.words.length
+                  }
+                  if (v.articles.length) {
+                    if (currentDictId === studyDictId) defaultState.article.studyIndex = 0
+                    checkRiskKey(defaultState.article.bookList[0], cloneDeep(v))
+                    defaultState.article.bookList[0].length = v.articles.length
+                  }
                 }
-                if (currentType === 'simple') {
+                if (currentType === 'simple' || currentType === 'skip') {
                   if (currentDictId === studyDictId) defaultState.word.studyIndex = 2
                   checkRiskKey(defaultState.word.bookList[2], v)
+                  defaultState.word.bookList[2].length = v.words.length
                 }
                 if (currentType === 'wrong') {
                   if (currentDictId === studyDictId) defaultState.word.studyIndex = 1
                   checkRiskKey(defaultState.word.bookList[1], v)
+                  defaultState.word.bookList[1].length = v.words.length
                 }
               }
               if (currentType === 'word') {
@@ -130,11 +144,12 @@ export function checkAndUpgradeSaveDict(val: any) {
                   formatWord(v)
                   let dict = getDefaultDict({custom: true})
                   checkRiskKey(dict, v)
+                  dict.length = dict.words.length
                   defaultState.word.bookList.push(dict)
                   if (currentDictId === studyDictId) defaultState.word.studyIndex = defaultState.word.bookList.length - 1
                 } else {
                   //当时把选中的词典的id设为随机了，导致通过id找不到
-                  let r = dictionaryResources.find(a => a.name === v.name)
+                  let r: any = dict_list.flat().find(a => a.name === v.name)
                   if (r) {
                     formatWord(v)
                     let dict = getDefaultDict(r)
@@ -150,11 +165,12 @@ export function checkAndUpgradeSaveDict(val: any) {
                   formatWord(v)
                   let dict = getDefaultDict({custom: true})
                   checkRiskKey(dict, v)
+                  dict.length = dict.articles.length
                   defaultState.article.bookList.push(dict)
                   if (currentDictId === studyDictId) defaultState.article.studyIndex = defaultState.article.bookList.length - 1
                 } else {
                   //当时把选中的词典的id设为随机了
-                  let r = enArticle.find(a => a.name === v.name)
+                  let r: any = book_list.flat().find(a => a.name === v.name)
                   if (r) {
                     formatWord(v)
                     let dict = getDefaultDict(r)
@@ -166,7 +182,7 @@ export function checkAndUpgradeSaveDict(val: any) {
                 }
               }
             } catch (e) {
-              console.log('升级数据失败！')
+              console.error('升级数据失败！', e)
             }
           })
         }
@@ -393,10 +409,15 @@ export function _parseLRC(lrc: string): { start: number, end: number, text: stri
   return parsed;
 }
 
+export async function sleep(time: number) {
+  return new Promise(resolve => setTimeout(resolve, time));
+}
+
 export async function _getDictDataByUrl(val: DictResource, type: DictType = DictType.word): Promise<Dict> {
-  let dictResourceUrl = `./dicts/${val.language}/word/${val.url}`
+  // await sleep(2000);
+  let dictResourceUrl = `/dicts/${val.language}/word/${val.url}`
   if (type === DictType.article) {
-    dictResourceUrl = `./dicts/${val.language}/${val.type}/${val.url}`;
+    dictResourceUrl = `/dicts/${val.language}/article/${val.url}`;
   }
   let s = await getDictFile(dictResourceUrl)
   if (s) {
@@ -566,4 +587,31 @@ export function groupBy<T extends Record<string, any>>(array: T[], key: string) 
     (result[groupKey] ||= []).push(item);
     return result;
   }, {});
+}
+
+//随机取N个
+export function getRandomN(arr: any[], n: number) {
+  const copy = [...arr]
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]] // 交换
+  }
+  return copy.slice(0, n)
+}
+
+//数组分成N份
+export function splitIntoN(arr: any[], n: number) {
+  const result = []
+  const len = arr.length
+  const base = Math.floor(len / n)  // 每份至少这么多
+  let extra = len % n               // 前几份多 1 个
+
+  let index = 0
+  for (let i = 0; i < n; i++) {
+    const size = base + (extra > 0 ? 1 : 0)
+    result.push(arr.slice(index, index + size))
+    index += size
+    if (extra > 0) extra--
+  }
+  return result
 }

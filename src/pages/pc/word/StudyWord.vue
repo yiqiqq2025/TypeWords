@@ -6,25 +6,25 @@ import Statistics from "@/pages/pc/word/Statistics.vue";
 import {emitter, EventKey, useEvents} from "@/utils/eventBus.ts";
 import {useSettingStore} from "@/stores/setting.ts";
 import {useRuntimeStore} from "@/stores/runtime.ts";
-import {ShortcutKey, StudyData, Word} from "@/types/types.ts";
-import {useOnKeyboardEventListener, useStartKeyboardEventListener} from "@/hooks/event.ts";
+import {Dict, ShortcutKey, StudyData, Word} from "@/types/types.ts";
+import {useDisableEventListener, useOnKeyboardEventListener, useStartKeyboardEventListener} from "@/hooks/event.ts";
 import useTheme from "@/hooks/theme.ts";
 import {getCurrentStudyWord, useWordOptions} from "@/hooks/dict.ts";
 import {_getDictDataByUrl, cloneDeep, shuffle} from "@/utils";
 import {useRoute, useRouter} from "vue-router";
-import {Icon} from "@iconify/vue";
 import Footer from "@/pages/pc/word/components/Footer.vue";
 import Panel from "@/pages/pc/components/Panel.vue";
 import BaseIcon from "@/components/BaseIcon.vue";
-import Tooltip from "@/pages/pc/components/Tooltip.vue";
+import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
 import WordList from "@/pages/pc/components/list/WordList.vue";
-import Type from "@/pages/pc/word/components/Type.vue";
+import TypeWord from "@/pages/pc/word/components/TypeWord.vue";
 import Empty from "@/components/Empty.vue";
 import {useBaseStore} from "@/stores/base.ts";
 import {usePracticeStore} from "@/stores/practice.ts";
-import {dictionaryResources} from "@/assets/dictionary.ts";
-import {ElMessage} from "element-plus";
-import {getDefaultWord} from "@/types/func.ts";
+import Toast from '@/pages/pc/components/base/toast/Toast.ts'
+import {getDefaultDict, getDefaultWord} from "@/types/func.ts";
+import ConflictNotice from "@/pages/pc/components/ConflictNotice.vue";
+import dict_list from "@/assets/dict-list.json";
 
 interface IProps {
   new: Word[],
@@ -61,31 +61,46 @@ let data = $ref<StudyData>({
   wrongWords: [],
 })
 
-onMounted(() => {
-  let dictId = route.query.q
-  //如果url里有词典id，那么直接请求词典数据，并加到bookList里面进行学习
+async function init() {
+  console.log('load好了开始加载')
+  let dict = getDefaultDict()
+  let dictId = route.params.id
   if (dictId) {
-    let dictResource = dictionaryResources.find(v => v.id === dictId)
-    if (dictResource) {
-      loading = true
-      requestIdleCallback(() => {
-        _getDictDataByUrl(dictResource).then(r => {
-          store.changeDict(r)
-          studyData = getCurrentStudyWord()
-          loading = false
-        })
-      })
+    //先在自己的词典列表里面找，如果没有再在资源列表里面找
+    dict = store.word.bookList.find(v => v.id === dictId)
+    if (!dict) dict = dict_list.flat().find(v => v.id === dictId) as Dict
+    if (dict && dict.id) {
+      //如果是不是自定义词典，就请求数据
+      if (!dict.custom) dict = await _getDictDataByUrl(dict)
+      if (!dict.words.length) {
+        router.push('/word')
+        return Toast.warning('没有单词可学习！')
+      }
+      store.changeDict(dict)
+      studyData = getCurrentStudyWord()
+      loading = false
     } else {
       router.push('/word')
     }
   } else {
-    if (runtimeStore.routeData) {
-      studyData = runtimeStore.routeData
-    } else {
-      router.push('/word')
-    }
+    router.push('/word')
+  }
+}
+
+watch(() => store.load, (n) => {
+  if (n && loading) init()
+}, {immediate: true})
+
+onMounted(() => {
+  if (runtimeStore.routeData) {
+    studyData = runtimeStore.routeData
+  } else {
+    loading = true
   }
 })
+
+useStartKeyboardEventListener()
+useDisableEventListener(() => loading)
 
 watch(() => studyData, () => {
   if (studyData.new.length === 0) {
@@ -99,7 +114,7 @@ watch(() => studyData, () => {
         data.words = studyData.write
         statStore.step = 4
       } else {
-        ElMessage.warning('没有可学习的单词！')
+        Toast.warning('没有可学习的单词！')
         router.push('/word')
       }
     }
@@ -124,9 +139,6 @@ watch(() => studyData, () => {
 
 provide('studyData', data)
 
-const dictIsEnd = $computed(() => {
-  return store.sdict.lastLearnIndex === store.sdict.length
-})
 const word = $computed(() => {
   return data.words[data.index] ?? getDefaultWord()
 })
@@ -248,7 +260,6 @@ async function onKeyDown(e: KeyboardEvent) {
   }
 }
 
-useStartKeyboardEventListener()
 
 useOnKeyboardEventListener(onKeyDown, onKeyUp)
 
@@ -274,7 +285,7 @@ function repeat() {
 
 function prev() {
   if (data.index === 0) {
-    ElMessage.warning('已经是第一个了~')
+    Toast.warning('已经是第一个了~')
   } else {
     data.index--
   }
@@ -354,13 +365,13 @@ useEvents([
 </script>
 
 <template>
-  <div class="practice-wrapper">
+  <div class="practice-wrapper" v-loading="loading">
     <div class="practice-word">
       <div class="absolute z-1 top-4   w-full" v-if="settingStore.showNearWord">
         <div class="center gap-2 cursor-pointer float-left"
              @click="prev"
              v-if="prevWord">
-          <Icon class="arrow" icon="bi:arrow-left" width="22"/>
+          <IconBiArrowLeft class="arrow" width="22"/>
           <Tooltip
               :title="`上一个(${settingStore.shortcutKeyMap[ShortcutKey.Previous]})`"
           >
@@ -375,10 +386,10 @@ useEvents([
           >
             <div class="word" :class="settingStore.dictation && 'word-shadow'">{{ nextWord.word }}</div>
           </Tooltip>
-          <Icon class="arrow" icon="bi:arrow-right" width="22"/>
+          <IconBiArrowRight class="arrow" width="22"/>
         </div>
       </div>
-      <Type
+      <TypeWord
           ref="typingRef"
           :word="word"
           @wrong="onTypeWrong"
@@ -410,27 +421,20 @@ useEvents([
           >
             <template v-slot:suffix="{item,index}">
               <BaseIcon
-                  v-if="!isWordCollect(item)"
-                  class="collect"
+                  :class="!isWordCollect(item)?'collect':'fill'"
                   @click.stop="toggleWordCollect(item)"
-                  title="收藏" icon="ph:star"/>
+                  :title="!isWordCollect(item) ? '收藏' : '取消收藏'">
+                <IconPhStar v-if="!isWordCollect(item)"/>
+                <IconPhStarFill v-else/>
+              </BaseIcon>
+
               <BaseIcon
-                  v-else
-                  class="fill"
-                  @click.stop="toggleWordCollect(item)"
-                  title="取消收藏" icon="ph:star-fill"/>
-              <BaseIcon
-                  v-if="!isWordSimple(item)"
-                  class="easy"
+                  :class="!isWordSimple(item)?'collect':'fill'"
                   @click.stop="toggleWordSimple(item)"
-                  title="标记为已掌握"
-                  icon="material-symbols:check-circle-outline-rounded"/>
-              <BaseIcon
-                  v-else
-                  class="fill"
-                  @click.stop="toggleWordSimple(item)"
-                  title="取消标记已掌握"
-                  icon="material-symbols:check-circle-rounded"/>
+                  :title="!isWordSimple(item) ? '标记为已掌握' : '取消标记已掌握'">
+                <IconMaterialSymbolsCheckCircleOutlineRounded v-if="!isWordSimple(item)"/>
+                <IconMaterialSymbolsCheckCircleRounded v-else/>
+              </BaseIcon>
             </template>
           </WordList>
           <Empty v-else/>
@@ -439,6 +443,7 @@ useEvents([
     </div>
   </div>
   <Statistics v-model="showStatDialog"/>
+  <ConflictNotice/>
 </template>
 
 <style scoped lang="scss">

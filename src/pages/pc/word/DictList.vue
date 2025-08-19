@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import "vue-activity-calendar/style.css";
-import {useNav} from "@/utils";
+import {groupBy, useNav} from "@/utils";
 import BasePage from "@/pages/pc/components/BasePage.vue";
 import {DictResource} from "@/types/types.ts";
 import {useRuntimeStore} from "@/stores/runtime.ts";
@@ -13,10 +12,9 @@ import BackIcon from "@/pages/pc/components/BackIcon.vue";
 import DictGroup from "@/pages/pc/components/list/DictGroup.vue";
 import {useBaseStore} from "@/stores/base.ts";
 import {useRouter} from "vue-router";
-import {groupBy} from "@/utils";
-import {dictionaryResources} from "@/assets/dictionary.ts";
 import {computed} from "vue";
 import {getDefaultDict} from "@/types/func.ts";
+import dict_list from "@/assets/dict-list.json";
 
 const {nav} = useNav()
 const runtimeStore = useRuntimeStore()
@@ -48,7 +46,7 @@ function groupByDictTags(dictList: DictResource[]) {
 }
 
 const groupedByCategoryAndTag = $computed(() => {
-  const groupByCategory = groupBy(dictionaryResources, 'category')
+  const groupByCategory = groupBy(dict_list.flat(), 'category')
   let data = []
   for (const [key, value] of Object.entries(groupByCategory)) {
     data.push([key, groupByDictTags(value)])
@@ -62,7 +60,7 @@ let searchKey = $ref('')
 const searchList = computed<any[]>(() => {
   if (searchKey) {
     let s = searchKey.toLowerCase()
-    return dictionaryResources.filter((item) => {
+    return dict_list.flat().filter((item) => {
       return item.id.toLowerCase().includes(s)
           || item.name.toLowerCase().includes(s)
           || item.category.toLowerCase().includes(s)
@@ -79,16 +77,18 @@ const searchList = computed<any[]>(() => {
   <BasePage>
     <div class="card">
       <div class="flex items-center relative gap-2">
-        <BackIcon class="z-2" @Click='router.back()'/>
+        <BackIcon class="z-2" @click='router.back'/>
         <div class="flex flex-1 gap-4" v-if="showSearchInput">
-          <Input placeholder="请输入词典名称/缩写/类别" v-model="searchKey" class="flex-1" autofocus/>
+          <Input prefix-icon placeholder="请输入词典名称/缩写/类别" v-model="searchKey" class="flex-1" autofocus/>
           <BaseButton @click="showSearchInput = false, searchKey = ''">取消</BaseButton>
         </div>
         <div class="py-1 flex flex-1 justify-end" v-else>
           <span class="page-title absolute w-full center">词典列表</span>
           <BaseIcon @click="showSearchInput = true"
                     class="z-1"
-                    icon="fluent:search-24-regular"/>
+                    icon="fluent:search-24-regular">
+            <IconFluentSearch24Regular/>
+          </BaseIcon>
         </div>
       </div>
       <div class="mt-4" v-if="searchKey">

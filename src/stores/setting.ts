@@ -2,6 +2,7 @@ import {defineStore} from "pinia"
 import {checkAndUpgradeSaveSetting, cloneDeep} from "@/utils";
 import {DefaultShortcutKeyMap} from "@/types/types.ts";
 import {SAVE_SETTING_KEY} from "@/utils/const.ts";
+import {get} from "idb-keyval";
 
 export interface SettingState {
   showToolbar: boolean,
@@ -21,7 +22,6 @@ export interface SettingState {
   repeatCustomCount?: number,
   dictation: boolean,
   translate: boolean,
-  detail: boolean,
   showNearWord: boolean
   ignoreCase: boolean
   allowWordTip: boolean
@@ -35,15 +35,13 @@ export interface SettingState {
   showPanel: boolean,
   sideExpand: boolean,
   theme: string,
-  collapse: boolean,
-  chapterWordNumber: number,
   shortcutKeyMap: Record<string, string>,
   first: boolean
   firstTime: number
   load: boolean
+  conflictNotice: boolean // 其他脚本/插件冲突提示
+  ignoreSimpleWord: boolean // 忽略简单词
 }
-
-export const DefaultChapterWordNumber = 30
 
 export const getDefaultSettingState = (): SettingState => ({
   showToolbar: true,
@@ -65,7 +63,6 @@ export const getDefaultSettingState = (): SettingState => ({
   repeatCustomCount: null,
   dictation: false,
   translate: true,
-  detail: false,
 
   showNearWord: true,
   ignoreCase: true,
@@ -78,12 +75,12 @@ export const getDefaultSettingState = (): SettingState => ({
   },
   waitTimeForChangeWord: 300,
   theme: 'auto',
-  collapse: false,
-  chapterWordNumber: DefaultChapterWordNumber,
   shortcutKeyMap: cloneDeep(DefaultShortcutKeyMap),
   first: true,
   firstTime: Date.now(),
-  load: false
+  load: false,
+  conflictNotice: true,
+  ignoreSimpleWord: false
 })
 
 export const useSettingStore = defineStore('setting', {
@@ -95,11 +92,17 @@ export const useSettingStore = defineStore('setting', {
       this.$patch(obj)
     },
     init() {
-      return new Promise(resolve => {
+      return new Promise(async resolve => {
+        //TODO 后面记得删除了
         let configStr = localStorage.getItem(SAVE_SETTING_KEY.key)
+        let configStr2 = await get(SAVE_SETTING_KEY.key)
+        if (configStr2) {
+          //兼容localStorage.getItem
+          configStr = configStr2
+        }
         let data = checkAndUpgradeSaveSetting(configStr)
-        this.setState(data)
-        this.load = true
+        this.setState({...data, load: true})
+        // this.load = true
         resolve(true)
       })
     }

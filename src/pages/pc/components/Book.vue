@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import {Dict, DictResource} from "@/types/types.ts";
-import {Icon} from "@iconify/vue";
-import {ElProgress, ElCheckbox} from 'element-plus';
+import {Dict} from "@/types/types.ts";
+import Progress from '@/pages/pc/components/base/Progress.vue'
+import Checkbox from "@/pages/pc/components/base/checkbox/Checkbox.vue";
 
 const props = defineProps<{
   item?: Partial<Dict>;
@@ -37,20 +37,20 @@ const studyProgress = $computed(() => {
         <div>{{ studyProgress }}{{ item?.length }}{{ quantifier }}</div>
       </div>
       <div class="absolute bottom-2 left-4 right-4">
-        <ElProgress v-if="item?.lastLearnIndex || item.complete" class="mt-1"
-                    :percentage="progress"
-                    :show-text="false"></ElProgress>
+        <Progress v-if="item?.lastLearnIndex || item.complete" class="mt-1"
+                  :percentage="progress"
+                  :show-text="false"></Progress>
       </div>
-      <ElCheckbox v-if="showCheckbox"
-                  :model-value="checked"
-                  @click.stop="$emit('check')"
-                  class="absolute left-0 bottom-0 h-5!"/>
+      <Checkbox v-if="showCheckbox"
+                :model-value="checked"
+                @change="$emit('check')"
+                class="absolute left-4 bottom-4"/>
       <div class="custom" v-if="item.custom">自定义</div>
     </template>
     <div v-else class="center h-full">
-      <Icon
+      <IconFluentAdd20Filled
           width="40px"
-          icon="fluent:add-20-filled"/>
+        />
     </div>
 
   </div>

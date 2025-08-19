@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {onMounted, onUnmounted, watch} from "vue";
-import Tooltip from "@/pages/pc/components/Tooltip.vue";
-import {Icon} from '@iconify/vue';
+import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
 import {useEventListener} from "@/hooks/event.ts";
 
 import BaseButton from "@/components/BaseButton.vue";
@@ -93,13 +92,13 @@ watch(() => props.modelValue, n => {
     runtimeStore.modalList.push({id, close})
     zIndex = 999 + runtimeStore.modalList.length
     visible = true
+    console.log(12)
   } else {
     close()
   }
 })
 
 onMounted(() => {
-  // console.log('props.modelValue', props.modelValue)
   if (props.modelValue === undefined) {
     visible = true
     id = Date.now()
@@ -158,11 +157,10 @@ async function cancel() {
             ]"
       >
         <Tooltip title="关闭">
-          <Icon @click="close"
-                v-if="showClose"
-                class="close hvr-grow cursor-pointer"
-                width="24" color="#929596"
-                icon="ion:close-outline"/>
+          <IconIonCloseOutline @click="close"
+                               v-if="showClose"
+                               class="close hvr-grow cursor-pointer"
+                               width="24" color="#929596"/>
         </Tooltip>
         <div class="modal-header" v-if="header">
           <div class="title">{{ props.title }}</div>

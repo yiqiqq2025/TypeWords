@@ -9,8 +9,10 @@ import {cloneDeep, debounce, reverse, shuffle} from "@/utils";
 import Input from "@/pages/pc/components/Input.vue";
 import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
 import Empty from "@/components/Empty.vue";
-import {Icon} from "@iconify/vue";
-import {ElCheckbox, ElPagination} from 'element-plus'
+import Pagination from '@/pages/pc/components/base/Pagination.vue'
+import Toast from '@/pages/pc/components/base/toast/Toast.ts'
+import Checkbox from "@/pages/pc/components/base/checkbox/Checkbox.vue";
+import DeleteIcon from "@/components/icon/DeleteIcon.vue";
 
 let list = defineModel('list')
 
@@ -94,11 +96,11 @@ let showSearchInput = $ref(false)
 
 function sort(type: Sort) {
   if (type === Sort.reverse) {
-    ElMessage.success('已翻转排序')
+    Toast.success('已翻转排序')
     list.value = reverse(cloneDeep(list.value))
   }
   if (type === Sort.random) {
-    ElMessage.success('已随机排序')
+    Toast.success('已随机排序')
     list.value = shuffle(cloneDeep(list.value))
   }
   showSortDialog = false
@@ -118,7 +120,7 @@ const s = useSlots()
 
 defineRender(
     () => {
-      const d = (item) => <ElCheckbox
+      const d = (item) => <Checkbox
           modelValue={selectIds.includes(item.id)}
           onChange={() => toggleSelect(item)}
           size="large"/>
@@ -132,6 +134,7 @@ defineRender(
                         class="flex gap-4"
                     >
                       <Input
+                          prefixIcon
                           modelValue={searchKey}
                           onUpdate:modelValue=
                               {debounce(e => searchKey = e)}
@@ -141,9 +144,9 @@ defineRender(
                 ) : (
                     <div class="flex justify-between " v-else>
                       <div class="flex gap-2 items-center">
-                        <ElCheckbox
+                        <Checkbox
                             disabled={!currentList.length}
-                            onClick={() => toggleSelectAll()}
+                            onChange={() => toggleSelectAll()}
                             modelValue={selectAll}
                             size="large"/>
                         <span>{selectIds.length} / {list.value.length}</span>
@@ -158,26 +161,32 @@ defineRender(
                               >
                                 <BaseIcon
                                     class="del"
-                                    title="删除"
-                                    icon="solar:trash-bin-minimalistic-linear"/>
+                                    title="删除">
+                                  <DeleteIcon/>
+                                </BaseIcon>
                               </PopConfirm>
                               : null
                         }
                         <BaseIcon
                             onClick={props.add}
                             icon="fluent:add-20-filled"
-                            title="添加单词"/>
+                            title="添加单词">
+                          <IconFluentAdd20Filled/>
+                        </BaseIcon>
                         <BaseIcon
                             disabled={!currentList.length}
                             title="改变顺序"
                             icon="icon-park-outline:sort-two"
                             onClick={() => showSortDialog = !showSortDialog}
-                        />
+                        >
+                         <IconIconParkOutlineSortTwo/>
+                        </BaseIcon>
                         <BaseIcon
                             disabled={!currentList.length}
                             onClick={() => showSearchInput = !showSearchInput}
-                            title="搜索"
-                            icon="fluent:search-24-regular"/>
+                            title="搜索">
+                            <IconFluentSearch24Regular/>
+                        </BaseIcon>
                         <MiniDialog
                             modelValue={showSortDialog}
                             onUpdate:modelValue={e => showSortDialog = e}
@@ -200,8 +209,7 @@ defineRender(
             {
               props.loading ?
                   <div class="h-full w-full center text-4xl">
-                    <Icon
-                        icon="eos-icons:loading"
+                    <IconEosIconsLoading
                         color="gray"
                     />
                   </div>
@@ -220,14 +228,14 @@ defineRender(
                           })}
                         </div>
                         <div class="flex justify-end">
-                          <ElPagination background
-                                        currentPage={pageNo}
-                                        onUpdate:current-page={handlePageNo}
-                                        pageSize={pageSize}
-                                        onUpdate:page-size={(e) => pageSize = e}
-                                        pageSizes={[20, 50, 100, 200]}
-                                        layout="prev, pager, next"
-                                        total={list.value.length}/>
+                          <Pagination
+                              currentPage={pageNo}
+                              onUpdate:current-page={handlePageNo}
+                              pageSize={pageSize}
+                              onUpdate:page-size={(e) => pageSize = e}
+                              pageSizes={[20, 50, 100, 200]}
+                              layout="prev, pager, next"
+                              total={list.value.length}/>
                         </div>
                       </>
                   ) : <Empty/>

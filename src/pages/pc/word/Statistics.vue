@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import Dialog from "@/pages/pc/components/dialog/Dialog.vue";
 import {useBaseStore} from "@/stores/base.ts";
 import BaseButton from "@/components/BaseButton.vue";
 import {ShortcutKey, Statistics} from "@/types/types.ts";
 import {emitter, EventKey, useEvents} from "@/utils/eventBus.ts";
-import {Icon} from '@iconify/vue';
 import {useSettingStore} from "@/stores/setting.ts";
 import {usePracticeStore} from "@/stores/practice.ts";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
-import {watch} from "vue";
+import {defineAsyncComponent, watch} from "vue";
+const Dialog = defineAsyncComponent(() => import('@/pages/pc/components/dialog/Dialog.vue'))
 
 dayjs.extend(isBetween);
 
@@ -57,6 +56,15 @@ watch(model, (newVal) => {
       new: statStore.newWordNumber,
       review: statStore.reviewWordNumber + statStore.writeWordNumber
     }
+    window.umami?.track('studyWordEnd', {
+      name: store.sdict.name,
+      spend: Number(statStore.spend / 1000 / 60).toFixed(1),
+      index: store.sdict.lastLearnIndex,
+      perDayStudyNumber:store.sdict.perDayStudyNumber,
+      custom: store.sdict.custom,
+      complete: store.sdict.complete,
+      str:`name:${store.sdict.name},per:${store.sdict.perDayStudyNumber},spend:${Number(statStore.spend / 1000 / 60).toFixed(1)},index:${store.sdict.lastLearnIndex}`
+    })
     //这里不知为啥会卡，打开有延迟
     requestIdleCallback(() => {
       store.sdict.lastLearnIndex = store.sdict.lastLearnIndex + statStore.newWordNumber
@@ -122,7 +130,7 @@ function options(emitType: string) {
              style="background: rgb(254,236,236)">
           <div class="text-3xl">{{ statStore.wrong }}</div>
           <div class="center gap-2">
-            <Icon icon="iconamoon:close" class="text-2xl"/>
+            <IconIconamoonClose class="text-2xl"/>
             错词
           </div>
         </div>
@@ -130,7 +138,7 @@ function options(emitType: string) {
              style="background: rgb(231,248,241)">
           <div class="text-3xl">{{ statStore.total - statStore.wrong }}</div>
           <div class="center gap-2">
-            <Icon icon="tabler:check" class="text-2xl"/>
+            <IconTablerCheck class="text-2xl"/>
             正确
           </div>
         </div>

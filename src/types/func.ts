@@ -1,5 +1,6 @@
 import {Article, ArticleWord, Dict, DictType, Word} from "@/types/types.ts";
 import {shallowReactive} from "vue";
+import {cloneDeep} from "@/utils";
 
 export function getDefaultWord(val: Partial<Word> = {}): Word {
   return {
@@ -42,7 +43,7 @@ export function getDefaultArticle(val: Partial<Article> = {}): Article {
     audioSrc: '',
     lrcPosition: [],
     questions: [],
-    ...val
+    ...cloneDeep(val)
   }
 }
 

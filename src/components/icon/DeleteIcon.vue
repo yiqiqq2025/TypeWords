@@ -1,12 +1,5 @@
-<script setup lang="ts">
-import {Icon} from "@iconify/vue";
-
-</script>
+<script setup lang="ts"></script>
 
 <template>
-  <Icon icon="solar:trash-bin-minimalistic-linear" width="20"/>
+  <IconSolarTrashBinMinimalisticLinear/>
 </template>
-
-<style scoped lang="scss">
-
-</style>

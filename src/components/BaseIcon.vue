@@ -1,12 +1,9 @@
 <script setup lang="ts">
 
-import Tooltip from "@/pages/pc/components/Tooltip.vue";
-import IconWrapper from "@/pages/pc/components/IconWrapper.vue";
-import {Icon} from "@iconify/vue";
+import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
 
 defineProps<{
   title?: string,
-  icon: string,
   disabled?: boolean,
   noBg?: boolean,
 }>()
@@ -23,7 +20,7 @@ const emit = defineEmits(['click'])
         class="icon-wrapper"
         :class="{disabled,noBg}"
     >
-      <Icon :icon="icon"/>
+      <slot/>
     </div>
   </Tooltip>
 </template>
@@ -46,7 +43,7 @@ $w: 1.4rem;
   &:hover:not(.disabled,.noBg) {
     background: var(--color-icon-hightlight);
 
-    svg {
+    :deep(svg) {
       color: white;
     }
   }

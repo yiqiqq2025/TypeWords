@@ -100,7 +100,7 @@ defineExpose({scrollBottom})
        ref="el"
   >
     <div class="search">
-      <Input v-model="searchKey"/>
+      <Input prefix-icon v-model="searchKey"/>
     </div>
     <transition-group name="drag" class="list" tag="div">
       <div class="item"
@@ -124,13 +124,16 @@ defineExpose({scrollBottom})
         <div class="right">
           <BaseIcon
               @click="delItem(item)"
-              title="删除" icon="fluent:delete-24-regular"/>
+              title="删除">
+            <IconFluentDelete24Regular/>
+          </BaseIcon>
           <div
               @mousedown="draggable = true"
               @mouseup="draggable = false"
           >
-            <BaseIcon
-                icon="carbon:move"/>
+            <BaseIcon>
+              <IconCarbonMove/>
+            </BaseIcon>
           </div>
         </div>
       </div>

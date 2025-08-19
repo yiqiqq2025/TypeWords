@@ -1,13 +1,12 @@
 <script setup lang="ts">
 
-import {inject, onMounted, onUnmounted} from "vue"
+import {inject} from "vue"
 import {usePracticeStore} from "@/stores/practice.ts";
 import {useSettingStore} from "@/stores/setting.ts";
 import {ShortcutKey, StudyData} from "@/types/types.ts";
 import BaseIcon from "@/components/BaseIcon.vue";
-import {Icon} from "@iconify/vue";
-import Tooltip from "@/pages/pc/components/Tooltip.vue";
-import {ElProgress} from 'element-plus';
+import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
+import Progress from '@/pages/pc/components/base/Progress.vue'
 
 const statisticsStore = usePracticeStore()
 const settingStore = useSettingStore()
@@ -28,18 +27,6 @@ const emit = defineEmits<{
 function format(val: number, suffix: string = '', check: number = -1) {
   return val === check ? '-' : (val + suffix)
 }
-
-let speedMinute = $ref(0)
-let timer = $ref(0)
-onMounted(() => {
-  timer = setInterval(() => {
-    speedMinute = Math.floor((Date.now() - statisticsStore.startDate) / 1000 / 60)
-  }, 1000)
-})
-
-onUnmounted(() => {
-  timer && clearInterval(timer)
-})
 
 let studyData = inject<StudyData>('studyData')
 
@@ -75,7 +62,7 @@ const progress = $computed(() => {
 <template>
   <div class="footer" :class="!settingStore.showToolbar && 'hide'">
     <Tooltip :title="settingStore.showToolbar?'收起':'展开'">
-      <Icon icon="icon-park-outline:down"
+      <IconIconParkOutlineDown
             @click="settingStore.showToolbar = !settingStore.showToolbar"
             class="arrow"
             :class="!settingStore.showToolbar && 'down'"
@@ -84,7 +71,7 @@ const progress = $computed(() => {
     </Tooltip>
 
     <div class="bottom">
-      <ElProgress
+      <Progress
           :percentage="progress"
           :stroke-width="8"
           :show-text="false"/>
@@ -113,60 +100,55 @@ const progress = $computed(() => {
         </div>
         <div class="flex  gap-2  justify-center items-center">
           <BaseIcon
-              v-if="!isSimple"
-              class="collect"
+              :class="!isSimple?'collect':'fill'"
               @click="$emit('toggleSimple')"
-              :title="`标记为已掌握(${settingStore.shortcutKeyMap[ShortcutKey.ToggleSimple]})`"
-              icon="material-symbols:check-circle-outline-rounded"/>
-          <BaseIcon
-              v-else
-              class="fill"
-              @click="$emit('toggleSimple')"
-              :title="`取消标记已掌握(${settingStore.shortcutKeyMap[ShortcutKey.ToggleSimple]})`"
-              icon="material-symbols:check-circle-rounded"/>
+              :title="(!isSimple ? '标记为已掌握' : '取消标记已掌握')+`(${settingStore.shortcutKeyMap[ShortcutKey.ToggleSimple]})`">
+            <IconMaterialSymbolsCheckCircleOutlineRounded v-if="!isSimple"/>
+            <IconMaterialSymbolsCheckCircleRounded v-else/>
+          </BaseIcon>
 
           <BaseIcon
-              v-if="!isCollect"
-              class="collect"
-              @click="$emit('toggleCollect')"
-              :title="`收藏(${settingStore.shortcutKeyMap[ShortcutKey.ToggleCollect]})`"
-              icon="ph:star"/>
-          <BaseIcon
-              v-else
-              @click="$emit('toggleCollect')"
-              :title="`取消收藏(${settingStore.shortcutKeyMap[ShortcutKey.ToggleCollect]})`"
-              icon="ph:star-fill"/>
-
+              :class="!isCollect?'collect':'fill'"
+              @click.stop="$emit('toggleCollect')"
+              :title="(!isCollect ? '收藏' : '取消收藏')+`(${settingStore.shortcutKeyMap[ShortcutKey.ToggleCollect]})`">
+            <IconPhStar v-if="!isCollect"/>
+            <IconPhStarFill v-else/>
+          </BaseIcon>
           <BaseIcon
               @click="emit('skip')"
-              :title="`跳过(${settingStore.shortcutKeyMap[ShortcutKey.Next]})`"
-              icon="icon-park-outline:go-ahead"/>
+              :title="`跳过(${settingStore.shortcutKeyMap[ShortcutKey.Next]})`">
+            <IconIconParkOutlineGoAhead/>
+          </BaseIcon>
 
           <BaseIcon
               @click="settingStore.dictation = !settingStore.dictation"
               :title="`开关默写模式(${settingStore.shortcutKeyMap[ShortcutKey.ToggleDictation]})`"
-              :icon="['majesticons:eye-off-line','mdi:eye-outline'][settingStore.dictation?0:1]"/>
+          >
+            <IconMajesticonsEyeOffLine v-if="settingStore.dictation"/>
+            <IconMdiEyeOutline v-else/>
+          </BaseIcon>
 
-          <BaseIcon :icon="['mdi:translate','mdi:translate-off'][settingStore.translate?0:1]"
-                    :title="`开关释义显示(${settingStore.shortcutKeyMap[ShortcutKey.ToggleShowTranslate]})`"
-                    @click="settingStore.translate = !settingStore.translate"/>
+          <BaseIcon
+              :title="`开关释义显示(${settingStore.shortcutKeyMap[ShortcutKey.ToggleShowTranslate]})`"
+              @click="settingStore.translate = !settingStore.translate">
+            <IconMdiTranslate v-if="settingStore.translate"/>
+            <IconMdiTranslateOff v-else/>
+          </BaseIcon>
 
           <BaseIcon
               @click="settingStore.showPanel = !settingStore.showPanel"
-              :title="`单词本(${settingStore.shortcutKeyMap[ShortcutKey.TogglePanel]})`"
-              icon="tdesign:menu-unfold"/>
+              :title="`单词本(${settingStore.shortcutKeyMap[ShortcutKey.TogglePanel]})`">
+            <IconTdesignMenuUnfold/>
+          </BaseIcon>
         </div>
       </div>
     </div>
-    <div class="progress">
-      <ElProgress :percentage="progress"
-                  :stroke-width="8"
-                  :show-text="false"/>
+    <div class="progress-wrap">
+      <Progress :percentage="progress"
+                :stroke-width="8"
+                :show-text="false"/>
     </div>
   </div>
-  <!--
-   @click="emitter.emit(EventKey.openStatModal, {})"
-              @click="settingStore.showPanel = !settingStore.showPanel"-->
 </template>
 
 <style scoped lang="scss">
@@ -184,7 +166,7 @@ const progress = $computed(() => {
     margin-bottom: -6rem;
     margin-top: 3rem;
 
-    .progress {
+    .progress-wrap {
       bottom: calc(100% + 1.8rem);
     }
   }
@@ -222,17 +204,13 @@ const progress = $computed(() => {
     }
   }
 
-  .progress {
+  .progress-wrap {
     width: 100%;
     transition: all .3s;
     padding: 0 .6rem;
     box-sizing: border-box;
     position: absolute;
     bottom: 0;
-  }
-
-  :deep(.el-progress-bar__inner) {
-    background: var(--color-scrollbar);
   }
 
   .arrow {

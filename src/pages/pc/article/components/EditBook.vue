@@ -2,13 +2,16 @@
 
 import {Dict, DictId, DictType} from "@/types/types.ts";
 import {cloneDeep} from "@/utils";
-
-import {ElForm, ElFormItem, ElInput, ElSelect, ElOption, FormInstance, FormRules, ElMessage} from "element-plus";
+import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import {onMounted, reactive} from "vue";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 import {useBaseStore} from "@/stores/base.ts";
 import BaseButton from "@/components/BaseButton.vue";
 import {getDefaultDict} from "@/types/func.ts";
+import {Option, Select} from "@/pages/pc/components/base/select";
+import BaseInput from "@/pages/pc/components/base/BaseInput.vue";
+import Form from "@/pages/pc/components/base/form/Form.vue";
+import FormItem from "@/pages/pc/components/base/form/FormItem.vue";
 
 const props = defineProps<{
   isAdd: boolean,
@@ -31,8 +34,8 @@ const DefaultDictForm = {
   type: DictType.article
 }
 let dictForm: any = $ref(cloneDeep(DefaultDictForm))
-const dictFormRef = $ref<FormInstance>()
-const dictRules = reactive<FormRules>({
+const dictFormRef = $ref()
+const dictRules = reactive({
   name: [
     {required: true, message: '请输入名称', trigger: 'blur'},
     {max: 20, message: '名称不能超过20个字符', trigger: 'blur'},
@@ -54,13 +57,13 @@ async function onSubmit() {
       if (props.isAdd) {
         data.id = 'custom-dict-' + Date.now()
         if (source.bookList.find(v => v.name === data.name)) {
-          ElMessage.warning('已有相同名称！')
+          Toast.warning('已有相同名称！')
           return
         } else {
           source.bookList.push(cloneDeep(data))
           runtimeStore.editDict = data
           emit('submit')
-          ElMessage.success('添加成功')
+          Toast.success('添加成功')
         }
       } else {
         let rIndex = source.bookList.findIndex(v => v.id === data.id)
@@ -68,15 +71,15 @@ async function onSubmit() {
         if (rIndex > -1) {
           source.bookList[rIndex] = cloneDeep(data)
           emit('submit')
-          ElMessage.success('修改成功')
+          Toast.success('修改成功')
         } else {
           source.bookList.push(cloneDeep(data))
-          ElMessage.success('修改成功并加入我的词典')
+          Toast.success('修改成功并加入我的词典')
         }
       }
       console.log('submit!', data)
     } else {
-      ElMessage.warning('请填写完整')
+      Toast.warning('请填写完整')
     }
   })
 }
@@ -91,38 +94,38 @@ onMounted(() => {
 
 <template>
   <div class="w-120 mt-4">
-    <ElForm
+    <Form
         ref="dictFormRef"
         :rules="dictRules"
         :model="dictForm"
         label-width="8rem">
-      <ElFormItem label="名称" prop="name">
-        <ElInput v-model="dictForm.name"/>
-      </ElFormItem>
-      <ElFormItem label="描述">
-        <ElInput v-model="dictForm.description" type="textarea"/>
-      </ElFormItem>
-      <ElFormItem label="原文语言">
-        <ElSelect v-model="dictForm.language" placeholder="请选择选项">
-          <ElOption label="英语" value="en"/>
-          <ElOption label="德语" value="de"/>
-          <ElOption label="日语" value="ja"/>
-          <ElOption label="代码" value="code"/>
-        </ElSelect>
-      </ElFormItem>
-      <ElFormItem label="译文语言">
-        <ElSelect v-model="dictForm.translateLanguage" placeholder="请选择选项">
-          <ElOption label="中文" value="zh-CN"/>
-          <ElOption label="英语" value="en"/>
-          <ElOption label="德语" value="de"/>
-          <ElOption label="日语" value="ja"/>
-        </ElSelect>
-      </ElFormItem>
+      <FormItem label="名称" prop="name">
+        <BaseInput v-model="dictForm.name"/>
+      </FormItem>
+      <FormItem label="描述">
+        <BaseInput v-model="dictForm.description" textarea/>
+      </FormItem>
+      <FormItem label="原文语言">
+        <Select v-model="dictForm.language" placeholder="请选择选项">
+          <Option label="英语" value="en"/>
+          <Option label="德语" value="de"/>
+          <Option label="日语" value="ja"/>
+          <Option label="代码" value="code"/>
+        </Select>
+      </FormItem>
+      <FormItem label="译文语言">
+        <Select v-model="dictForm.translateLanguage" placeholder="请选择选项">
+          <Option label="中文" value="zh-CN"/>
+          <Option label="英语" value="en"/>
+          <Option label="德语" value="de"/>
+          <Option label="日语" value="ja"/>
+        </Select>
+      </FormItem>
       <div class="center">
         <base-button type="info" @click="emit('close')">关闭</base-button>
         <base-button type="primary" @click="onSubmit">确定</base-button>
       </div>
-    </ElForm>
+    </Form>
   </div>
 </template>
 

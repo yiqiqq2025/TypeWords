@@ -28,8 +28,8 @@
     ],
     "types": [
       "vite/client",
-      "element-plus/global",
       "unplugin-vue-macros/macros-global",
+      "unplugin-vue-components/types"  // 让 TS 识别自动导入组件
     ],
     "baseUrl": "src",
     //This is because TypeScript does not resolve webpack aliases automatically.
@@ -47,9 +47,7 @@
     "src/**/*.tsx",
     "src/**/*.d.ts",
     "src/**/*.vue",
-    "auto-imports.d.ts",
     "src/vite-env.d.ts",
-    "src/global.d.ts"
   ],
   "references": [
     {

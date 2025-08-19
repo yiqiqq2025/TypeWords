@@ -1,4 +1,4 @@
-export const GITHUB = 'https://github.com/zyronon/bbword'
+export const GITHUB = 'https://github.com/zyronon/TypeWords'
 
 const common = {
   word_dict_list_version: 1

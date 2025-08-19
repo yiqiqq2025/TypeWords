@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import Tooltip from "@/pages/pc/components/Tooltip.vue";
-import {Icon} from "@iconify/vue";
+import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
 
 interface IProps {
   keyboard?: string,
@@ -32,14 +31,14 @@ defineEmits(['click'])
              (disabled||loading) && 'disabled',
          ]">
       <span :style="{opacity:loading?0:1}"><slot></slot></span>
-      <Icon v-if="loading"
-            class="loading"
-            icon="eos-icons:loading"
-            width="18"
-            color="#ffffff"
+      <IconEosIconsLoading
+          v-if="loading"
+          class="loading"
+          width="18"
+          :color="type === 'info'?'#000000':'#ffffff'"
       />
       <div class="key-notice" v-if="keyboard">
-        <Icon icon="bi:keyboard" width="14" color="#ffffff"/>
+        <IconBiKeyboard width="14" color="#ffffff"/>
         <span class="key">{{ keyboard }}</span>
       </div>
     </div>
@@ -121,7 +120,7 @@ defineEmits(['click'])
 
   &.info {
     background: var(--btn-info);
-    border: 1px solid  var(--color-main-text);
+    border: 1px solid var(--color-main-text);
     color: var(--color-main-text);
   }
 

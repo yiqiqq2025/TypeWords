@@ -9,8 +9,7 @@ import {nanoid} from "nanoid";
 import BaseIcon from "@/components/BaseIcon.vue";
 import BaseTable from "@/pages/pc/components/BaseTable.vue";
 import WordItem from "@/pages/pc/components/WordItem.vue";
-import type {FormInstance, FormRules} from "element-plus";
-import {ElForm, ElFormItem, ElInput, ElMessage} from "element-plus";
+import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
 import BackIcon from "@/pages/pc/components/BackIcon.vue";
 import BaseButton from "@/components/BaseButton.vue";
@@ -18,6 +17,11 @@ import {useRoute, useRouter} from "vue-router";
 import {useBaseStore} from "@/stores/base.ts";
 import EditBook from "@/pages/pc/article/components/EditBook.vue";
 import {getDefaultDict} from "@/types/func.ts";
+import BaseInput from "@/pages/pc/components/base/BaseInput.vue";
+import Textarea from "@/pages/pc/components/base/Textarea.vue";
+import FormItem from "@/pages/pc/components/base/form/FormItem.vue";
+import Form from "@/pages/pc/components/base/form/Form.vue";
+import DeleteIcon from "@/components/icon/DeleteIcon.vue";
 
 const runtimeStore = useRuntimeStore()
 const base = useBaseStore()
@@ -51,8 +55,8 @@ const getDefaultFormWord = () => {
 }
 let isOperate = $ref(false)
 let wordForm = $ref(getDefaultFormWord())
-let wordFormRef = $ref<FormInstance>()
-const wordRules = reactive<FormRules>({
+let wordFormRef = $ref()
+const wordRules = reactive({
   word: [
     {required: true, message: '请输入单词', trigger: 'blur'},
     {max: 30, message: '名称不能超过30个字符', trigger: 'blur'},
@@ -80,6 +84,7 @@ function syncDictInMyStudyList(study = false) {
 }
 
 async function onSubmitWord() {
+  // return console.log('wordFormRef',wordFormRef,wordFormRef.validate)
   await wordFormRef.validate((valid) => {
     if (valid) {
       let data: any = convertToWord(wordForm)
@@ -88,9 +93,9 @@ async function onSubmitWord() {
         let r = list.find(v => v.id === data.id)
         if (r) {
           Object.assign(r, data)
-          ElMessage.success('修改成功')
+          Toast.success('修改成功')
         } else {
-          ElMessage.success('修改失败，未找到单词')
+          Toast.success('修改失败，未找到单词')
           return
         }
       } else {
@@ -98,15 +103,15 @@ async function onSubmitWord() {
         data.checked = false
         let r = list.find(v => v.word === wordForm.word)
         if (r) {
-          ElMessage.warning('已有相同名称单词！')
+          Toast.warning('已有相同名称单词！')
           return
         } else list.push(data)
-        ElMessage.success('添加成功')
+        Toast.success('添加成功')
         wordForm = getDefaultFormWord()
       }
       syncDictInMyStudyList()
     } else {
-      ElMessage.warning('请填写完整')
+      Toast.warning('请填写完整')
     }
   })
 }
@@ -203,11 +208,12 @@ defineRender(() => {
         {
           showBookDetail.value ? <div className="card mb-0 h-[95vh] flex flex-col">
                 <div class="flex justify-between items-center relative">
-                  <BackIcon class="z-2" onClick={() => router.back()}/>
+                  <BackIcon class="z-2" onClick={router.back}/>
                   <div class="absolute page-title text-align-center w-full">{runtimeStore.editDict.name}</div>
                   <div class="flex">
-                    <BaseButton type="info" onClick={() => isEdit = true}>编辑</BaseButton>
-                    <BaseButton loading={studyLoading} onClick={addMyStudyList}>学习</BaseButton>
+                    <BaseButton loading={studyLoading || loading} type="info"
+                                onClick={() => isEdit = true}>编辑</BaseButton>
+                    <BaseButton loading={studyLoading || loading} onClick={addMyStudyList}>学习</BaseButton>
                   </div>
                 </div>
                 <div class="text-lg  ">介绍：{runtimeStore.editDict.description}</div>
@@ -236,15 +242,17 @@ defineRender(() => {
                                       <BaseIcon
                                           class="option-icon"
                                           onClick={() => editWord(val.item)}
-                                          title="编辑"
-                                          icon="tabler:edit"/>
+                                          title="编辑">
+                                        <IconTablerEdit/>
+                                      </BaseIcon>
                                       <PopConfirm title="确认删除？"
                                                   onConfirm={() => delWord(val.item.id)}
                                       >
                                         <BaseIcon
                                             class="option-icon"
-                                            title="删除"
-                                            icon="solar:trash-bin-minimalistic-linear"/>
+                                            title="删除">
+                                          <DeleteIcon/>
+                                        </BaseIcon>
                                       </PopConfirm>
 
                                     </div>
@@ -260,78 +268,72 @@ defineRender(() => {
                           <div class="common-title">
                             {wordForm.id ? '修改' : '添加'}单词
                           </div>
-                          <ElForm
+                          <Form
                               class="flex-1 overflow-auto pr-2"
                               ref={e => wordFormRef = e}
                               rules={wordRules}
                               model={wordForm}
                               label-width="7rem">
-                            <ElFormItem label="单词" prop="word">
-                              <ElInput
+                            <FormItem label="单词" prop="word">
+                              <BaseInput
                                   modelValue={wordForm.word}
                                   onUpdate:modelValue={e => wordForm.word = e}
                               />
-                            </ElFormItem>
-                            <ElFormItem label="英音音标">
-                              <ElInput
+                            </FormItem>
+                            <FormItem label="英音音标">
+                              <BaseInput
                                   modelValue={wordForm.phonetic0}
                                   onUpdate:modelValue={e => wordForm.phonetic0 = e}
                               />
-                            </ElFormItem>
-                            <ElFormItem label="美音音标">
-                              <ElInput
+                            </FormItem>
+                            <FormItem label="美音音标">
+                              <BaseInput
                                   modelValue={wordForm.phonetic1}
                                   onUpdate:modelValue={e => wordForm.phonetic1 = e}/>
-                            </ElFormItem>
-                            <ElFormItem label="翻译">
-                              <ElInput
+                            </FormItem>
+                            <FormItem label="翻译">
+                              <Textarea
                                   modelValue={wordForm.trans}
                                   onUpdate:modelValue={e => wordForm.trans = e}
                                   placeholder="一行一个翻译，前面词性，后面内容（如n.取消）；多个翻译请换行"
-                                  autosize={{minRows: 6, maxRows: 10}}
-                                  type="textarea"/>
-                            </ElFormItem>
-                            <ElFormItem label="例句">
-                              <ElInput
+                                  autosize={{minRows: 6, maxRows: 10}}/>
+                            </FormItem>
+                            <FormItem label="例句">
+                              <Textarea
                                   modelValue={wordForm.sentences}
                                   onUpdate:modelValue={e => wordForm.sentences = e}
                                   placeholder="一行原文，一行译文；多个请换两行"
-                                  autosize={{minRows: 6, maxRows: 10}}
-                                  type="textarea"/>
-                            </ElFormItem>
-                            <ElFormItem label="短语">
-                              <ElInput
+                                  autosize={{minRows: 6, maxRows: 10}}/>
+                            </FormItem>
+                            <FormItem label="短语">
+                              <Textarea
                                   modelValue={wordForm.phrases}
                                   onUpdate:modelValue={e => wordForm.phrases = e}
                                   placeholder="一行原文，一行译文；多个请换两行"
-                                  autosize={{minRows: 6, maxRows: 10}}
-                                  type="textarea"/>
-                            </ElFormItem>
-                            <ElFormItem label="同义词">
-                              <ElInput
+                                  autosize={{minRows: 6, maxRows: 10}}/>
+                            </FormItem>
+                            <FormItem label="同义词">
+                              <Textarea
                                   modelValue={wordForm.synos}
                                   onUpdate:modelValue={e => wordForm.synos = e}
                                   placeholder="请参考已有单词格式"
-                                  autosize={{minRows: 6, maxRows: 20}}
-                                  type="textarea"/>
-                            </ElFormItem>
-                            <ElFormItem label="同根词">
-                              <ElInput
+                                  autosize={{minRows: 6, maxRows: 20}}/>
+                            </FormItem>
+                            <FormItem label="同根词">
+                              <Textarea
                                   modelValue={wordForm.relWords}
                                   onUpdate:modelValue={e => wordForm.relWords = e}
                                   placeholder="请参考已有单词格式"
-                                  autosize={{minRows: 6, maxRows: 20}}
-                                  type="textarea"/>
-                            </ElFormItem>
-                            <ElFormItem label="词源">
-                              <ElInput
+                                  autosize={{minRows: 6, maxRows: 20}}/>
+                            </FormItem>
+                            <FormItem label="词源">
+                              <Textarea
                                   modelValue={wordForm.etymology}
                                   onUpdate:modelValue={e => wordForm.etymology = e}
                                   placeholder="请参考已有单词格式"
-                                  autosize={{minRows: 6, maxRows: 10}}
-                                  type="textarea"/>
-                            </ElFormItem>
-                          </ElForm>
+                                  autosize={{minRows: 6, maxRows: 10}}/>
+                            </FormItem>
+                          </Form>
                           <div class="center">
                             <BaseButton
                                 type="info"
@@ -348,7 +350,7 @@ defineRender(() => {
               </div> :
               <div class="card mb-0 h-[95vh]">
                 <div class="flex justify-between items-center relative">
-                  <BackIcon class="z-2" onClick={() => isAdd ? router.back() : (isEdit = false)}/>
+                  <BackIcon class="z-2" onClick={isAdd ? router.back : (isEdit = false)}/>
                   <div class="absolute page-title text-align-center w-full">
                     {runtimeStore.editDict.id ? '修改' : '创建'}词典
                   </div>
