@@ -1,24 +1,25 @@
 const {SitemapStream, streamToPromise} = require('sitemap')
 const {createWriteStream} = require('fs')
 const {resolve} = require('path')
-
+const bookList = require('../src/assets/book-list.json')
+const dictList = require('../src/assets/dict-list.json')
 // 你的网站域名
-const SITE_URL = 'https://yourdomain.com'
+const SITE_URL = 'https://2study.top'
 
 // 静态路由（首页、练习页等）
 const staticPages = [
   {url: '/', changefreq: 'daily', priority: 1.0},
-  {url: '/word', changefreq: 'daily', priority: 0.9},
-  {url: '/article', changefreq: 'daily', priority: 0.9},
+  {url: '/words', changefreq: 'daily', priority: 0.9},
+  {url: '/articles', changefreq: 'daily', priority: 0.9},
   {url: '/setting', changefreq: 'monthly', priority: 0.3},
 ]
 
 // 动态页面示例（假设你有文章或单词数据）
-const dynamicPages = [
-  {url: '/article/vue-seo', changefreq: 'weekly', priority: 0.8},
-  {url: '/article/js-tips', changefreq: 'weekly', priority: 0.8},
-  // 如果文章很多，可以用 JSON / API 自动生成数组
-]
+const dynamicPages = bookList.flat().map(book => {
+  return {url: '/practice-articles/' + book.id, changefreq: 'weekly', priority: 0.8}
+}).concat(dictList.flat().map(book => {
+  return {url: '/practice-words/' + book.id, changefreq: 'weekly', priority: 0.8}
+}))
 
 async function generateSitemap() {
   const sitemap = new SitemapStream({hostname: SITE_URL})

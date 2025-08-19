@@ -106,7 +106,7 @@ export default defineConfig(() => {
           LATEST_COMMIT_HASH: JSON.stringify(latestCommitHash + (process.env.NODE_ENV === 'production' ? '' : ' (dev)')),
         },
         //默认是'',导致只能在一级域名下使用。
-        base: './',
+        base: '/',
         resolve: {
           alias: {
             "@": pathResolve("src"),

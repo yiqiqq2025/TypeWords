@@ -8,10 +8,11 @@ import dayjs from 'dayjs'
 import axios from "axios";
 import {env} from "@/config/ENV.ts";
 import {nextTick} from "vue";
-import {dictionaryResources, enArticle} from "@/assets/dictionary.ts";
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import {getDefaultArticle, getDefaultDict, getDefaultWord} from "@/types/func.ts";
 import {set} from "idb-keyval";
+import book_list from "@/assets/book-list.json";
+import dict_list from "@/assets/dict-list.json";
 
 export function no() {
   Toast.warning('未现实')
@@ -148,7 +149,7 @@ export function checkAndUpgradeSaveDict(val: any) {
                   if (currentDictId === studyDictId) defaultState.word.studyIndex = defaultState.word.bookList.length - 1
                 } else {
                   //当时把选中的词典的id设为随机了，导致通过id找不到
-                  let r = dictionaryResources.find(a => a.name === v.name)
+                  let r: any = dict_list.flat().find(a => a.name === v.name)
                   if (r) {
                     formatWord(v)
                     let dict = getDefaultDict(r)
@@ -169,7 +170,7 @@ export function checkAndUpgradeSaveDict(val: any) {
                   if (currentDictId === studyDictId) defaultState.article.studyIndex = defaultState.article.bookList.length - 1
                 } else {
                   //当时把选中的词典的id设为随机了
-                  let r = enArticle.find(a => a.name === v.name)
+                  let r: any = book_list.flat().find(a => a.name === v.name)
                   if (r) {
                     formatWord(v)
                     let dict = getDefaultDict(r)
@@ -416,7 +417,7 @@ export async function _getDictDataByUrl(val: DictResource, type: DictType = Dict
   // await sleep(2000);
   let dictResourceUrl = `/dicts/${val.language}/word/${val.url}`
   if (type === DictType.article) {
-    dictResourceUrl = `/dicts/${val.language}/${val.type}/${val.url}`;
+    dictResourceUrl = `/dicts/${val.language}/article/${val.url}`;
   }
   let s = await getDictFile(dictResourceUrl)
   if (s) {

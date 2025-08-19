@@ -10,7 +10,7 @@ import useTheme from "@/hooks/theme.ts";
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import {_getDictDataByUrl, cloneDeep} from "@/utils";
 import {usePracticeStore} from "@/stores/practice.ts";
-import {getCurrentStudyWord, useArticleOptions} from "@/hooks/dict.ts";
+import {useArticleOptions} from "@/hooks/dict.ts";
 import {genArticleSectionData, usePlaySentenceAudio} from "@/hooks/article.ts";
 import {getDefaultArticle, getDefaultDict} from "@/types/func.ts";
 import TypingArticle from "@/pages/pc/article/components/TypingArticle.vue";
@@ -20,9 +20,8 @@ import ArticleList from "@/pages/pc/components/list/ArticleList.vue";
 import EditSingleArticleModal from "@/pages/pc/article/components/EditSingleArticleModal.vue";
 import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
 import ConflictNotice from "@/pages/pc/components/ConflictNotice.vue";
-import {dictionaryResources, enArticle} from "@/assets/dictionary.ts";
 import {useRoute, useRouter} from "vue-router";
-import {useRuntimeStore} from "@/stores/runtime.ts";
+import book_list from "@/assets/book-list.json";
 
 const store = useBaseStore()
 const settingStore = useSettingStore()
@@ -95,12 +94,12 @@ async function init() {
   if (dictId) {
     //先在自己的词典列表里面找，如果没有再在资源列表里面找
     dict = store.article.bookList.find(v => v.id === dictId)
-    if (!dict) dict = enArticle.find(v => v.id === dictId) as Dict
+    if (!dict) dict = book_list.flat().find(v => v.id === dictId) as Dict
     if (dict && dict.id) {
       //如果是不是自定义词典，就请求数据
       if (!dict.custom) dict = await _getDictDataByUrl(dict, DictType.article)
       if (!dict.articles.length) {
-        router.push('/article')
+        router.push('/articles')
         return Toast.warning('没有文章可学习！')
       }
       store.changeBook(dict)
@@ -108,10 +107,10 @@ async function init() {
       getCurrentPractice()
       loading = false
     } else {
-      router.push('/article')
+      router.push('/articles')
     }
   } else {
-    router.push('/article')
+    router.push('/articles')
   }
 }
 

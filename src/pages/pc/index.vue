@@ -22,11 +22,11 @@ const {toggleTheme} = useTheme()
     <div class="aside anim fixed" :class="{'expand':settingStore.sideExpand}">
       <div class="top">
         <Logo v-if="settingStore.sideExpand"/>
-        <div class="row" @click="router.push('/word')">
+        <div class="row" @click="router.push('/words')">
           <IconMaterialSymbolsLightDictionaryOutlineSharp/>
           <span v-if="settingStore.sideExpand">单词</span>
         </div>
-        <div class="row" @click="router.push('/article')">
+        <div class="row" @click="router.push('/articles')">
           <IconPhArticleNyTimes/>
           <span v-if="settingStore.sideExpand">文章</span>
         </div>

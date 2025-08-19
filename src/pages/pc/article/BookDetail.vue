@@ -52,7 +52,7 @@ async function init() {
     runtimeStore.editDict = getDefaultDict()
   } else {
     if (!runtimeStore.editDict.id) {
-      await router.push("/article")
+      await router.push("/articles")
     } else {
       if (!runtimeStore.editDict?.articles?.length
           && !runtimeStore.editDict?.custom
@@ -66,7 +66,7 @@ async function init() {
       if (runtimeStore.editDict.articles.length) {
         selectArticle = runtimeStore.editDict.articles[0]
       }
-      console.log(runtimeStore.editDict)
+      console.log('runtimeStore.editDict',runtimeStore.editDict)
     }
   }
 }

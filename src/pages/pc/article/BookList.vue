@@ -10,7 +10,7 @@ import BaseButton from "@/components/BaseButton.vue";
 import DictList from "@/pages/pc/components/list/DictList.vue";
 import BackIcon from "@/pages/pc/components/BackIcon.vue";
 import {useRouter} from "vue-router";
-import {enArticle} from "@/assets/dictionary.ts";
+import book_list from "@/assets/book-list.json";
 import {computed} from "vue";
 import {getDefaultDict} from "@/types/func.ts";
 
@@ -34,7 +34,7 @@ let searchKey = $ref('')
 const searchList = computed<any[]>(() => {
   if (searchKey) {
     let s = searchKey.toLowerCase()
-    return enArticle.filter((item) => {
+    return book_list.flat().filter((item) => {
       return item.id.toLowerCase().includes(s)
           || item.name.toLowerCase().includes(s)
           || item.category.toLowerCase().includes(s)
@@ -59,7 +59,7 @@ const searchList = computed<any[]>(() => {
         <div class="py-1 flex flex-1 justify-end" v-else>
           <span class="page-title absolute w-full center">书籍列表</span>
           <BaseIcon @click="showSearchInput = true"
-                     class="z-1">
+                    class="z-1">
             <IconFluentSearch24Regular/>
           </BaseIcon>
         </div>
@@ -75,9 +75,9 @@ const searchList = computed<any[]>(() => {
       </div>
       <div class="w-full mt-2" v-else>
         <DictList
-            v-if="enArticle.length "
+            v-if="book_list.flat().length "
             @selectDict="selectDict"
-            :list="enArticle"
+            :list="book_list.flat()"
             quantifier="篇"
             :select-id="'-1'"/>
       </div>

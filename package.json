@@ -6,7 +6,7 @@
     "start": "vite",
     "dev": "vite",
     "test": "",
-    "build": "vite build",
+    "build": "vite build && node scripts/generate-sitemap.js",
     "build-nocdn": "vite build",
     "build-tsc": "vue-tsc && vite build",
     "report": "vite build",
@@ -14,7 +14,8 @@
     "commit": "git-cz",
     "prepare": "husky install",
     "i18n:write": "gulp i18nwrite",
-    "deploy-oss": "node scripts/deploy-oss.js"
+    "deploy-oss": "node scripts/deploy-oss.js",
+    "deploy-2": "node scripts/generate-sitemap.js"
   },
   "dependencies": {
     "@imengyu/vue3-context-menu": "^1.5.1",

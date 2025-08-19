@@ -43,7 +43,7 @@ function startStudy() {
       custom: base.sbook.custom,
       complete: base.sbook.complete,
     })
-    nav('/study-article/' + store.sbook.id)
+    nav('/practice-articles/' + store.sbook.id)
   } else {
     window.umami?.track('no-book')
     Toast.warning('请先选择一本书籍')

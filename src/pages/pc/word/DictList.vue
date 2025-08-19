@@ -12,9 +12,9 @@ import BackIcon from "@/pages/pc/components/BackIcon.vue";
 import DictGroup from "@/pages/pc/components/list/DictGroup.vue";
 import {useBaseStore} from "@/stores/base.ts";
 import {useRouter} from "vue-router";
-import {dictionaryResources} from "@/assets/dictionary.ts";
 import {computed} from "vue";
 import {getDefaultDict} from "@/types/func.ts";
+import dict_list from "@/assets/dict-list.json";
 
 const {nav} = useNav()
 const runtimeStore = useRuntimeStore()
@@ -46,7 +46,7 @@ function groupByDictTags(dictList: DictResource[]) {
 }
 
 const groupedByCategoryAndTag = $computed(() => {
-  const groupByCategory = groupBy(dictionaryResources, 'category')
+  const groupByCategory = groupBy(dict_list.flat(), 'category')
   let data = []
   for (const [key, value] of Object.entries(groupByCategory)) {
     data.push([key, groupByDictTags(value)])
@@ -60,7 +60,7 @@ let searchKey = $ref('')
 const searchList = computed<any[]>(() => {
   if (searchKey) {
     let s = searchKey.toLowerCase()
-    return dictionaryResources.filter((item) => {
+    return dict_list.flat().filter((item) => {
       return item.id.toLowerCase().includes(s)
           || item.name.toLowerCase().includes(s)
           || item.category.toLowerCase().includes(s)

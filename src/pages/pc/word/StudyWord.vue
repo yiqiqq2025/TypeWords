@@ -21,10 +21,10 @@ import TypeWord from "@/pages/pc/word/components/TypeWord.vue";
 import Empty from "@/components/Empty.vue";
 import {useBaseStore} from "@/stores/base.ts";
 import {usePracticeStore} from "@/stores/practice.ts";
-import {dictionaryResources} from "@/assets/dictionary.ts";
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import {getDefaultDict, getDefaultWord} from "@/types/func.ts";
 import ConflictNotice from "@/pages/pc/components/ConflictNotice.vue";
+import dict_list from "@/assets/dict-list.json";
 
 interface IProps {
   new: Word[],
@@ -68,7 +68,7 @@ async function init() {
   if (dictId) {
     //先在自己的词典列表里面找，如果没有再在资源列表里面找
     dict = store.word.bookList.find(v => v.id === dictId)
-    if (!dict) dict = dictionaryResources.find(v => v.id === dictId) as Dict
+    if (!dict) dict = dict_list.flat().find(v => v.id === dictId) as Dict
     if (dict && dict.id) {
       //如果是不是自定义词典，就请求数据
       if (!dict.custom) dict = await _getDictDataByUrl(dict)
