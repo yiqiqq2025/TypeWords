@@ -14,8 +14,7 @@
     "commit": "git-cz",
     "prepare": "husky install",
     "i18n:write": "gulp i18nwrite",
-    "deploy-oss": "node scripts/deploy-oss.js",
-    "deploy-2": "node scripts/generate-sitemap.js"
+    "deploy-oss": "node scripts/deploy-oss.js"
   },
   "dependencies": {
     "@imengyu/vue3-context-menu": "^1.5.1",
