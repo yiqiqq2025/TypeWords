@@ -43,7 +43,7 @@ function startStudy() {
       custom: base.sbook.custom,
       complete: base.sbook.complete,
     })
-    nav('/study-article', {name: store.sbook.name, id: store.sbook.id})
+    nav('/study-article/' + store.sbook.id)
   } else {
     window.umami?.track('no-book')
     Toast.warning('请先选择一本书籍')
@@ -128,7 +128,7 @@ async function goBookDetail(val: DictResource) {
           <div class="color-blue cursor-pointer" v-if="base.article.bookList.length > 1"
                @click="isMultiple = !isMultiple; selectIds = []">{{ isMultiple ? '取消' : '管理书籍' }}
           </div>
-          <div class="color-blue cursor-pointer" @click="nav('dict-detail', { isAdd: true })">创建个人书籍</div>
+          <div class="color-blue cursor-pointer" @click="nav('book-detail', { isAdd: true })">创建个人书籍</div>
         </div>
       </div>
       <div class="flex gap-4 flex-wrap mt-4">

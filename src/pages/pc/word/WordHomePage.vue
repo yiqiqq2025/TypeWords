@@ -60,7 +60,7 @@ function startStudy() {
       custom: store.sdict.custom,
       complete: store.sdict.complete,
     })
-    nav('study-word', {name: store.sdict.name, id: store.sdict.id}, currentStudy)
+    nav('study-word/' + store.sdict.id, {}, currentStudy)
   } else {
     window.umami?.track('no-dict')
     Toast.warning('请先选择一本词典')

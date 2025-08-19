@@ -21,11 +21,11 @@ export const routes: RouteRecordRaw[] = [
       // {path: 'home', component: HomeIndex},
       {path: 'word', component: WordHomePage},
       {path: 'dict-list', component: DictList},
-      {path: 'study-word', component: StudyWord},
+      {path: 'study-word/:id', component: StudyWord},
       {path: 'dict-detail', component: DictDetail},
 
       {path: 'article', component: ArticleHomePage},
-      {path: 'study-article', component: StudyArticle},
+      {path: 'study-article/:id', component: StudyArticle},
       {path: 'book-detail', component: BookDetail},
       {path: 'book-list', component: BookList},
       {path: 'edit-article', component: () => import("@/pages/pc/article/EditArticlePage.vue")},
@@ -39,8 +39,8 @@ export const routes: RouteRecordRaw[] = [
 ]
 
 const router = VueRouter.createRouter({
-  // history: VueRouter.createWebHistory(),
-  history: VueRouter.createWebHashHistory(),
+  history: VueRouter.createWebHistory(),
+  // history: VueRouter.createWebHashHistory(),
   routes,
   scrollBehavior(to, from, savedPosition) {
     // console.log('savedPosition', savedPosition)

@@ -414,9 +414,9 @@ export async function sleep(time: number) {
 
 export async function _getDictDataByUrl(val: DictResource, type: DictType = DictType.word): Promise<Dict> {
   // await sleep(2000);
-  let dictResourceUrl = `./dicts/${val.language}/word/${val.url}`
+  let dictResourceUrl = `/dicts/${val.language}/word/${val.url}`
   if (type === DictType.article) {
-    dictResourceUrl = `./dicts/${val.language}/${val.type}/${val.url}`;
+    dictResourceUrl = `/dicts/${val.language}/${val.type}/${val.url}`;
   }
   let s = await getDictFile(dictResourceUrl)
   if (s) {

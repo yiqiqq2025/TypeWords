@@ -146,7 +146,7 @@ const {
 
     <div class="card mb-0 h-[95vh]" v-else>
       <div class="flex justify-between items-center relative">
-        <BackIcon class="z-2" @click="isAdd ? $router.back():(isEdit = false)"/>
+        <BackIcon class="z-2" @click="isAdd ? $router.back:(isEdit = false)"/>
         <div class="absolute text-2xl text-align-center w-full">{{ runtimeStore.editDict.id ? '修改' : '创建' }}书籍
         </div>
       </div>

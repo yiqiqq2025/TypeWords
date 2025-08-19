@@ -61,53 +61,46 @@ let data = $ref<StudyData>({
   wrongWords: [],
 })
 
-watch(() => store.load, (n) => {
-  if (n && loading && runtimeStore.editDict.id) {
-    console.log('load好了开始加载')
-    store.changeDict(runtimeStore.editDict)
-    studyData = getCurrentStudyWord()
-    loading = false
+async function init() {
+  console.log('load好了开始加载')
+  let dict = getDefaultDict()
+  let dictId = route.params.id
+  if (dictId) {
+    //先在自己的词典列表里面找，如果没有再在资源列表里面找
+    dict = store.word.bookList.find(v => v.id === dictId)
+    if (!dict) dict = dictionaryResources.find(v => v.id === dictId) as Dict
+    if (dict && dict.id) {
+      //如果是不是自定义词典，就请求数据
+      if (!dict.custom) dict = await _getDictDataByUrl(dict)
+      if (!dict.words.length) {
+        router.push('/word')
+        return Toast.warning('没有单词可学习！')
+      }
+      store.changeDict(dict)
+      studyData = getCurrentStudyWord()
+      loading = false
+    } else {
+      router.push('/word')
+    }
+  } else {
+    router.push('/word')
   }
-}, {immediate: true})
+}
 
-useStartKeyboardEventListener()
-useDisableEventListener(() => loading)
+watch(() => store.load, (n) => {
+  if (n && loading) init()
+}, {immediate: true})
 
 onMounted(() => {
   if (runtimeStore.routeData) {
     studyData = runtimeStore.routeData
   } else {
-    let dictName = route.query.name
-    let dictId = route.query.id
-    //如果url里有词典id或name，那么直接请求词典数据，并加到bookList里面进行学习
-    //todo 这里要处理自定义词典的问题
-    if (dictName || dictId) {
-      let dictResource = getDefaultDict()
-      if (dictId) dictResource = dictionaryResources.find(v => v.id === dictId) as Dict
-      else if (dictName) dictResource = dictionaryResources.find(v => v.name === dictName) as Dict
-      if (dictResource.id) {
-        loading = true
-        _getDictDataByUrl(dictResource).then(r => {
-          if (!r.words.length) {
-            router.push('/word')
-            return Toast.warning('没有单词可学习！')
-          }
-          runtimeStore.editDict = r
-          if (store.load) {
-            console.log('直接加载')
-            store.changeDict(r)
-            studyData = getCurrentStudyWord()
-            loading = false
-          }
-        })
-      } else {
-        router.push('/word')
-      }
-    } else {
-      router.push('/word')
-    }
+    loading = true
   }
 })
+
+useStartKeyboardEventListener()
+useDisableEventListener(() => loading)
 
 watch(() => studyData, () => {
   if (studyData.new.length === 0) {

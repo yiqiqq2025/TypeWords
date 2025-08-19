@@ -10,7 +10,7 @@ import useTheme from "@/hooks/theme.ts";
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import {_getDictDataByUrl, cloneDeep} from "@/utils";
 import {usePracticeStore} from "@/stores/practice.ts";
-import {useArticleOptions} from "@/hooks/dict.ts";
+import {getCurrentStudyWord, useArticleOptions} from "@/hooks/dict.ts";
 import {genArticleSectionData, usePlaySentenceAudio} from "@/hooks/article.ts";
 import {getDefaultArticle, getDefaultDict} from "@/types/func.ts";
 import TypingArticle from "@/pages/pc/article/components/TypingArticle.vue";
@@ -20,7 +20,7 @@ import ArticleList from "@/pages/pc/components/list/ArticleList.vue";
 import EditSingleArticleModal from "@/pages/pc/article/components/EditSingleArticleModal.vue";
 import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
 import ConflictNotice from "@/pages/pc/components/ConflictNotice.vue";
-import {enArticle} from "@/assets/dictionary.ts";
+import {dictionaryResources, enArticle} from "@/assets/dictionary.ts";
 import {useRoute, useRouter} from "vue-router";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 
@@ -39,7 +39,7 @@ let articleData = $ref({
 })
 let showEditArticle = $ref(false)
 let typingArticleRef = $ref<any>()
-let loading = $ref<boolean>(true)
+let loading = $ref<boolean>(false)
 let editArticle = $ref<Article>(getDefaultArticle())
 
 function write() {
@@ -87,60 +87,50 @@ function next() {
 
 const router = useRouter()
 const route = useRoute()
-const runtimeStore = useRuntimeStore()
 
-
-watch(() => store.load, (n) => {
-  if (n && loading && runtimeStore.editDict.id) {
-    console.log('load好了开始加载')
-    store.changeBook(runtimeStore.editDict)
-    articleData.list = cloneDeep(store.sbook.articles)
-    getCurrentPractice()
-    loading = false
-  }
-},{immediate: true})
-
-useStartKeyboardEventListener()
-useDisableEventListener(() => loading)
-
-function init() {
-  if (store.sbook?.articles?.length) {
-    articleData.list = cloneDeep(store.sbook.articles)
-    getCurrentPractice()
-    loading = false
-  } else {
-    let dictName = route.query.name
-    let dictId = route.query.id
-    //如果url里有词典id或name，那么直接请求词典数据，并加到bookList里面进行学习
-    //todo 这里要处理自定义词典的问题
-    if (dictName || dictId) {
-      let dictResource = getDefaultDict()
-      if (dictId) dictResource = enArticle.find(v => v.id === dictId) as Dict
-      else if (dictName) dictResource = enArticle.find(v => v.name === dictName) as Dict
-      if (dictResource.id) {
-        loading = true
-        _getDictDataByUrl(dictResource, DictType.article).then(r => {
-          if (!r.articles.length) {
-            router.push('/article')
-            return Toast.warning('没有文章可学习！')
-          }
-          runtimeStore.editDict = r
-          if (store.load) {
-            console.log('直接加载')
-            store.changeBook(r)
-            articleData.list = cloneDeep(store.sbook.articles)
-            getCurrentPractice()
-            loading = false
-          }
-        })
-      } else {
+async function init() {
+  console.log('load好了开始加载')
+  let dict = getDefaultDict()
+  let dictId = route.params.id
+  if (dictId) {
+    //先在自己的词典列表里面找，如果没有再在资源列表里面找
+    dict = store.article.bookList.find(v => v.id === dictId)
+    if (!dict) dict = enArticle.find(v => v.id === dictId) as Dict
+    if (dict && dict.id) {
+      //如果是不是自定义词典，就请求数据
+      if (!dict.custom) dict = await _getDictDataByUrl(dict, DictType.article)
+      if (!dict.articles.length) {
         router.push('/article')
+        return Toast.warning('没有文章可学习！')
       }
+      store.changeBook(dict)
+      articleData.list = cloneDeep(store.sbook.articles)
+      getCurrentPractice()
+      loading = false
     } else {
       router.push('/article')
     }
+  } else {
+    router.push('/article')
   }
 }
+
+watch(() => store.load, (n) => {
+  if (n && loading) init()
+}, {immediate: true})
+
+onMounted(() => {
+  if (store.sbook?.articles?.length) {
+    articleData.list = cloneDeep(store.sbook.articles)
+    getCurrentPractice()
+  } else {
+    loading = true
+  }
+})
+
+
+useStartKeyboardEventListener()
+useDisableEventListener(() => loading)
 
 function setArticle(val: Article) {
   statisticsStore.inputWordNumber = 0
@@ -245,8 +235,6 @@ async function onKeyDown(e: KeyboardEvent) {
 }
 
 useOnKeyboardEventListener(onKeyDown, onKeyUp)
-
-onMounted(init)
 
 useEvents([
   [EventKey.write, write],
