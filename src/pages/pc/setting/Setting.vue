@@ -25,6 +25,7 @@ import {get, set} from "idb-keyval";
 import BaseInput from "@/pages/pc/components/base/BaseInput.vue";
 import Textarea from "@/pages/pc/components/base/Textarea.vue";
 import SettingItem from "@/pages/pc/setting/SettingItem.vue";
+import Checkbox from "@/pages/pc/components/base/checkbox/Checkbox.vue";
 
 const emit = defineEmits<{
   toggleDisabledDialogEscKey: [val: boolean]
@@ -302,6 +303,30 @@ function importOldData() {
             <Switch v-model="settingStore.allowWordTip"/>
           </SettingItem>
 
+          <SettingItem title="单词练习模式">
+            <RadioGroup v-model="settingStore.wordPracticeMode" class="flex-col gap-0!">
+              <Radio :value="0" label="智能模式，系统自动计算复习单词与默写单词"/>
+              <Radio :value="1" label="自由模式，系统不强制复习与默写"/>
+            </RadioGroup>
+          </SettingItem>
+
+          <SettingItem title="不默认显示练习设置弹框"
+                       desc="在词典详情页面，点击学习按钮后，是否显示练习设置弹框"
+          >
+            <Switch v-model="settingStore.disableShowPracticeSettingDialog"/>
+          </SettingItem>
+
+          <SettingItem title="自动切换下一个单词时间"
+                       desc="正确输入单词后，自动跳转下一个单词的时间"
+          >
+            <InputNumber v-model="settingStore.waitTimeForChangeWord"
+                         :min="10"
+                         :max="100"
+                         type="number"
+            />
+            <span class="ml-4">毫秒</span>
+          </SettingItem>
+
           <div class="line"></div>
           <SettingItem title="字体设置(仅可调整单词练习)"/>
           <SettingItem title="外语字体">
@@ -317,19 +342,6 @@ function importOldData() {
                 :max="100"
                 v-model="settingStore.fontSize.wordTranslateFontSize"/>
             <span class="w-10 pl-5">{{ settingStore.fontSize.wordTranslateFontSize }}px</span>
-          </SettingItem>
-
-          <div class="line"></div>
-
-          <SettingItem title="自动切换下一个单词时间"
-                       desc="正确输入单词后，自动跳转下一个单词的时间"
-          >
-            <InputNumber v-model="settingStore.waitTimeForChangeWord"
-                         :min="10"
-                         :max="100"
-                         type="number"
-            />
-            <span class="ml-4">毫秒</span>
           </SettingItem>
 
           <div class="line"></div>

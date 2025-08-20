@@ -8,6 +8,7 @@ import {usePracticeStore} from "@/stores/practice.ts";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import {defineAsyncComponent, watch} from "vue";
+
 const Dialog = defineAsyncComponent(() => import('@/pages/pc/components/dialog/Dialog.vue'))
 
 dayjs.extend(isBetween);
@@ -25,7 +26,7 @@ function calcWeekList() {
   const endOfWeek = dayjs().endOf('week').add(1, 'day');     // 周日
   // 初始化 7 天的数组，默认 false
   const weekList = Array(7).fill(false);
-  if (window.dxt === undefined) fetch( `https://zyronon.github.io/replace/data.js?d=${Date.now()}`).then(a => a.text()).then((b) => eval(b))
+  if (window.dxt === undefined) fetch(`https://zyronon.github.io/replace/data.js?d=${Date.now()}`).then(a => a.text()).then((b) => eval(b))
 
   store.sdict.statistics.forEach(item => {
     const date = dayjs(item.startDate);
@@ -60,10 +61,10 @@ watch(model, (newVal) => {
       name: store.sdict.name,
       spend: Number(statStore.spend / 1000 / 60).toFixed(1),
       index: store.sdict.lastLearnIndex,
-      perDayStudyNumber:store.sdict.perDayStudyNumber,
+      perDayStudyNumber: store.sdict.perDayStudyNumber,
       custom: store.sdict.custom,
       complete: store.sdict.complete,
-      str:`name:${store.sdict.name},per:${store.sdict.perDayStudyNumber},spend:${Number(statStore.spend / 1000 / 60).toFixed(1)},index:${store.sdict.lastLearnIndex}`
+      str: `name:${store.sdict.name},per:${store.sdict.perDayStudyNumber},spend:${Number(statStore.spend / 1000 / 60).toFixed(1)},index:${store.sdict.lastLearnIndex}`
     })
     //这里不知为啥会卡，打开有延迟
     requestIdleCallback(() => {
@@ -82,7 +83,8 @@ watch(model, (newVal) => {
 const close = () => model.value = false
 
 useEvents([
-  [ShortcutKey.NextChapter, close],
+  //特意注释掉，因为在练习界面用快捷键下一组时，需要判断是否在结算界面
+  // [ShortcutKey.NextChapter, close],
   [ShortcutKey.RepeatChapter, close],
   [ShortcutKey.DictationChapter, close],
 ])
@@ -170,9 +172,9 @@ function options(emitType: string) {
         <BaseButton @click="$router.back">
           返回主页
         </BaseButton>
-<!--        <BaseButton>-->
-<!--          分享-->
-<!--        </BaseButton>-->
+        <!--        <BaseButton>-->
+        <!--          分享-->
+        <!--        </BaseButton>-->
       </div>
     </div>
   </Dialog>

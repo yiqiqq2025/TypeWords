@@ -41,6 +41,8 @@ export interface SettingState {
   load: boolean
   conflictNotice: boolean // 其他脚本/插件冲突提示
   ignoreSimpleWord: boolean // 忽略简单词
+  wordPracticeMode: number // 单词练习模式，0：智能模式，1：自由模式
+  disableShowPracticeSettingDialog: boolean // 不默认显示练习设置弹框
 }
 
 export const getDefaultSettingState = (): SettingState => ({
@@ -80,7 +82,9 @@ export const getDefaultSettingState = (): SettingState => ({
   firstTime: Date.now(),
   load: false,
   conflictNotice: true,
-  ignoreSimpleWord: false
+  ignoreSimpleWord: false,
+  wordPracticeMode: 0,
+  disableShowPracticeSettingDialog: false
 })
 
 export const useSettingStore = defineStore('setting', {

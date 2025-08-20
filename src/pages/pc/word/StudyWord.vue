@@ -214,6 +214,11 @@ function next(isTyping: boolean = true) {
 
       //开始默写新词
       if (statStore.step === 0) {
+        if (settingStore.wordPracticeMode === 1) {
+          console.log('自由模式，全完学完了')
+          showStatDialog = true
+          return
+        }
         statStore.step++
         console.log('开始默写新词')
         settingStore.dictation = true
@@ -265,7 +270,7 @@ useOnKeyboardEventListener(onKeyDown, onKeyUp)
 
 function repeat() {
   console.log('重学一遍')
-  settingStore.dictation = false
+  if (settingStore.wordPracticeMode === 0) settingStore.dictation = false
   if (store.sdict.lastLearnIndex === 0 && store.sdict.complete) {
     //如果是刚刚完成，那么学习进度要从length减回去，因为lastLearnIndex为0了，同时改complete为false
     store.sdict.lastLearnIndex = store.sdict.length - statStore.newWordNumber
@@ -336,7 +341,15 @@ function togglePanel() {
 }
 
 function continueStudy() {
-  settingStore.dictation = false
+  if (settingStore.wordPracticeMode === 0) settingStore.dictation = false
+  //这里判断是否显示结算弹框，如果显示了结算弹框的话，就不用加进度了
+  if (!showStatDialog) {
+    console.log('没学完，强行跳过')
+    store.sdict.lastLearnIndex = store.sdict.lastLearnIndex + statStore.newWordNumber
+  } else {
+    console.log('学完了，正常下一组')
+    showStatDialog = false
+  }
   studyData = getCurrentStudyWord()
 }
 
@@ -355,6 +368,7 @@ useEvents([
   [ShortcutKey.PlayWordPronunciation, play],
 
   [ShortcutKey.RepeatChapter, repeat],
+  [ShortcutKey.NextChapter, continueStudy],
   [ShortcutKey.ToggleShowTranslate, toggleTranslate],
   [ShortcutKey.ToggleDictation, toggleDictation],
   [ShortcutKey.ToggleTheme, toggleTheme],
@@ -406,7 +420,17 @@ useEvents([
     <div class="word-panel-wrapper">
       <Panel>
         <template v-slot:title>
-          <span>{{ store.sdict.name }} ({{ data.index + 1 }} / {{ data.words.length }})</span>
+          <!--          <span>{{ store.sdict.name }} ({{ data.index + 1 }} / {{ data.words.length }})</span>-->
+          <div class="center gap-space">
+            <span>{{ store.sdict.name }} ({{ store.sdict.lastLearnIndex }} / {{ store.sdict.length }})</span>
+
+            <BaseIcon
+                @click="continueStudy"
+                :title="`下一组(${settingStore.shortcutKeyMap[ShortcutKey.NextChapter]})`">
+              <IconBiArrowRight class="arrow" width="22"/>
+            </BaseIcon>
+          </div>
+
         </template>
         <div class="panel-page-item pl-4">
           <WordList

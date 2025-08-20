@@ -17,7 +17,7 @@ defineProps({
   modelValue: Boolean
 })
 
-const emit = defineEmits(['update:modelValue', 'click'])
+const emit = defineEmits(['update:modelValue', 'click', 'onChange'])
 
 function change($event) {
   emit('update:modelValue', $event.target.checked)

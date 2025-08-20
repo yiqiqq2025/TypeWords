@@ -1,6 +1,6 @@
 import {defineStore} from 'pinia'
 import {Dict, DictId, Word} from "../types/types.ts"
-import {_getStudyProgress, checkAndUpgradeSaveDict} from "@/utils";
+import {_getAccomplishDate, _getStudyProgress, checkAndUpgradeSaveDict} from "@/utils";
 import {SAVE_DICT_KEY} from "@/utils/const.ts";
 import {shallowReactive} from "vue";
 import {getDefaultDict} from "@/types/func.ts";
@@ -93,9 +93,14 @@ export const useBaseStore = defineStore('base', {
       return getDefaultDict()
     },
     currentStudyProgress(): number {
-      if (!this.sdict.words?.length) return 0
+      if (!this.sdict.length) return 0
       if (this.sdict.complete) return 100
-      return _getStudyProgress(this.sdict.lastLearnIndex, this.sdict.words?.length)
+      return _getStudyProgress(this.sdict.lastLearnIndex, this.sdict.length)
+    },
+    getDictCompleteDate(): number {
+      if (!this.sdict.length) return 0
+      if (!this.sdict.perDayStudyNumber) return 0
+      return Math.ceil((this.sdict.length - this.sdict.lastLearnIndex) / this.sdict.perDayStudyNumber)
     },
     currentBook(): Dict {
       return this.article.bookList[this.article.studyIndex] ?? {}

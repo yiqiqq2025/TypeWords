@@ -92,7 +92,6 @@ watch(() => props.modelValue, n => {
     runtimeStore.modalList.push({id, close})
     zIndex = 999 + runtimeStore.modalList.length
     visible = true
-    console.log(12)
   } else {
     close()
   }
@@ -170,6 +169,7 @@ async function cancel() {
           <div v-if="content" class="content">{{ content }}</div>
         </div>
         <div class="modal-footer" v-if="footer">
+          <div class="left flex items-end"><slot name="footer-left"></slot></div>
           <div class="right">
             <BaseButton type="info" @click="cancel">{{ cancelButtonText }}</BaseButton>
             <BaseButton
@@ -305,7 +305,7 @@ $header-height: 4rem;
 
     .modal-body {
       box-sizing: border-box;
-      color: rgba(255, 255, 255, 0.8);
+      color: var(--color-main-text);
       font-weight: 400;
       font-size: 1.1rem;
       line-height: 1.7rem;
@@ -320,14 +320,13 @@ $header-height: 4rem;
 
       .content {
         width: 25rem;
-        color: var(--color-main-text);
         padding: .2rem 1.6rem 1.6rem;
       }
     }
 
     .modal-footer {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       padding: var(--space);
     }
   }

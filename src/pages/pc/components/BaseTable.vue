@@ -17,14 +17,14 @@ import DeleteIcon from "@/components/icon/DeleteIcon.vue";
 let list = defineModel('list')
 
 const props = withDefaults(defineProps<{
-  showBorder?: boolean
   loading?: boolean
+  showToolbar?: boolean
   del?: Function
   batchDel?: Function
   add?: Function
 }>(), {
-  showBorder: false,
   loading: true,
+  showToolbar: true,
   del: () => void 0,
   add: () => void 0,
   batchDel: () => void 0
@@ -127,102 +127,101 @@ defineRender(
 
       return (
           <div class="flex flex-col gap-3">
-            <div>
-              {
-                showSearchInput ? (
-                    <div
-                        class="flex gap-4"
-                    >
-                      <Input
-                          prefixIcon
-                          modelValue={searchKey}
-                          onUpdate:modelValue=
-                              {debounce(e => searchKey = e)}
-                          class="flex-1"/>
-                      <BaseButton onClick={() => (showSearchInput = false, searchKey = '')}>取消</BaseButton>
-                    </div>
-                ) : (
-                    <div class="flex justify-between " v-else>
-                      <div class="flex gap-2 items-center">
-                        <Checkbox
-                            disabled={!currentList.length}
-                            onChange={() => toggleSelectAll()}
-                            modelValue={selectAll}
-                            size="large"/>
-                        <span>{selectIds.length} / {list.value.length}</span>
-                      </div>
-
-
-                      <div class="flex gap-2 relative">
-                        {
-                          selectIds.length ?
-                              <PopConfirm title="确认删除所有选中数据？"
-                                          onConfirm={handleBatchDel}
-                              >
-                                <BaseIcon
-                                    class="del"
-                                    title="删除">
-                                  <DeleteIcon/>
-                                </BaseIcon>
-                              </PopConfirm>
-                              : null
-                        }
-                        <BaseIcon
-                            onClick={props.add}
-                            icon="fluent:add-20-filled"
-                            title="添加单词">
-                          <IconFluentAdd20Filled/>
-                        </BaseIcon>
-                        <BaseIcon
-                            disabled={!currentList.length}
-                            title="改变顺序"
-                            icon="icon-park-outline:sort-two"
-                            onClick={() => showSortDialog = !showSortDialog}
+            {
+                props.showToolbar && <div>
+                  {
+                    showSearchInput ? (
+                        <div
+                            class="flex gap-4"
                         >
-                         <IconIconParkOutlineSortTwo/>
-                        </BaseIcon>
-                        <BaseIcon
-                            disabled={!currentList.length}
-                            onClick={() => showSearchInput = !showSearchInput}
-                            title="搜索">
-                            <IconFluentSearch24Regular/>
-                        </BaseIcon>
-                        <MiniDialog
-                            modelValue={showSortDialog}
-                            onUpdate:modelValue={e => showSortDialog = e}
-                            style="width: 8rem;"
-                        >
-                          <div class="mini-row-title">
-                            列表顺序设置
+                          <Input
+                              prefixIcon
+                              modelValue={searchKey}
+                              onUpdate:modelValue=
+                                  {debounce(e => searchKey = e)}
+                              class="flex-1"/>
+                          <BaseButton onClick={() => (showSearchInput = false, searchKey = '')}>取消</BaseButton>
+                        </div>
+                    ) : (
+                        <div class="flex justify-between " v-else>
+                          <div class="flex gap-2 items-center">
+                            <Checkbox
+                                disabled={!currentList.length}
+                                onChange={() => toggleSelectAll()}
+                                modelValue={selectAll}
+                                size="large"/>
+                            <span>{selectIds.length} / {list.value.length}</span>
                           </div>
-                          <div class="mini-row">
-                            <BaseButton size="small" onClick={() => sort(Sort.reverse)}>翻转
-                            </BaseButton>
-                            <BaseButton size="small" onClick={() => sort(Sort.random)}>随机</BaseButton>
+
+                          <div class="flex gap-2 relative">
+                            {
+                              selectIds.length ?
+                                  <PopConfirm title="确认删除所有选中数据？"
+                                              onConfirm={handleBatchDel}
+                                  >
+                                    <BaseIcon
+                                        class="del"
+                                        title="删除">
+                                      <DeleteIcon/>
+                                    </BaseIcon>
+                                  </PopConfirm>
+                                  : null
+                            }
+                            <BaseIcon
+                                onClick={props.add}
+                                icon="fluent:add-20-filled"
+                                title="添加单词">
+                              <IconFluentAdd20Filled/>
+                            </BaseIcon>
+                            <BaseIcon
+                                disabled={!currentList.length}
+                                title="改变顺序"
+                                icon="icon-park-outline:sort-two"
+                                onClick={() => showSortDialog = !showSortDialog}
+                            >
+                              <IconIconParkOutlineSortTwo/>
+                            </BaseIcon>
+                            <BaseIcon
+                                disabled={!currentList.length}
+                                onClick={() => showSearchInput = !showSearchInput}
+                                title="搜索">
+                              <IconFluentSearch24Regular/>
+                            </BaseIcon>
+                            <MiniDialog
+                                modelValue={showSortDialog}
+                                onUpdate:modelValue={e => showSortDialog = e}
+                                style="width: 8rem;"
+                            >
+                              <div class="mini-row-title">
+                                列表顺序设置
+                              </div>
+                              <div class="mini-row">
+                                <BaseButton size="small" onClick={() => sort(Sort.reverse)}>翻转
+                                </BaseButton>
+                                <BaseButton size="small" onClick={() => sort(Sort.random)}>随机</BaseButton>
+                              </div>
+                            </MiniDialog>
                           </div>
-                        </MiniDialog>
-                      </div>
-                    </div>
-                )
-              }
-            </div>
+                        </div>
+                    )
+                  }
+                </div>
+            }
             {
               props.loading ?
                   <div class="h-full w-full center text-4xl">
-                    <IconEosIconsLoading
-                        color="gray"
-                    />
+                    <IconEosIconsLoading color="gray"/>
                   </div>
                   : currentList.length ? (
                       <>
                         <div class="flex-1 overflow-auto"
                              ref={e => listRef = e}>
-                          {currentList.map((item) => {
+                          {currentList.map((item, index) => {
                             return (
                                 <div class="list-item-wrapper"
                                      key={item.word}
                                 >
-                                  {s.default({checkbox: d, item})}
+                                  {s.default({checkbox: d, item, index: (pageSize * (pageNo - 1)) + index + 1})}
                                 </div>
                             )
                           })}
