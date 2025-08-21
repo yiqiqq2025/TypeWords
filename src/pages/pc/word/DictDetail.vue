@@ -2,7 +2,7 @@
 import {DictId} from "@/types/types.ts";
 
 import BasePage from "@/pages/pc/components/BasePage.vue";
-import {computed, onMounted, reactive, shallowReactive} from "vue";
+import {computed, onMounted, reactive, shallowReactive, watch} from "vue";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 import {_getDictDataByUrl, _nextTick, cloneDeep, convertToWord, useNav} from "@/utils";
 import {nanoid} from "nanoid";
@@ -214,6 +214,7 @@ function startPractice() {
       perDayStudyNumber: store.sdict.perDayStudyNumber,
       custom: store.sdict.custom,
       complete: store.sdict.complete,
+      wordPracticeMode: settingStore.wordPracticeMode
     })
     let currentStudy = getCurrentStudyWord()
     nav('practice-words/' + store.sdict.id, {}, currentStudy)
@@ -240,7 +241,7 @@ defineRender(() => {
         {
           showBookDetail.value ? <div className="card mb-0 h-[95vh] flex flex-col">
                 <div class="flex justify-between items-center relative">
-                  <BackIcon class="z-2" onClick={router.back}/>
+                  <BackIcon class="z-2"/>
                   <div class="absolute page-title text-align-center w-full">{runtimeStore.editDict.name}</div>
                   <div class="flex">
                     <BaseButton loading={studyLoading || loading} type="info"
@@ -382,7 +383,13 @@ defineRender(() => {
               </div> :
               <div class="card mb-0 h-[95vh]">
                 <div class="flex justify-between items-center relative">
-                  <BackIcon class="z-2" onClick={isAdd ? router.back : (isEdit = false)}/>
+                  <BackIcon class="z-2" onClick={() => {
+                    if (isAdd) {
+                      router.back()
+                    } else {
+                      isEdit = false
+                    }
+                  }}/>
                   <div class="absolute page-title text-align-center w-full">
                     {runtimeStore.editDict.id ? '修改' : '创建'}词典
                   </div>

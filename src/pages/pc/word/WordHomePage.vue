@@ -60,6 +60,7 @@ function startPractice() {
       perDayStudyNumber: store.sdict.perDayStudyNumber,
       custom: store.sdict.custom,
       complete: store.sdict.complete,
+      wordPracticeMode: settingStore.wordPracticeMode
     })
     nav('practice-words/' + store.sdict.id, {}, currentStudy)
   } else {

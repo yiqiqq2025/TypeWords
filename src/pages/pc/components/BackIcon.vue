@@ -1,12 +1,23 @@
 <script setup lang="ts">
 
 import BaseIcon from "@/components/BaseIcon.vue";
+import {useAttrs} from "vue";
+import router from "@/router.ts";
+
+const attrs = useAttrs()
+
+function onClick() {
+  if (!attrs.onClick) {
+    router.back()
+  }
+}
 </script>
 
 <template>
   <BaseIcon
       title="返回"
-      @click="$router.back">
+      @click="onClick"
+  >
     <IconFormkitLeft/>
   </BaseIcon>
 </template>
