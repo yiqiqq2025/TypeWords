@@ -33,7 +33,7 @@ export const DefaultBaseState = (): BaseState => ({
     bookList: [
       getDefaultDict({id: DictId.wordCollect, name: '收藏'}),
       getDefaultDict({id: DictId.wordWrong, name: '错词'}),
-      getDefaultDict({id: DictId.wordKnown, name: '已掌握'}),
+      getDefaultDict({id: DictId.wordKnown, name: '已掌握',description:'已掌握后的单词不会出现在练习中'}),
       // getDefaultDict({
       //   id: 'nce-new-2',
       //   name: '新概念英语(新版)-2',

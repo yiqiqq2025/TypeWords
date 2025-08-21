@@ -79,7 +79,7 @@ function repeat() {
 
 async function onTyping(e: KeyboardEvent) {
   if (inputLock) return
-  console.log('onTyping')
+  console.log('onTyping', inputLock)
   inputLock = true
   let letter = e.key
   let isTypingRight = false
@@ -104,17 +104,20 @@ async function onTyping(e: KeyboardEvent) {
 
   if (input.toLowerCase() === props.word.word.toLowerCase()) {
     playCorrect()
-    if (settingStore.repeatCount == 100) {
-      if (settingStore.repeatCustomCount <= wordRepeatCount + 1) {
-        setTimeout(() => emit('complete'), settingStore.waitTimeForChangeWord)
+    //不需要把inputLock设为false，输入完成不能再输入了，只能删除，删除会打开锁
+    if (settingStore.autoNextWord) {
+      if (settingStore.repeatCount == 100) {
+        if (settingStore.repeatCustomCount <= wordRepeatCount + 1) {
+          setTimeout(() => emit('complete'), settingStore.waitTimeForChangeWord)
+        } else {
+          repeat()
+        }
       } else {
-        repeat()
-      }
-    } else {
-      if (settingStore.repeatCount <= wordRepeatCount + 1) {
-        setTimeout(() => emit('complete'), settingStore.waitTimeForChangeWord)
-      } else {
-        repeat()
+        if (settingStore.repeatCount <= wordRepeatCount + 1) {
+          setTimeout(() => emit('complete'), settingStore.waitTimeForChangeWord)
+        } else {
+          repeat()
+        }
       }
     }
   } else {
@@ -124,6 +127,7 @@ async function onTyping(e: KeyboardEvent) {
 
 function del() {
   playKeyboardAudio()
+  inputLock = false
 
   if (wrong) {
     wrong = ''

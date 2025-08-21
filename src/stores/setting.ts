@@ -43,6 +43,7 @@ export interface SettingState {
   ignoreSimpleWord: boolean // 忽略简单词
   wordPracticeMode: number // 单词练习模式，0：智能模式，1：自由模式
   disableShowPracticeSettingDialog: boolean // 不默认显示练习设置弹框
+  autoNextWord: boolean //自动切换下一个单词
 }
 
 export const getDefaultSettingState = (): SettingState => ({
@@ -84,7 +85,8 @@ export const getDefaultSettingState = (): SettingState => ({
   conflictNotice: true,
   ignoreSimpleWord: false,
   wordPracticeMode: 0,
-  disableShowPracticeSettingDialog: false
+  disableShowPracticeSettingDialog: false,
+  autoNextWord: true
 })
 
 export const useSettingStore = defineStore('setting', {
