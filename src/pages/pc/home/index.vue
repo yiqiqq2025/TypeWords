@@ -12,8 +12,8 @@ import Radio from "@/pages/pc/components/base/radio/Radio.vue";
       <h2>记忆不再盲目，学习更高效，开源单词与文章练习工具</h2>
     </div>
     <div class="flex">
-      <BaseButton @click="$router.push('/words')">练习单词</BaseButton>
-      <BaseButton @click="$router.push('/articles')">练习文章</BaseButton>
+      <BaseButton @click="$router.push('/words')">单词练习</BaseButton>
+      <BaseButton @click="$router.push('/articles')">文章练习</BaseButton>
     </div>
     <div class="flex w-60vw gap-space">
       <div class="card">
@@ -92,9 +92,12 @@ h1 {
 h2 {
   margin: 0;
 }
+h3:first-child{
+  margin-top: 0;
+}
 
 .card {
-  @apply flex flex-col items-start gap-2 flex-1;
+  @apply flex flex-col items-start gap-2 flex-1 mb-0;
   .emoji {
     display: inline-block;
     background: var(--color-third);
