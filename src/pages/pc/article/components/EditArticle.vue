@@ -16,6 +16,8 @@ import copy from "copy-to-clipboard";
 import {Option, Select} from "@/pages/pc/components/base/select";
 import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
 import InputNumber from "@/pages/pc/components/base/InputNumber.vue";
+import {nanoid} from "nanoid";
+
 const Dialog = defineAsyncComponent(() => import('@/pages/pc/components/dialog/Dialog.vue'))
 
 interface IProps {
@@ -38,7 +40,7 @@ let progress = $ref(0)
 let failCount = $ref(0)
 let textareaRef = $ref<HTMLTextAreaElement>()
 const TranslateEngineOptions = [
-  {value: 'youdao', label: '有道'},
+  // {value: 'youdao', label: '有道'},
   {value: 'baidu', label: '百度'},
 ]
 
@@ -103,7 +105,7 @@ async function startNetworkTranslate() {
   //这里需要用异步，因为watch了article.networkTranslate，改变networkTranslate了之后，会重新设置article.sections
   //导致getNetworkTranslate里面拿到的article.sections是废弃的值
   setTimeout(async () => {
-    await getNetworkTranslate(editArticle, TranslateEngine.Baidu, true, (v: number) => {
+    await getNetworkTranslate(editArticle, TranslateEngine.Baidu, false, (v: number) => {
       progress = v
     })
     failCount = 0
@@ -143,6 +145,7 @@ function save(option: 'save' | 'saveAndNext') {
     }
 
     let d = cloneDeep(editArticle)
+    if (!d.id) d.id = nanoid(6)
     delete d.sections
     copy(console.json(d, 2))
     const saveTemp = () => {
@@ -440,7 +443,7 @@ function setStartTime(val: Sentence, i: number, j: number) {
                   </div>
                   <div class="flex flex-col">
                     <BaseIcon :icon="sentence.audioPosition?.length ? 'basil:edit-outline' : 'basil:add-outline'"
-                               @click="handleShowEditAudioDialog(sentence,indexI,indexJ)">
+                              @click="handleShowEditAudioDialog(sentence,indexI,indexJ)">
                       <IconBasilEditOutline v-if="sentence.audioPosition?.length"/>
                       <IconBasilAddOutline v-else/>
                     </BaseIcon>
@@ -495,8 +498,8 @@ function setStartTime(val: Sentence, i: number, j: number) {
               <span v-else> - 结束</span>
             </div>
             <BaseIcon
-                      title="试听"
-                      @click="playSentenceAudio(editSentence,sentenceAudioRef,editArticle)">
+                title="试听"
+                @click="playSentenceAudio(editSentence,sentenceAudioRef,editArticle)">
               <IconHugeiconsPlay/>
             </BaseIcon>
           </div>
