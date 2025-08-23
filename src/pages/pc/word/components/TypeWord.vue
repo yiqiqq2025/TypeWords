@@ -9,6 +9,7 @@ import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
 import SentenceHightLightWord from "@/pages/pc/word/components/SentenceHightLightWord.vue";
 import {usePracticeStore} from "@/stores/practice.ts";
 import {getDefaultWord} from "@/types/func.ts";
+import {sleep} from "@/utils";
 
 interface IProps {
   word: Word,
@@ -78,10 +79,15 @@ function repeat() {
 }
 
 async function onTyping(e: KeyboardEvent) {
-  if (inputLock) return
-  console.log('onTyping', inputLock)
-  inputLock = true
+  if (inputLock) {
+    //如果是锁定状态，说明要么输入太快；要么就是设置了不自动跳转，然后输入完了，当这种情况时，监听空格键，按下切换下一个
+    if (e.code === 'Space' && input.toLowerCase() === props.word.word.toLowerCase()) {
+      return emit('complete')
+    }
+    return
+  }
   let letter = e.key
+  inputLock = true
   let isTypingRight = false
   if (settingStore.ignoreCase) {
     isTypingRight = letter.toLowerCase() === props.word.word[input.length].toLowerCase()
@@ -93,13 +99,13 @@ async function onTyping(e: KeyboardEvent) {
     wrong = ''
     playKeyboardAudio()
   } else {
+    emit('wrong')
     wrong = letter
     playBeep()
     volumeIconRef?.play()
-    setTimeout(() => {
-      wrong = ''
-    }, 500)
-    emit('wrong')
+    await sleep(500)
+    if (settingStore.inputWrongClear) input = ''
+    wrong = ''
   }
 
   if (input.toLowerCase() === props.word.word.toLowerCase()) {

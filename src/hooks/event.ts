@@ -53,7 +53,6 @@ export function useStartKeyboardEventListener() {
 
   useEventListener('keydown', (e: KeyboardEvent) => {
     if (!runtimeStore.disableEventListener) {
-      e.preventDefault()
       let shortcutKey = getShortcutKey(e)
       // console.log('shortcutKey', shortcutKey)
 
@@ -68,10 +67,11 @@ export function useStartKeyboardEventListener() {
         }
       }
       if (shortcutEvent) {
+        e.preventDefault()
         emitter.emit(shortcutEvent, e)
       } else {
         //非英文模式下，输入区域的 keyCode 均为 229时，
-        if ((e.keyCode >= 65 && e.keyCode <= 90)
+        if (((e.keyCode >= 65 && e.keyCode <= 90)
           || (e.keyCode >= 48 && e.keyCode <= 57)
           || e.code === 'Space'
           || e.code === 'Slash'
@@ -85,7 +85,9 @@ export function useStartKeyboardEventListener() {
           || e.code === 'Semicolon'
           // || e.code === 'Backquote'
           || e.keyCode === 229
-        ) {
+          //当按下功能键时，不阻止事件传播
+        ) && (!e.ctrlKey && !e.altKey)) {
+          e.preventDefault()
           emitter.emit(EventKey.onTyping, e)
         } else {
           emitter.emit(EventKey.keydown, e)

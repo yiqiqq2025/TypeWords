@@ -174,12 +174,12 @@ function importOldData() {
       <div class="left mt-10">
         <div class="tabs">
           <div class="tab" :class="tabIndex === 0 && 'active'" @click="tabIndex = 0">
-            <IconBxHeadphone width="20"/>
-            <span>音效设置</span>
-          </div>
-          <div class="tab" :class="tabIndex === 1 && 'active'" @click="tabIndex = 1">
             <IconIconParkOutlineSettingConfig width="20"/>
             <span>练习设置</span>
+          </div>
+          <div class="tab" :class="tabIndex === 1 && 'active'" @click="tabIndex = 1">
+            <IconBxHeadphone width="20"/>
+            <span>音效设置</span>
           </div>
           <div class="tab" :class="tabIndex === 2 && 'active'" @click="tabIndex = 2">
             <IconMaterialSymbolsKeyboardOutline width="20"/>
@@ -202,71 +202,6 @@ function importOldData() {
       <div class="content">
         <div class="page-title text-align-center">设置</div>
         <div v-if="tabIndex === 0">
-          <SettingItem mainTitle="所有音效">
-            <Switch v-model="settingStore.allSound" @change="useChangeAllSound"/>
-          </SettingItem>
-
-          <div class="line"></div>
-          <SettingItem title="单词/句子自动发音">
-            <Switch v-model="settingStore.wordSound"/>
-          </SettingItem>
-          <SettingItem title="单词/句子发音口音">
-            <Select v-model="settingStore.wordSoundType"
-                    placeholder="请选择"
-                    class="w-50!"
-            >
-              <Option label="美音" value="us"/>
-              <Option label="英音" value="uk"/>
-            </Select>
-          </SettingItem>
-          <SettingItem title="音量">
-            <Slider v-model="settingStore.wordSoundVolume"/>
-            <span class="w-10 pl-5">{{ settingStore.wordSoundVolume }}%</span>
-          </SettingItem>
-          <SettingItem title="倍速">
-            <Slider v-model="settingStore.wordSoundSpeed" :step="0.1" :min="0.5" :max="3"/>
-            <span class="w-10 pl-5">{{ settingStore.wordSoundSpeed }}</span>
-          </SettingItem>
-
-          <div class="line"></div>
-          <SettingItem title="按键音">
-            <Switch v-model="settingStore.keyboardSound"/>
-          </SettingItem>
-          <SettingItem title="按键音效">
-            <Select v-model="settingStore.keyboardSoundFile"
-                    placeholder="请选择"
-                    class="w-50!"
-            >
-              <Option
-                  v-for="item in SoundFileOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-              >
-                <div class="flex justify-between items-center w-full">
-                  <span>{{ item.label }}</span>
-                  <VolumeIcon
-                      :time="100"
-                      @click="usePlayAudio(getAudioFileUrl(item.value)[0])"/>
-                </div>
-              </Option>
-            </Select>
-          </SettingItem>
-          <SettingItem title="音量">
-            <Slider v-model="settingStore.keyboardSoundVolume"/>
-            <span class="w-10 pl-5">{{ settingStore.keyboardSoundVolume }}%</span>
-          </SettingItem>
-
-          <div class="line"></div>
-          <SettingItem title="效果音（输入错误、完成时的音效）">
-            <Switch v-model="settingStore.effectSound"/>
-          </SettingItem>
-          <SettingItem title="音量">
-            <Slider v-model="settingStore.effectSoundVolume"/>
-            <span class="w-10 pl-5">{{ settingStore.effectSoundVolume }}%</span>
-          </SettingItem>
-        </div>
-        <div v-if="tabIndex === 1">
           <SettingItem title="单词练习模式">
             <RadioGroup v-model="settingStore.wordPracticeMode" class="flex-col gap-0!">
               <Radio :value="0" label="智能模式，系统自动计算复习单词与默写单词"/>
@@ -298,8 +233,15 @@ function importOldData() {
             <Switch v-model="settingStore.disableShowPracticeSettingDialog"/>
           </SettingItem>
 
+          <SettingItem title="单词输入错误时，清空已输入内容"
+          >
+            <Switch v-model="settingStore.inputWrongClear"/>
+          </SettingItem>
+
           <div class="line" v-if="settingStore.autoNextWord"></div>
-          <SettingItem title="自动切换下一个单词">
+          <SettingItem title="自动切换下一个单词"
+          desc="未开启自动切换时，当输入完成后请使用空格键切换下一个"
+          >
             <Switch v-model="settingStore.autoNextWord"/>
           </SettingItem>
 
@@ -368,6 +310,71 @@ function importOldData() {
             <Textarea
                 placeholder="多个单词用英文逗号隔号"
                 v-model="simpleWords" :autosize="{minRows: 6, maxRows: 10}"/>
+          </SettingItem>
+        </div>
+        <div v-if="tabIndex === 1">
+          <SettingItem mainTitle="所有音效">
+            <Switch v-model="settingStore.allSound" @change="useChangeAllSound"/>
+          </SettingItem>
+
+          <div class="line"></div>
+          <SettingItem title="单词/句子自动发音">
+            <Switch v-model="settingStore.wordSound"/>
+          </SettingItem>
+          <SettingItem title="单词/句子发音口音">
+            <Select v-model="settingStore.wordSoundType"
+                    placeholder="请选择"
+                    class="w-50!"
+            >
+              <Option label="美音" value="us"/>
+              <Option label="英音" value="uk"/>
+            </Select>
+          </SettingItem>
+          <SettingItem title="音量">
+            <Slider v-model="settingStore.wordSoundVolume"/>
+            <span class="w-10 pl-5">{{ settingStore.wordSoundVolume }}%</span>
+          </SettingItem>
+          <SettingItem title="倍速">
+            <Slider v-model="settingStore.wordSoundSpeed" :step="0.1" :min="0.5" :max="3"/>
+            <span class="w-10 pl-5">{{ settingStore.wordSoundSpeed }}</span>
+          </SettingItem>
+
+          <div class="line"></div>
+          <SettingItem title="按键音">
+            <Switch v-model="settingStore.keyboardSound"/>
+          </SettingItem>
+          <SettingItem title="按键音效">
+            <Select v-model="settingStore.keyboardSoundFile"
+                    placeholder="请选择"
+                    class="w-50!"
+            >
+              <Option
+                  v-for="item in SoundFileOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+              >
+                <div class="flex justify-between items-center w-full">
+                  <span>{{ item.label }}</span>
+                  <VolumeIcon
+                      :time="100"
+                      @click="usePlayAudio(getAudioFileUrl(item.value)[0])"/>
+                </div>
+              </Option>
+            </Select>
+          </SettingItem>
+          <SettingItem title="音量">
+            <Slider v-model="settingStore.keyboardSoundVolume"/>
+            <span class="w-10 pl-5">{{ settingStore.keyboardSoundVolume }}%</span>
+          </SettingItem>
+
+          <div class="line"></div>
+          <SettingItem title="效果音（输入错误、完成时的音效）">
+            <Switch v-model="settingStore.effectSound"/>
+          </SettingItem>
+          <SettingItem title="音量">
+            <Slider v-model="settingStore.effectSoundVolume"/>
+            <span class="w-10 pl-5">{{ settingStore.effectSoundVolume }}%</span>
           </SettingItem>
         </div>
         <div class="body" v-if="tabIndex === 2">
