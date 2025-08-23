@@ -18,6 +18,7 @@ import DeleteIcon from "@/components/icon/DeleteIcon.vue";
 import PracticeSettingDialog from "@/pages/pc/word/components/PracticeSettingDialog.vue";
 import ChangeLastPracticeIndexDialog from "@/pages/pc/word/components/ChangeLastPracticeIndexDialog.vue";
 import {useSettingStore} from "@/stores/setting.ts";
+import recommendDictList from "@/assets/recommend-dict-list.json";
 
 
 const store = useBaseStore()
@@ -116,7 +117,6 @@ const progressTextRight = $computed(() => {
   return store.sdict?.lastLearnIndex
 })
 
-let practiceMode = $ref(0)
 
 function check(cb: Function) {
   if (!store.sdict.id) {
@@ -167,7 +167,7 @@ function check(cb: Function) {
             <div class="text-4xl font-bold">{{ currentStudy.new.length }}</div>
             <div class="text">新词</div>
           </div>
-          <template  v-if="settingStore.wordPracticeMode === 0">
+          <template v-if="settingStore.wordPracticeMode === 0">
             <div class="flex-1 flex flex-col items-center">
               <div class="text-4xl font-bold">{{ currentStudy.review.length }}</div>
               <div class="text">复习</div>
@@ -226,7 +226,24 @@ function check(cb: Function) {
         <Book :is-add="true" @click="router.push('/dict-list')"/>
       </div>
     </div>
+
+    <div class="card  flex flex-col">
+      <div class="flex justify-between">
+        <div class="title">推荐</div>
+        <div class="flex gap-4 items-center">
+          <div class="color-blue cursor-pointer" @click="router.push('/dict-list')">更多</div>
+        </div>
+      </div>
+
+      <div class="flex gap-4 flex-wrap  mt-4">
+        <Book :is-add="false"
+              quantifier="个词"
+              :item="item as any"
+              v-for="(item, j) in recommendDictList" @click="goDictDetail(item as any)"/>
+      </div>
+    </div>
   </BasePage>
+
   <PracticeSettingDialog
       :show-left-option="false"
       v-model="showPracticeSettingDialog" @ok="currentStudy = getCurrentStudyWord()"/>
