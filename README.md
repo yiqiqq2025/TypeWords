@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  练习英语，一次敲击，一点进步；一个可以在网页上背单词、背文章的网站，
+  学习英语，一次敲击，一点进步；记忆不再盲目，学习更高效，开源单词与文章练习工具
 </p> 
 
 <p align="center">
@@ -21,8 +21,8 @@
 <a href="https://trendshift.io/repositories/14139" target="_blank" class="trendshift-badge"><img src="https://trendshift.io/api/badge/repositories/14139" alt="TypeWords | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 </div>
 
-![image](/docs/word.png)
-![image](/docs/article.png)
+![image](/public/word.png)
+![image](/public/article.png)
 
 ## 在线访问
 

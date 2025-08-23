@@ -6,6 +6,7 @@ import {watch} from "vue";
 import {useSettingStore} from "@/stores/setting.ts";
 
 import {isMobile} from "@/utils";
+import {ProjectName} from "@/config/ENV.ts";
 
 let settingStore = useSettingStore()
 let showNotice = $ref(false)
@@ -44,7 +45,7 @@ watch(() => settingStore.load, (n) => {
          v-if="show">
       <div class="notice">
         坚持练习，提高外语能力。将
-        <span class="active">「Type Words」</span>
+        <span class="active">「{{ ProjectName}}」</span>
         保存为书签，永不迷失！
       </div>
       <div class="wrapper">

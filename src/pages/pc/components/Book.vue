@@ -33,7 +33,7 @@ const studyProgress = $computed(() => {
         <div class="text-base">{{ item?.name }}</div>
         <div class="text-sm line-clamp-3" v-opacity="item.name !== item.description">{{ item?.description }}</div>
       </div>
-      <div class="absolute bottom-3 right-3">
+      <div class="absolute bottom-4 right-3">
         <div>{{ studyProgress }}{{ item?.length }}{{ quantifier }}</div>
       </div>
       <div class="absolute bottom-2 left-3 right-3">

@@ -22,6 +22,10 @@ const {toggleTheme} = useTheme()
     <div class="aside anim fixed" :class="{'expand':settingStore.sideExpand}">
       <div class="top">
         <Logo v-if="settingStore.sideExpand"/>
+        <div class="row" @click="router.push('/')">
+          <IconFluentHome20Regular/>
+          <span v-if="settingStore.sideExpand">主页</span>
+        </div>
         <div class="row" @click="router.push('/words')">
           <IconFluentTextUnderlineDouble20Regular/>
           <span v-if="settingStore.sideExpand">单词</span>

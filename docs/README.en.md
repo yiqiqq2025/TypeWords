@@ -24,7 +24,8 @@ Practice English, one strike, one step forward
 <a href="https://trendshift.io/repositories/14139" target="_blank" class="trendshift-badge"><img src="https://trendshift.io/api/badge/repositories/14139" alt="TypeWords | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 </div>
 
-![image](/docs/word.png)![image](/docs/article.png)
+![image](/public/word.png)
+![image](/public/article.png)
 
 ## Online visit
 

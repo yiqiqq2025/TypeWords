@@ -11,14 +11,15 @@ import BookDetail from "@/pages/pc/article/BookDetail.vue";
 import DictList from "@/pages/pc/word/DictList.vue";
 import BookList from "@/pages/pc/article/BookList.vue";
 import Setting from "@/pages/pc/setting/Setting.vue";
+import Home from "@/pages/pc/home/index.vue";
 
 export const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: PC,
-    redirect: '/word',
+    redirect: '/',
     children: [
-      // {path: 'home', component: HomeIndex},
+      {path: '/', component: Home},
       {path: 'words', component: WordHomePage},
       {path: 'word', redirect: '/words'},
       {path: 'dict-list', component: DictList},
