@@ -355,7 +355,6 @@ let showQuestions = $ref(false)
 
 <template>
   <div class="typing-article" ref="typeArticleRef">
-
     <header class="mb-4">
       <div class="title word">{{ props.article.title }}</div>
       <div class="titleTranslate" v-if="settingStore.translate">{{ props.article.titleTranslate }}</div>
@@ -447,7 +446,7 @@ let showQuestions = $ref(false)
     <div class="options flex justify-center" v-if="isEnd">
       <BaseButton
           v-if="store.currentBook.lastLearnIndex < store.currentBook.articles.length - 1"
-          @click="emit('next')">下一章
+          @click="emit('next')">下一篇
       </BaseButton>
     </div>
 
@@ -550,7 +549,7 @@ let showQuestions = $ref(false)
     }
 
     &.tall {
-      line-height: 2.2;
+      line-height: 2.6;
     }
 
     .section {
@@ -590,7 +589,7 @@ let showQuestions = $ref(false)
     height: 100%;
     width: 100%;
     font-size: 1.2rem;
-    line-height: 3.0;
+    line-height: 3.5;
     letter-spacing: .2rem;
     font-family: var(--zh-article-family);
     font-weight: bold;

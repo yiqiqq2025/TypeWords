@@ -130,8 +130,8 @@ async function refreshCDN() {
 async function main() {
   const files = getAllFiles('./dist')
   console.log(`📁 共找到 ${files.length} 个文件，开始上传...`)
-  // await uploadFilesWithClean(files, './dist', ['dicts', 'sound', 'libs'])
-  await uploadFilesWithClean(files, './dist', [ 'libs'])
+  await uploadFilesWithClean(files, './dist', ['dicts', 'sound', 'libs'])
+  // await uploadFilesWithClean(files, './dist', ['libs'])
   await refreshCDN()
 }
 

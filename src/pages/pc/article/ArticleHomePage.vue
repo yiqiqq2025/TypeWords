@@ -97,7 +97,7 @@ async function goBookDetail(val: DictResource) {
               base.currentBook.name || '请选择书籍开始学习'
             }}</span>
           <BaseIcon @click="router.push('/book-list')">
-            <IconFluentArrowSync16Regular v-if="base.currentBook.name"/>
+            <IconFluentArrowSort20Regular v-if="base.currentBook.name"/>
             <IconFluentAdd16Filled v-else/>
           </BaseIcon>
         </div>

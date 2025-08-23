@@ -109,8 +109,9 @@ export const useBaseStore = defineStore('base', {
       return this.article.bookList[this.article.studyIndex] ?? {}
     },
     currentBookProgress(): number {
-      if (this.currentBook.name) return Number(Number(this.currentBook.lastLearnIndex / this.currentBook.length).toFixed(2))
-      return 0
+      if (!this.sbook.length) return 0
+      if (this.sbook.complete) return 100
+      return _getStudyProgress(this.sbook.lastLearnIndex, this.sbook.length)
     },
   },
   actions: {
