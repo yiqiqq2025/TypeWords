@@ -298,7 +298,7 @@ function importOldData() {
 
           <div class="line"></div>
           <SettingItem title="简单词过滤"
-                       desc="开启后，练习的单词中不会再出现简单词"
+                       desc="开启后，练习单词中不会包含简单词；文章统计的总词数中不会包含简单词"
           >
             <Switch v-model="settingStore.ignoreSimpleWord"/>
           </SettingItem>

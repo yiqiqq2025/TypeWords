@@ -231,7 +231,8 @@ function onTyping(e: KeyboardEvent) {
       isRight = key === letter
     }
     if (isRight) {
-      input += letter
+      //这里使用原文的字母，不使用用户输入的，因为原文是大写时，用户输入的小写，会导致布局重绘
+      input += key
       wrong = ''
       // console.log('匹配上了')
       stringIndex++
