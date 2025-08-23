@@ -18,7 +18,7 @@ function onClick() {
       title="返回"
       @click="onClick"
   >
-    <IconFormkitLeft/>
+    <IconFluentChevronLeft28Filled/>
   </BaseIcon>
 </template>
 

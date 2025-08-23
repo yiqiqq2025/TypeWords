@@ -53,11 +53,11 @@ watch(() => settingStore.load, (n) => {
             <div class="href-wrapper">
               <div class="round">
                 <div class="href">2study.top</div>
-                <IconMdiStarOutline width="22"/>
+                <IconFluentStar12Regular width="22"/>
               </div>
               <div class="right">
                 👈
-                <IconMdiStar class="star" width="22"/>
+                <IconFluentStar20Filled class="star" width="22"/>
                 点亮它!
               </div>
             </div>

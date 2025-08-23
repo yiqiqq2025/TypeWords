@@ -113,8 +113,8 @@ const {
                   :class="!isArticleCollect(item)?'collect':'fill'"
                   @click.stop="toggleArticleCollect(item)"
                   :title="!isArticleCollect(item) ? '收藏' : '取消收藏'">
-                <IconPhStar v-if="!isArticleCollect(item)"/>
-                <IconPhStarFill v-else/>
+                <IconFluentStar16Regular v-if="!isArticleCollect(item)"/>
+                <IconFluentStar16Filled v-else/>
               </BaseIcon>
             </template>
           </ArticleList>

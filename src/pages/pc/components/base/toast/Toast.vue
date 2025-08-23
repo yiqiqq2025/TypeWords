@@ -3,12 +3,12 @@
     <div v-if="visible" class="message" :class="type" :style="style" @mouseenter="handleMouseEnter"
          @mouseleave="handleMouseLeave">
       <div class="message-content">
-        <IconMdiCheckCircle v-if="props.type === 'success'" class="message-icon"/>
-        <IconMdiAlertCircle v-if="props.type === 'warning'" class="message-icon"/>
-        <IconMdiInformation v-if="props.type === 'info'" class="message-icon"/>
-        <IconMdiCloseCircle v-if="props.type === 'error'" class="message-icon"/>
+        <IconFluentCheckmarkCircle20Filled v-if="props.type === 'success'" class="message-icon"/>
+        <IconFluentErrorCircle20Filled v-if="props.type === 'warning'" class="message-icon"/>
+        <IconFluentErrorCircle20Filled v-if="props.type === 'info'" class="message-icon"/>
+        <IconFluentDismissCircle20Filled v-if="props.type === 'error'" class="message-icon"/>
         <span class="message-text">{{ message }}</span>
-        <IconMdiClose v-if="showClose" class="message-close" @click="close"/>
+        <Close v-if="showClose" class="message-close" @click="close"/>
       </div>
     </div>
   </Transition>

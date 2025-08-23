@@ -62,11 +62,10 @@ const progress = $computed(() => {
 <template>
   <div class="footer" :class="!settingStore.showToolbar && 'hide'">
     <Tooltip :title="settingStore.showToolbar?'收起':'展开'">
-      <IconIconParkOutlineDown
+      <IconFluentChevronLeft20Filled
             @click="settingStore.showToolbar = !settingStore.showToolbar"
             class="arrow"
             :class="!settingStore.showToolbar && 'down'"
-            width="24"
             color="#999"/>
     </Tooltip>
 
@@ -103,42 +102,42 @@ const progress = $computed(() => {
               :class="!isSimple?'collect':'fill'"
               @click="$emit('toggleSimple')"
               :title="(!isSimple ? '标记为已掌握' : '取消标记已掌握')+`(${settingStore.shortcutKeyMap[ShortcutKey.ToggleSimple]})`">
-            <IconMaterialSymbolsCheckCircleOutlineRounded v-if="!isSimple"/>
-            <IconMaterialSymbolsCheckCircleRounded v-else/>
+            <IconFluentCheckmarkCircle16Regular v-if="!isSimple"/>
+            <IconFluentCheckmarkCircle16Filled v-else/>
           </BaseIcon>
 
           <BaseIcon
               :class="!isCollect?'collect':'fill'"
               @click.stop="$emit('toggleCollect')"
               :title="(!isCollect ? '收藏' : '取消收藏')+`(${settingStore.shortcutKeyMap[ShortcutKey.ToggleCollect]})`">
-            <IconPhStar v-if="!isCollect"/>
-            <IconPhStarFill v-else/>
+            <IconFluentStarAdd16Regular v-if="!isCollect"/>
+            <IconFluentStar16Filled v-else/>
           </BaseIcon>
           <BaseIcon
               @click="emit('skip')"
               :title="`跳过(${settingStore.shortcutKeyMap[ShortcutKey.Next]})`">
-            <IconIconParkOutlineGoAhead/>
+            <IconFluentArrowBounce20Regular class="transform-rotate-180"/>
           </BaseIcon>
 
           <BaseIcon
               @click="settingStore.dictation = !settingStore.dictation"
               :title="`开关默写模式(${settingStore.shortcutKeyMap[ShortcutKey.ToggleDictation]})`"
           >
-            <IconMajesticonsEyeOffLine v-if="settingStore.dictation"/>
-            <IconMdiEyeOutline v-else/>
+            <IconFluentEyeOff16Regular v-if="settingStore.dictation"/>
+            <IconFluentEye16Regular v-else/>
           </BaseIcon>
 
           <BaseIcon
               :title="`开关释义显示(${settingStore.shortcutKeyMap[ShortcutKey.ToggleShowTranslate]})`"
               @click="settingStore.translate = !settingStore.translate">
-            <IconMdiTranslate v-if="settingStore.translate"/>
-            <IconMdiTranslateOff v-else/>
+            <IconFluentTranslate16Regular v-if="settingStore.translate"/>
+            <IconFluentTranslateOff16Regular v-else/>
           </BaseIcon>
 
           <BaseIcon
               @click="settingStore.showPanel = !settingStore.showPanel"
               :title="`单词本(${settingStore.shortcutKeyMap[ShortcutKey.TogglePanel]})`">
-            <IconTdesignMenuUnfold/>
+            <IconFluentTextListAbcUppercaseLtr20Regular/>
           </BaseIcon>
         </div>
       </div>
@@ -160,7 +159,7 @@ const progress = $computed(() => {
   margin-bottom: .8rem;
   transition: all var(--anim-time);
   position: relative;
-  margin-top: 1rem;
+  margin-top: 1.6rem;
 
   &.hide {
     margin-bottom: -6rem;
@@ -215,18 +214,18 @@ const progress = $computed(() => {
 
   .arrow {
     position: absolute;
-    top: -50%;
+    top: -40%;
     left: 50%;
     cursor: pointer;
     transition: all .5s;
-    transform: rotate(0);
+    transform: rotate(-90deg);
     padding: .5rem;
+    font-size: 1.2rem;
 
     &.down {
       top: -90%;
-      transform: rotate(180deg);
+      transform: rotate(90deg);
     }
   }
-
 }
 </style>

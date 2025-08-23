@@ -384,7 +384,7 @@ useEvents([
         <div class="center gap-2 cursor-pointer float-left"
              @click="prev"
              v-if="prevWord">
-          <IconBiArrowLeft class="arrow" width="22"/>
+          <IconFluentArrowLeft16Regular class="arrow" width="22"/>
           <Tooltip
               :title="`上一个(${settingStore.shortcutKeyMap[ShortcutKey.Previous]})`"
           >
@@ -399,7 +399,7 @@ useEvents([
           >
             <div class="word" :class="settingStore.dictation && 'word-shadow'">{{ nextWord.word }}</div>
           </Tooltip>
-          <IconBiArrowRight class="arrow" width="22"/>
+          <IconFluentArrowRight16Regular class="arrow" width="22"/>
         </div>
       </div>
       <TypeWord
@@ -426,10 +426,9 @@ useEvents([
             <BaseIcon
                 @click="continueStudy"
                 :title="`下一组(${settingStore.shortcutKeyMap[ShortcutKey.NextChapter]})`">
-              <IconBiArrowRight class="arrow" width="22"/>
+              <IconFluentArrowRight16Regular class="arrow" width="22"/>
             </BaseIcon>
           </div>
-
         </template>
         <div class="panel-page-item pl-4">
           <WordList
@@ -447,16 +446,16 @@ useEvents([
                   :class="!isWordCollect(item)?'collect':'fill'"
                   @click.stop="toggleWordCollect(item)"
                   :title="!isWordCollect(item) ? '收藏' : '取消收藏'">
-                <IconPhStar v-if="!isWordCollect(item)"/>
-                <IconPhStarFill v-else/>
+                <IconFluentStar16Regular v-if="!isWordCollect(item)"/>
+                <IconFluentStar16Filled v-else/>
               </BaseIcon>
 
               <BaseIcon
                   :class="!isWordSimple(item)?'collect':'fill'"
                   @click.stop="toggleWordSimple(item)"
                   :title="!isWordSimple(item) ? '标记为已掌握' : '取消标记已掌握'">
-                <IconMaterialSymbolsCheckCircleOutlineRounded v-if="!isWordSimple(item)"/>
-                <IconMaterialSymbolsCheckCircleRounded v-else/>
+                <IconFluentCheckmarkCircle16Regular v-if="!isWordSimple(item)"/>
+                <IconFluentCheckmarkCircle16Filled v-else/>
               </BaseIcon>
             </template>
           </WordList>

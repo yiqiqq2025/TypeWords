@@ -43,7 +43,6 @@ function click() {
   play()
 }
 
-let iconList = ['bx:volume', 'bx:volume-low', 'bx:volume-full']
 defineExpose({play})
 
 </script>

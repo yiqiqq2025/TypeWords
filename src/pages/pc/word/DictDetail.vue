@@ -276,7 +276,7 @@ defineRender(() => {
                                           class="option-icon"
                                           onClick={() => editWord(val.item)}
                                           title="编辑">
-                                        <IconTablerEdit/>
+                                        <IconFluentTextEditStyle20Regular/>
                                       </BaseIcon>
                                       <PopConfirm title="确认删除？"
                                                   onConfirm={() => delWord(val.item.id)}

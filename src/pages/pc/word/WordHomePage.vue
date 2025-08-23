@@ -140,7 +140,7 @@ function check(cb: Function) {
                       @click="router.push('/dict-list')"
 
             >
-              <IconGgArrowsExchange v-if="store.sdict.name"/>
+              <IconFluentArrowSort20Regular v-if="store.sdict.name"/>
               <IconFluentAdd20Filled v-else/>
             </BaseIcon>
           </div>
@@ -194,10 +194,9 @@ function check(cb: Function) {
         <BaseButton size="large" :disabled="!store.sdict.name"
                     :loading="loading"
                     @click="startPractice">
-          <!--        <BaseButton size="large" @click="startPractice">-->
           <div class="flex items-center gap-2">
-            <span>开始学习</span>
-            <IconIcons8RightRound class="text-2xl"/>
+            <span class="line-height-[2]">开始学习</span>
+            <IconFluentArrowCircleRight16Regular class="text-xl"/>
           </div>
         </BaseButton>
       </div>

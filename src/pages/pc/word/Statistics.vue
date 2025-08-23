@@ -132,7 +132,7 @@ function options(emitType: string) {
              style="background: rgb(254,236,236)">
           <div class="text-3xl">{{ statStore.wrong }}</div>
           <div class="center gap-2">
-            <IconIconamoonClose class="text-2xl"/>
+            <IconFluentDismiss20Regular class="text-xl"/>
             错词
           </div>
         </div>
@@ -140,7 +140,7 @@ function options(emitType: string) {
              style="background: rgb(231,248,241)">
           <div class="text-3xl">{{ statStore.total - statStore.wrong }}</div>
           <div class="center gap-2">
-            <IconTablerCheck class="text-2xl"/>
+            <IconFluentCheckmark20Regular class="text-xl"/>
             正确
           </div>
         </div>

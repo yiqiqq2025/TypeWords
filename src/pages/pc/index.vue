@@ -23,31 +23,32 @@ const {toggleTheme} = useTheme()
       <div class="top">
         <Logo v-if="settingStore.sideExpand"/>
         <div class="row" @click="router.push('/words')">
-          <IconMaterialSymbolsLightDictionaryOutlineSharp/>
+          <IconFluentTextUnderlineDouble20Regular/>
           <span v-if="settingStore.sideExpand">单词</span>
         </div>
         <div class="row" @click="router.push('/articles')">
-          <IconPhArticleNyTimes/>
+          <!--          <IconPhArticleNyTimes/>-->
+          <IconFluentBookLetter20Regular/>
           <span v-if="settingStore.sideExpand">文章</span>
         </div>
         <div class="row" @click="router.push('/setting')">
-          <IconUilSetting/>
+          <IconFluentSettings20Regular/>
           <span v-if="settingStore.sideExpand">设置</span>
         </div>
       </div>
       <div class="bottom flex justify-evenly ">
         <BaseIcon
             @click="settingStore.sideExpand = !settingStore.sideExpand">
-          <IconFormkitLeft v-if="settingStore.sideExpand"/>
-          <IconFormkitRight v-else/>
+          <IconFluentChevronLeft20Filled v-if="settingStore.sideExpand"/>
+          <IconFluentChevronLeft20Filled class="transform-rotate-180" v-else/>
         </BaseIcon>
         <BaseIcon
             v-if="settingStore.sideExpand"
             :title="`切换主题(${settingStore.shortcutKeyMap[ShortcutKey.ToggleTheme]})`"
             @click="toggleTheme"
         >
-          <IconEpMoon v-if="settingStore.theme === 'light'"/>
-          <IconTablerSun v-else/>
+          <IconFluentWeatherMoon16Regular v-if="settingStore.theme === 'light'"/>
+          <IconFluentWeatherSunny16Regular v-else/>
         </BaseIcon>
       </div>
     </div>

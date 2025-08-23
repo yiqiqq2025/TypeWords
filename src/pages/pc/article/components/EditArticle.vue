@@ -297,7 +297,7 @@ function setStartTime(val: Sentence, i: number, j: number) {
             </textarea>
       <div class="justify-end items-center flex">
         <Tooltip>
-          <IconRiQuestionLine class="mr-3" width="20"/>
+          <IconFluentQuestionCircle20Regular class="mr-3" width="20"/>
           <template #reference>
             <div>
               <div class="mb-2">使用方法</div>
@@ -359,7 +359,7 @@ function setStartTime(val: Sentence, i: number, j: number) {
         </div>
         <div class="flex items-center">
           <Tooltip>
-            <IconRiQuestionLine class="mr-3" width="20"/>
+            <IconFluentQuestionCircle20Regular class="mr-3" width="20"/>
             <template #reference>
               <div>
                 <div class="mb-2">使用方法</div>
@@ -425,8 +425,8 @@ function setStartTime(val: Sentence, i: number, j: number) {
                           @click="setStartTime(sentence,indexI,indexJ)"
                           :title="indexI === 0 && indexJ === 0 ?'设置开始时间':'使用前一句的结束时间'"
                       >
-                        <IconIcSharpMyLocation v-if="indexI === 0 && indexJ === 0"/>
-                        <IconTwemojiEndArrow v-else/>
+                        <IconFluentMyLocation20Regular v-if="indexI === 0 && indexJ === 0"/>
+                        <IconFluentPaddingLeft20Regular v-else/>
                       </BaseIcon>
                     </div>
                     <div>-</div>
@@ -437,19 +437,22 @@ function setStartTime(val: Sentence, i: number, j: number) {
                           @click="sentence.audioPosition[1] = Number(Number(audioRef.currentTime).toFixed(2))"
                           title="设置结束时间"
                       >
-                        <IconIcSharpMyLocation/>
+                        <IconFluentMyLocation20Regular/>
                       </BaseIcon>
                     </div>
                   </div>
                   <div class="flex flex-col">
                     <BaseIcon :icon="sentence.audioPosition?.length ? 'basil:edit-outline' : 'basil:add-outline'"
+                              title="编辑"
                               @click="handleShowEditAudioDialog(sentence,indexI,indexJ)">
-                      <IconBasilEditOutline v-if="sentence.audioPosition?.length"/>
-                      <IconBasilAddOutline v-else/>
+                      <IconFluentSpeakerEdit20Regular v-if="!sentence.audioPosition?.length"/>
+                      <IconFluentAddSquare20Regular v-else/>
                     </BaseIcon>
-                    <BaseIcon v-if="sentence.audioPosition?.length"
+                    <BaseIcon
+                        title="播放"
+                        v-if="sentence.audioPosition?.length"
                               @click="playSentenceAudio(sentence,audioRef,editArticle)">
-                      <IconHugeiconsPlay/>
+                      <IconFluentPlay20Regular/>
                     </BaseIcon>
                   </div>
                 </div>
@@ -461,11 +464,11 @@ function setStartTime(val: Sentence, i: number, j: number) {
           <div class="status">
             <span>状态：</span>
             <div class="warning" v-if="failCount">
-              <IconTypcnWarningOutline/>
+              <IconFluentShieldQuestion20Regular/>
               共有{{ failCount }}句没有翻译！
             </div>
             <div class="success" v-else>
-              <IconMdiSuccessCircleOutline/>
+              <IconFluentCheckmarkCircle16Regular/>
               翻译完成！
             </div>
           </div>
@@ -498,9 +501,9 @@ function setStartTime(val: Sentence, i: number, j: number) {
               <span v-else> - 结束</span>
             </div>
             <BaseIcon
-                title="试听"
+                title="播放"
                 @click="playSentenceAudio(editSentence,sentenceAudioRef,editArticle)">
-              <IconHugeiconsPlay/>
+              <IconFluentPlay20Regular/>
             </BaseIcon>
           </div>
         </div>
@@ -514,13 +517,13 @@ function setStartTime(val: Sentence, i: number, j: number) {
                     @click="jumpAudio(editSentence.audioPosition[0])"
                     title="跳转"
                 >
-                  <IconIcSharpMyLocation/>
+                  <IconFluentMyLocation20Regular/>
                 </BaseIcon>
                 <BaseIcon
                     @click="setPreEndTimeToCurrentStartTime"
                     title="使用前一句的结束时间"
                 >
-                  <IconTwemojiEndArrow/>
+                  <IconFluentPaddingLeft20Regular/>
                 </BaseIcon>
               </div>
               <BaseButton @click="recordStart">记录</BaseButton>

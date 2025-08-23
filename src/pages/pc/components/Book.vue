@@ -47,12 +47,9 @@ const studyProgress = $computed(() => {
                 class="absolute left-3 bottom-3"/>
       <div class="custom" v-if="item.custom">自定义</div>
     </template>
-    <div v-else class="center h-full">
-      <IconFluentAdd20Filled
-          width="40px"
-        />
+    <div v-else class="center h-full text-2xl">
+      <IconFluentAdd16Regular/>
     </div>
-
   </div>
 </template>
 

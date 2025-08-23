@@ -5,6 +5,7 @@ import {useEventListener} from "@/hooks/event.ts";
 
 import BaseButton from "@/components/BaseButton.vue";
 import {useRuntimeStore} from "@/stores/runtime.ts";
+import BaseIcon from "@/components/BaseIcon.vue";
 
 export interface ModalProps {
   modelValue?: boolean,
@@ -156,10 +157,10 @@ async function cancel() {
             ]"
       >
         <Tooltip title="关闭">
-          <IconIonCloseOutline @click="close"
-                               v-if="showClose"
-                               class="close hvr-grow cursor-pointer"
-                               width="24" color="#929596"/>
+          <IconFluentDismiss20Regular @click="close"
+                                      v-if="showClose"
+                                      class="close cursor-pointer"
+                                      width="24"/>
         </Tooltip>
         <div class="modal-header" v-if="header">
           <div class="title">{{ props.title }}</div>
@@ -169,7 +170,9 @@ async function cancel() {
           <div v-if="content" class="content">{{ content }}</div>
         </div>
         <div class="modal-footer" v-if="footer">
-          <div class="left flex items-end"><slot name="footer-left"></slot></div>
+          <div class="left flex items-end">
+            <slot name="footer-left"></slot>
+          </div>
           <div class="right">
             <BaseButton type="info" @click="cancel">{{ cancelButtonText }}</BaseButton>
             <BaseButton

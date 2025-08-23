@@ -174,27 +174,27 @@ function importOldData() {
       <div class="left mt-10">
         <div class="tabs">
           <div class="tab" :class="tabIndex === 0 && 'active'" @click="tabIndex = 0">
-            <IconIconParkOutlineSettingConfig width="20"/>
+            <IconFluentAppsList24Regular width="20"/>
             <span>练习设置</span>
           </div>
           <div class="tab" :class="tabIndex === 1 && 'active'" @click="tabIndex = 1">
-            <IconBxHeadphone width="20"/>
+            <IconFluentHeadphones20Regular width="20"/>
             <span>音效设置</span>
           </div>
           <div class="tab" :class="tabIndex === 2 && 'active'" @click="tabIndex = 2">
-            <IconMaterialSymbolsKeyboardOutline width="20"/>
+            <IconFluentKeyboardLayoutFloat20Regular width="20"/>
             <span>快捷键设置</span>
           </div>
           <div class="tab" :class="tabIndex === 3 && 'active'" @click="tabIndex = 3">
-            <IconMdiDatabaseCogOutline width="20"/>
+            <IconFluentDatabasePerson20Regular width="20"/>
             <span>数据管理</span>
           </div>
           <div class="tab" :class="tabIndex === 4 && 'active'" @click="tabIndex = 4">
-            <IconMingcuteServiceFill width="20"/>
+            <IconFluentMailEdit20Regular width="20"/>
             <span>反馈</span>
           </div>
           <div class="tab" :class="tabIndex === 5 && 'active'" @click="tabIndex = 5">
-            <IconMdiAboutCircleOutline width="20"/>
+            <IconFluentPerson20Regular width="20"/>
             <span>关于</span>
           </div>
         </div>

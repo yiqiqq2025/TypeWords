@@ -97,18 +97,16 @@ async function goBookDetail(val: DictResource) {
               base.currentBook.name || '请选择书籍开始学习'
             }}</span>
           <BaseIcon @click="router.push('/book-list')">
-            <IconGgArrowsExchange v-if="base.currentBook.name"/>
-            <IconFluentAdd20Filled v-else/>
+            <IconFluentArrowSync16Regular v-if="base.currentBook.name"/>
+            <IconFluentAdd16Filled v-else/>
           </BaseIcon>
         </div>
-        <BaseButton
-            size="large"
-            @click="startStudy"
-            :disabled="!base.currentBook.name"
-        >
+        <BaseButton size="large"
+                    @click="startStudy"
+                    :disabled="!base.currentBook.name">
           <div class="flex items-center gap-2">
-            <span>开始学习</span>
-            <IconIcons8RightRound class="text-2xl"/>
+            <span class="line-height-[2]">开始学习</span>
+            <IconFluentArrowCircleRight16Regular class="text-xl"/>
           </div>
         </BaseButton>
       </div>

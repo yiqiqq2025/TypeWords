@@ -305,8 +305,8 @@ const {playSentenceAudio} = usePlaySentenceAudio()
                     :class="!isArticleCollect(item) ? 'collect' : 'fill'"
                     @click.stop="toggleArticleCollect(item)"
                     :title="!isArticleCollect(item) ? '收藏' : '取消收藏'">
-                  <IconPhStar v-if="!isArticleCollect(item)"/>
-                  <IconPhStarFill v-else/>
+                  <IconFluentStar16Regular v-if="!isArticleCollect(item)"/>
+                  <IconFluentStar16Filled v-else/>
                 </BaseIcon>
               </template>
             </ArticleList>
@@ -322,11 +322,10 @@ const {playSentenceAudio} = usePlaySentenceAudio()
     </div>
     <div class="footer" :class="!settingStore.showToolbar && 'hide'">
       <Tooltip :title="settingStore.showToolbar?'收起':'展开'">
-        <IconIconParkOutlineDown
+        <IconFluentChevronLeft20Filled
             @click="settingStore.showToolbar = !settingStore.showToolbar"
             class="arrow"
             :class="!settingStore.showToolbar && 'down'"
-            width="24"
             color="#999"/>
       </Tooltip>
 
@@ -351,27 +350,27 @@ const {playSentenceAudio} = usePlaySentenceAudio()
               <BaseIcon
                   :title="`下一句(${settingStore.shortcutKeyMap[ShortcutKey.Next]})`"
                   @click="skip">
-                <IconIconParkOutlineGoAhead/>
+                <IconFluentArrowBounce20Regular class="transform-rotate-180"/>
               </BaseIcon>
               <BaseIcon
                   :title="`重听(${settingStore.shortcutKeyMap[ShortcutKey.PlayWordPronunciation]})`"
                   @click="play">
-                <IconFluentReplay16Filled/>
+                <IconFluentReplay20Regular/>
               </BaseIcon>
 
               <BaseIcon
                   @click="settingStore.dictation = !settingStore.dictation"
                   :title="`开关默写模式(${settingStore.shortcutKeyMap[ShortcutKey.ToggleDictation]})`"
               >
-                <IconMajesticonsEyeOffLine v-if="settingStore.dictation"/>
-                <IconMdiEyeOutline v-else/>
+                <IconFluentEyeOff16Regular v-if="settingStore.dictation"/>
+                <IconFluentEye16Regular v-else/>
               </BaseIcon>
 
               <BaseIcon
                   :title="`开关释义显示(${settingStore.shortcutKeyMap[ShortcutKey.ToggleShowTranslate]})`"
                   @click="settingStore.translate = !settingStore.translate">
-                <IconMdiTranslate v-if="settingStore.translate"/>
-                <IconMdiTranslateOff v-else/>
+                <IconFluentTranslate16Regular v-if="settingStore.translate"/>
+                <IconFluentTranslateOff16Regular v-else/>
               </BaseIcon>
 
               <!--              <BaseIcon-->
@@ -382,7 +381,7 @@ const {playSentenceAudio} = usePlaySentenceAudio()
               <BaseIcon
                   @click="settingStore.showPanel = !settingStore.showPanel"
                   :title="`面板(${settingStore.shortcutKeyMap[ShortcutKey.TogglePanel]})`">
-                <IconTdesignMenuUnfold/>
+                <IconFluentTextListAbcUppercaseLtr20Regular/>
               </BaseIcon>
             </div>
           </div>
@@ -451,7 +450,7 @@ const {playSentenceAudio} = usePlaySentenceAudio()
   margin-bottom: .8rem;
   transition: all var(--anim-time);
   position: relative;
-  margin-top: 1rem;
+  margin-top: 1.6rem;
 
   &.hide {
     margin-bottom: -6rem;
@@ -495,16 +494,17 @@ const {playSentenceAudio} = usePlaySentenceAudio()
 
   .arrow {
     position: absolute;
-    top: -50%;
+    top: -40%;
     left: 50%;
     cursor: pointer;
     transition: all .5s;
-    transform: rotate(0);
+    transform: rotate(-90deg);
     padding: .5rem;
+    font-size: 1.2rem;
 
     &.down {
-      top: -90%;
-      transform: rotate(180deg);
+      top: -70%;
+      transform: rotate(90deg);
     }
   }
 

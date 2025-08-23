@@ -189,7 +189,7 @@ function quickNextPage() {
           :disabled="internalCurrentPage <= 1"
           @click="prev"
       >
-        <IconMingcuteLeftLine/>
+        <IconFluentChevronLeft20Filled/>
       </button>
 
       <!-- 页码 -->
@@ -250,7 +250,7 @@ function quickNextPage() {
           :disabled="internalCurrentPage >= pageCount"
           @click="next"
       >
-        <IconMingcuteRightLine/>
+        <IconFluentChevronLeft20Filled class="transform-rotate-180"/>
       </button>
 
       <!-- 每页条数选择器 -->

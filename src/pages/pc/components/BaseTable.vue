@@ -171,7 +171,7 @@ defineRender(
                                 onClick={props.add}
                                 icon="fluent:add-20-filled"
                                 title="添加单词">
-                              <IconFluentAdd20Filled/>
+                              <IconFluentAdd20Regular/>
                             </BaseIcon>
                             <BaseIcon
                                 disabled={!currentList.length}
@@ -179,13 +179,13 @@ defineRender(
                                 icon="icon-park-outline:sort-two"
                                 onClick={() => showSortDialog = !showSortDialog}
                             >
-                              <IconIconParkOutlineSortTwo/>
+                              <IconFluentArrowSort20Regular/>
                             </BaseIcon>
                             <BaseIcon
                                 disabled={!currentList.length}
                                 onClick={() => showSearchInput = !showSearchInput}
                                 title="搜索">
-                              <IconFluentSearch24Regular/>
+                              <IconFluentSearch20Regular/>
                             </BaseIcon>
                             <MiniDialog
                                 modelValue={showSortDialog}
