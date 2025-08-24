@@ -25,7 +25,6 @@ import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import {getDefaultDict, getDefaultWord} from "@/types/func.ts";
 import ConflictNotice from "@/pages/pc/components/ConflictNotice.vue";
 import dict_list from "@/assets/dict-list.json";
-import PracticeLayout from "@/pages/pc/components/PracticeLayout.vue";
 
 interface IProps {
   new: Word[],
@@ -379,42 +378,45 @@ useEvents([
 </script>
 
 <template>
-  <PracticeLayout
-      v-loading="loading"
-      panelLeft="var(--word-panel-margin-left)">
-    <template v-slot:practice>
-      <div class="practice-word">
-        <div class="absolute z-1 top-4   w-full" v-if="settingStore.showNearWord">
-          <div class="center gap-2 cursor-pointer float-left"
-               @click="prev"
-               v-if="prevWord">
-            <IconFluentArrowLeft16Regular class="arrow" width="22"/>
-            <Tooltip
-                :title="`上一个(${settingStore.shortcutKeyMap[ShortcutKey.Previous]})`"
-            >
-              <div class="word">{{ prevWord.word }}</div>
-            </Tooltip>
-          </div>
-          <div class="center gap-2 cursor-pointer float-right "
-               @click="next(false)"
-               v-if="nextWord">
-            <Tooltip
-                :title="`下一个(${settingStore.shortcutKeyMap[ShortcutKey.Next]})`"
-            >
-              <div class="word" :class="settingStore.dictation && 'word-shadow'">{{ nextWord.word }}</div>
-            </Tooltip>
-            <IconFluentArrowRight16Regular class="arrow" width="22"/>
-          </div>
+  <div class="practice-wrapper" v-loading="loading">
+    <div class="practice-word">
+      <div class="absolute z-1 top-4   w-full" v-if="settingStore.showNearWord">
+        <div class="center gap-2 cursor-pointer float-left"
+             @click="prev"
+             v-if="prevWord">
+          <IconFluentArrowLeft16Regular class="arrow" width="22"/>
+          <Tooltip
+              :title="`上一个(${settingStore.shortcutKeyMap[ShortcutKey.Previous]})`"
+          >
+            <div class="word">{{ prevWord.word }}</div>
+          </Tooltip>
         </div>
-        <TypeWord
-            ref="typingRef"
-            :word="word"
-            @wrong="onTypeWrong"
-            @complete="next"
-        />
+        <div class="center gap-2 cursor-pointer float-right "
+             @click="next(false)"
+             v-if="nextWord">
+          <Tooltip
+              :title="`下一个(${settingStore.shortcutKeyMap[ShortcutKey.Next]})`"
+          >
+            <div class="word" :class="settingStore.dictation && 'word-shadow'">{{ nextWord.word }}</div>
+          </Tooltip>
+          <IconFluentArrowRight16Regular class="arrow" width="22"/>
+        </div>
       </div>
-    </template>
-    <template v-slot:panel>
+      <TypeWord
+          ref="typingRef"
+          :word="word"
+          @wrong="onTypeWrong"
+          @complete="next"
+      />
+      <Footer
+          :is-simple="isWordSimple(word)"
+          @toggle-simple="toggleWordSimpleWrapper"
+          :is-collect="isWordCollect(word)"
+          @toggle-collect="toggleWordCollect(word)"
+          @skip="next(false)"
+      />
+    </div>
+    <div class="word-panel-wrapper">
       <Panel>
         <template v-slot:title>
           <!--          <span>{{ store.sdict.name }} ({{ data.index + 1 }} / {{ data.words.length }})</span>-->
@@ -460,17 +462,8 @@ useEvents([
           <Empty v-else/>
         </div>
       </Panel>
-    </template>
-    <template v-slot:footer>
-      <Footer
-          :is-simple="isWordSimple(word)"
-          @toggle-simple="toggleWordSimpleWrapper"
-          :is-collect="isWordCollect(word)"
-          @toggle-collect="toggleWordCollect(word)"
-          @skip="next(false)"
-      />
-    </template>
-  </PracticeLayout>
+    </div>
+  </div>
   <Statistics v-model="showStatDialog"/>
   <ConflictNotice/>
 </template>

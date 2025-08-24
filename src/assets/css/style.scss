@@ -15,16 +15,18 @@
   --color-scrollbar: rgb(147, 173, 227);
   --color-sub-gray: #c0bfbf;
 
-  --practice-wrapper-translateX: 1px;
   --article-width: 50vw;
   --article-toolbar-width: 50rem;
+  --article-panel-width: 20rem;
+  --article-panel-margin-left: calc(50% + var(--article-width) / 2 + 1rem);
+
   --toolbar-width: 50rem;
   --panel-width: 24rem;
+
   --space: 1rem;
   --stat-gap: 1rem;
   --shadow: rgba(0, 0, 0, 0.08) 0px 4px 12px;
-  --panel-margin-left: calc(50% + var(--toolbar-width) / 2 + 1rem);
-  --article-panel-margin-left: calc(50% + var(--article-width) / 2 + 1rem);
+  --word-panel-margin-left: calc(50% + var(--toolbar-width) / 2 + 1rem);
   --anim-time: 0.5s;
 
   --color-input-color: black;
@@ -61,7 +63,7 @@
   --color-notice-bg: rgb(247, 247, 247);
 
 
-  //修改element-ui的进度条底色
+  //修改的进度条底色
   --color-progress-bar: #d1d5df !important;
 }
 
@@ -118,31 +120,25 @@ html.dark {
 @media (max-width: 1720px) {
   :root {
     --toolbar-width: 50vw;
-    --article-width: 50vw;
     --panel-width: 20vw;
     --space: 0.5rem;
-  }
-  .footer {
-    .bottom {
-      padding: .5rem !important;
-    }
+
+    --article-toolbar-width: 45rem;
+    --article-panel-width: 18rem;
   }
 }
 
 @media (max-width: 1366px) {
   :root {
     --panel-width: 20vw;
-    --article-width: 50vw;
     --toolbar-width: 50vw;
     --stat-gap: 0.5rem;
     --space: 0.3rem;
+
+    --article-toolbar-width: 40rem;
+    --article-panel-width: 16rem;
   }
 
-  .footer {
-    .bottom {
-      padding: .5rem !important;
-    }
-  }
 }
 
 .anim {

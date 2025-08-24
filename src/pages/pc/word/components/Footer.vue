@@ -60,13 +60,13 @@ const progress = $computed(() => {
 </script>
 
 <template>
-  <div class="footer" :class="!settingStore.showToolbar && 'hide'">
+  <div class="footer">
     <Tooltip :title="settingStore.showToolbar?'收起':'展开'">
       <IconFluentChevronLeft20Filled
-            @click="settingStore.showToolbar = !settingStore.showToolbar"
-            class="arrow"
-            :class="!settingStore.showToolbar && 'down'"
-            color="#999"/>
+          @click="settingStore.showToolbar = !settingStore.showToolbar"
+          class="arrow"
+          :class="!settingStore.showToolbar && 'down'"
+          color="#999"/>
     </Tooltip>
 
     <div class="bottom">
@@ -75,7 +75,7 @@ const progress = $computed(() => {
           :stroke-width="8"
           :show-text="false"/>
       <div class="flex justify-between items-center">
-        <div class="stat gap-6">
+        <div class="stat">
           <div class="row">
             <div class="num">{{ `${studyData.index}/${studyData.words.length}` }}</div>
             <div class="line"></div>
@@ -156,16 +156,14 @@ const progress = $computed(() => {
 .footer {
   flex-shrink: 0;
   width: var(--toolbar-width);
-  margin-bottom: .8rem;
-  transition: all var(--anim-time);
   position: relative;
-  margin-top: 1.6rem;
 
   &.hide {
     margin-bottom: -6rem;
     margin-top: 3rem;
 
     .progress-wrap {
+
       bottom: calc(100% + 1.8rem);
     }
   }
@@ -185,6 +183,7 @@ const progress = $computed(() => {
       margin-top: .5rem;
       display: flex;
       justify-content: space-around;
+      gap: var(--stat-gap);
 
       .row {
         display: flex;
@@ -204,12 +203,12 @@ const progress = $computed(() => {
   }
 
   .progress-wrap {
-    width: 100%;
+    width: var(--toolbar-width);
     transition: all .3s;
     padding: 0 .6rem;
     box-sizing: border-box;
-    position: absolute;
-    bottom: 0;
+    position: fixed;
+    bottom: 1rem;
   }
 
   .arrow {

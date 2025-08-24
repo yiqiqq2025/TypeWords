@@ -482,15 +482,15 @@ let showQuestions = $ref(false)
 
 .typing-article {
   height: 100%;
-  width: 100%;
   overflow: auto;
   color: var(--color-article);
+  width: var(--article-width);
   font-size: 1.6rem;
 
   header {
     word-wrap: break-word;
     position: relative;
-    padding-top: 1rem;
+    padding-top: 3rem;
 
     .title {
       text-align: center;
@@ -549,7 +549,7 @@ let showQuestions = $ref(false)
     }
 
     &.tall {
-      line-height: 2.6;
+      line-height: 2.4;
     }
 
     .section {
@@ -589,7 +589,7 @@ let showQuestions = $ref(false)
     height: 100%;
     width: 100%;
     font-size: 1.2rem;
-    line-height: 3.5;
+    line-height: 3.2;
     letter-spacing: .2rem;
     font-family: var(--zh-article-family);
     font-weight: bold;

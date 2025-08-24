@@ -22,6 +22,7 @@ import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
 import ConflictNotice from "@/pages/pc/components/ConflictNotice.vue";
 import {useRoute, useRouter} from "vue-router";
 import book_list from "@/assets/book-list.json";
+import PracticeLayout from "@/pages/pc/components/PracticeLayout.vue";
 
 const store = useBaseStore()
 const settingStore = useSettingStore()
@@ -274,8 +275,10 @@ const {playSentenceAudio} = usePlaySentenceAudio()
 
 </script>
 <template>
-  <div class="practice-wrapper" v-loading="loading">
-    <div class="practice-article">
+  <PracticeLayout
+      v-loading="loading"
+      panelLeft="var(--article-panel-margin-left)">
+    <template v-slot:practice>
       <TypingArticle
           ref="typingArticleRef"
           @edit="edit"
@@ -285,179 +288,119 @@ const {playSentenceAudio} = usePlaySentenceAudio()
           @play="e => playSentenceAudio(e,audioRef,articleData.article)"
           :article="articleData.article"
       />
-
-      <div class="panel-wrapper">
-        <Panel>
-          <template v-slot:title>
+    </template>
+    <template v-slot:panel>
+      <Panel :style="{width:'var(--article-panel-width)'}">
+        <template v-slot:title>
             <span>{{
                 store.sbook.name
               }} ({{ store.sbook.lastLearnIndex + 1 }} / {{ articleData.list.length }})</span>
-          </template>
-          <div class="panel-page-item pl-4">
-            <ArticleList
-                :isActive="true"
-                :static="false"
-                :show-translate="settingStore.translate"
-                @click="changeArticle"
-                :active-id="articleData.article.id"
-                :list="articleData.list ">
-              <template v-slot:suffix="{item,index}">
+        </template>
+        <div class="panel-page-item pl-4">
+          <ArticleList
+              :isActive="true"
+              :static="false"
+              :show-translate="settingStore.translate"
+              @click="changeArticle"
+              :active-id="articleData.article.id"
+              :list="articleData.list ">
+            <template v-slot:suffix="{item,index}">
+              <BaseIcon
+                  :class="!isArticleCollect(item) ? 'collect' : 'fill'"
+                  @click.stop="toggleArticleCollect(item)"
+                  :title="!isArticleCollect(item) ? '收藏' : '取消收藏'">
+                <IconFluentStar16Regular v-if="!isArticleCollect(item)"/>
+                <IconFluentStar16Filled v-else/>
+              </BaseIcon>
+            </template>
+          </ArticleList>
+        </div>
+      </Panel>
+    </template>
+    <template v-slot:footer>
+      <div class="footer">
+        <Tooltip :title="settingStore.showToolbar?'收起':'展开'">
+          <IconFluentChevronLeft20Filled
+              @click="settingStore.showToolbar = !settingStore.showToolbar"
+              class="arrow"
+              :class="!settingStore.showToolbar && 'down'"
+              color="#999"/>
+        </Tooltip>
+        <div class="bottom">
+          <div class="flex justify-between items-center">
+            <div class="stat">
+              <div class="row">
+                <div class="num">{{ speedMinute }}分钟</div>
+                <div class="line"></div>
+                <div class="name">时间</div>
+              </div>
+              <div class="row">
+                <div class="num">{{ statisticsStore.total }}</div>
+                <div class="line"></div>
+                <div class="name">单词总数</div>
+              </div>
+            </div>
+            <audio ref="audioRef" v-if="articleData.article.audioSrc" :src="articleData.article.audioSrc"
+                   controls></audio>
+            <div class="flex flex-col items-center justify-center gap-1">
+              <div class="flex gap-2 center">
                 <BaseIcon
-                    :class="!isArticleCollect(item) ? 'collect' : 'fill'"
-                    @click.stop="toggleArticleCollect(item)"
-                    :title="!isArticleCollect(item) ? '收藏' : '取消收藏'">
-                  <IconFluentStar16Regular v-if="!isArticleCollect(item)"/>
-                  <IconFluentStar16Filled v-else/>
+                    :title="`下一句(${settingStore.shortcutKeyMap[ShortcutKey.Next]})`"
+                    @click="skip">
+                  <IconFluentArrowBounce20Regular class="transform-rotate-180"/>
                 </BaseIcon>
-              </template>
-            </ArticleList>
-          </div>
-        </Panel>
-      </div>
+                <BaseIcon
+                    :title="`重听(${settingStore.shortcutKeyMap[ShortcutKey.PlayWordPronunciation]})`"
+                    @click="play">
+                  <IconFluentReplay20Regular/>
+                </BaseIcon>
 
-      <EditSingleArticleModal
-          v-model="showEditArticle"
-          :article="editArticle"
-          @save="saveArticle"
-      />
-    </div>
-    <div class="footer" :class="!settingStore.showToolbar && 'hide'">
-      <Tooltip :title="settingStore.showToolbar?'收起':'展开'">
-        <IconFluentChevronLeft20Filled
-            @click="settingStore.showToolbar = !settingStore.showToolbar"
-            class="arrow"
-            :class="!settingStore.showToolbar && 'down'"
-            color="#999"/>
-      </Tooltip>
+                <BaseIcon
+                    @click="settingStore.dictation = !settingStore.dictation"
+                    :title="`开关默写模式(${settingStore.shortcutKeyMap[ShortcutKey.ToggleDictation]})`"
+                >
+                  <IconFluentEyeOff16Regular v-if="settingStore.dictation"/>
+                  <IconFluentEye16Regular v-else/>
+                </BaseIcon>
 
-      <div class="bottom">
-        <div class="flex justify-between items-center">
-          <div class="stat">
-            <div class="row">
-              <div class="num">{{ speedMinute }}分钟</div>
-              <div class="line"></div>
-              <div class="name">时间</div>
-            </div>
-            <div class="row">
-              <div class="num">{{ statisticsStore.total }}</div>
-              <div class="line"></div>
-              <div class="name">单词总数</div>
-            </div>
-          </div>
-          <audio ref="audioRef" v-if="articleData.article.audioSrc" :src="articleData.article.audioSrc"
-                 controls></audio>
-          <div class="flex flex-col items-center justify-center gap-1">
-            <div class="flex gap-2 center">
-              <BaseIcon
-                  :title="`下一句(${settingStore.shortcutKeyMap[ShortcutKey.Next]})`"
-                  @click="skip">
-                <IconFluentArrowBounce20Regular class="transform-rotate-180"/>
-              </BaseIcon>
-              <BaseIcon
-                  :title="`重听(${settingStore.shortcutKeyMap[ShortcutKey.PlayWordPronunciation]})`"
-                  @click="play">
-                <IconFluentReplay20Regular/>
-              </BaseIcon>
+                <BaseIcon
+                    :title="`开关释义显示(${settingStore.shortcutKeyMap[ShortcutKey.ToggleShowTranslate]})`"
+                    @click="settingStore.translate = !settingStore.translate">
+                  <IconFluentTranslate16Regular v-if="settingStore.translate"/>
+                  <IconFluentTranslateOff16Regular v-else/>
+                </BaseIcon>
 
-              <BaseIcon
-                  @click="settingStore.dictation = !settingStore.dictation"
-                  :title="`开关默写模式(${settingStore.shortcutKeyMap[ShortcutKey.ToggleDictation]})`"
-              >
-                <IconFluentEyeOff16Regular v-if="settingStore.dictation"/>
-                <IconFluentEye16Regular v-else/>
-              </BaseIcon>
-
-              <BaseIcon
-                  :title="`开关释义显示(${settingStore.shortcutKeyMap[ShortcutKey.ToggleShowTranslate]})`"
-                  @click="settingStore.translate = !settingStore.translate">
-                <IconFluentTranslate16Regular v-if="settingStore.translate"/>
-                <IconFluentTranslateOff16Regular v-else/>
-              </BaseIcon>
-
-              <!--              <BaseIcon-->
-              <!--                  :title="`编辑(${settingStore.shortcutKeyMap[ShortcutKey.EditArticle]})`"-->
-              <!--                  icon="tabler:edit"-->
-              <!--                  @click="emitter.emit(ShortcutKey.EditArticle)"-->
-              <!--              />-->
-              <BaseIcon
-                  @click="settingStore.showPanel = !settingStore.showPanel"
-                  :title="`面板(${settingStore.shortcutKeyMap[ShortcutKey.TogglePanel]})`">
-                <IconFluentTextListAbcUppercaseLtr20Regular/>
-              </BaseIcon>
+                <!--              <BaseIcon-->
+                <!--                  :title="`编辑(${settingStore.shortcutKeyMap[ShortcutKey.EditArticle]})`"-->
+                <!--                  icon="tabler:edit"-->
+                <!--                  @click="emitter.emit(ShortcutKey.EditArticle)"-->
+                <!--              />-->
+                <BaseIcon
+                    @click="settingStore.showPanel = !settingStore.showPanel"
+                    :title="`面板(${settingStore.shortcutKeyMap[ShortcutKey.TogglePanel]})`">
+                  <IconFluentTextListAbcUppercaseLtr20Regular/>
+                </BaseIcon>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </template>
+  </PracticeLayout>
+
+  <EditSingleArticleModal
+      v-model="showEditArticle"
+      :article="editArticle"
+      @save="saveArticle"
+  />
+
   <ConflictNotice/>
 </template>
 
 <style scoped lang="scss">
 
-.practice-wrapper {
-  font-size: 0.9rem;
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  overflow: hidden;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.swiper-wrapper {
-  height: 100%;
-  overflow: hidden;
-
-  .swiper-list {
-    transition: transform .3s;
-    height: 200%;
-
-    .swiper-item {
-      height: 50%;
-      overflow: auto;
-      display: flex;
-      justify-content: center;
-    }
-  }
-
-  .step1 {
-    transform: translate3d(0, -50%, 0);
-  }
-}
-
-.practice-article {
-  flex: 1;
-  overflow: hidden;
-  width: var(--article-width);
-}
-
-.typing-word-wrapper {
-  width: var(--toolbar-width);
-}
-
-.panel-wrapper {
-  position: absolute;
-  left: var(--article-panel-margin-left);
-  //left: 0;
-  top: .8rem;
-  z-index: 1;
-  height: calc(100% - 1.5rem);
-}
-
 .footer {
   width: var(--article-toolbar-width);
-  margin-bottom: .8rem;
-  transition: all var(--anim-time);
-  position: relative;
-  margin-top: 1.6rem;
-
-  &.hide {
-    margin-bottom: -6rem;
-    margin-top: 3rem;
-
-  }
 
   .bottom {
     position: relative;
@@ -508,8 +451,5 @@ const {playSentenceAudio} = usePlaySentenceAudio()
       transform: rotate(90deg);
     }
   }
-
-
 }
-
 </style>
