@@ -19,6 +19,7 @@ import PracticeSettingDialog from "@/pages/pc/word/components/PracticeSettingDia
 import ChangeLastPracticeIndexDialog from "@/pages/pc/word/components/ChangeLastPracticeIndexDialog.vue";
 import {useSettingStore} from "@/stores/setting.ts";
 import recommendDictList from "@/assets/recommend-dict-list.json";
+import CollectNotice from "@/pages/pc/components/CollectNotice.vue";
 
 
 const store = useBaseStore()
@@ -254,6 +255,8 @@ function check(cb: Function) {
         showChangeLastPracticeIndexDialog = false
       }"
   />
+
+  <CollectNotice/>
 </template>
 
 <style scoped lang="scss">

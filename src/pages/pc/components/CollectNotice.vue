@@ -32,9 +32,11 @@ function close() {
 
 watch(() => settingStore.load, (n) => {
   if (n && settingStore.first) {
-    show = true
+   setTimeout(()=>{
+     show = true
+   },1000)
   }
-})
+}, {immediate: true})
 
 </script>
 
@@ -45,7 +47,7 @@ watch(() => settingStore.load, (n) => {
          v-if="show">
       <div class="notice">
         坚持练习，提高外语能力。将
-        <span class="active">「{{ ProjectName}}」</span>
+        <span class="active">「{{ ProjectName }}」</span>
         保存为书签，永不迷失！
       </div>
       <div class="wrapper">
