@@ -48,7 +48,7 @@ export interface BaiduConfig {
 export class Baidu extends Translator<BaiduConfig> {
   readonly name = "baidu";
 
-  readonly endpoint = "https://api.fanyi.baidu.com/api/trans/vip/translate";
+  readonly endpoint = "/baidu";
 
   protected async query(
     text: string,
