@@ -335,7 +335,18 @@ const {playSentenceAudio} = usePlaySentenceAudio()
                 <div class="name">时间</div>
               </div>
               <div class="row">
-                <div class="num">{{ statisticsStore.total }}</div>
+                <div class="num center gap-1">
+                  {{ statisticsStore.total }}
+                  <Tooltip>
+                    <IconFluentQuestionCircle20Regular width="18"/>
+                    <template #reference>
+                      <div>
+                        统计词数{{ settingStore.ignoreSimpleWord ? '不包含' : '包含' }}简单词，不包含已掌握
+                        <div>简单词可在设置 -> 练习设置 -> 简单词过滤中修改</div>
+                      </div>
+                    </template>
+                  </Tooltip>
+                </div>
                 <div class="line"></div>
                 <div class="name">单词总数</div>
               </div>

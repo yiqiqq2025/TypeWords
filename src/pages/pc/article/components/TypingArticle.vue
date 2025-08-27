@@ -271,8 +271,47 @@ function del() {
   if (wrong) {
     wrong = ''
   } else {
-    input = input.slice(0, -1)
+    if (isEnd) return;
+    if (isSpace) {
+      isSpace = false
+    }
+    let endSentence = false
+    let endWord = false
+    let endString = false
+    if (stringIndex === 0) {
+      if (wordIndex === 0) {
+        if (sentenceIndex === 0) {
+          if (sectionIndex === 0) {
+            return
+          } else {
+            endSentence = endString = endWord = true
+            sectionIndex--
+          }
+        } else {
+          endString = endWord = true
+          sentenceIndex--
+        }
+      } else {
+        endString = true
+        wordIndex--
+      }
+    } else stringIndex--
+    let currentSection = props.article.sections[sectionIndex]
+    if (endSentence) sentenceIndex = currentSection.length - 1
+    let currentSentence = currentSection[sentenceIndex]
+    if (endWord) wordIndex = currentSentence.words.length - 1
+    let currentWord: ArticleWord = currentSentence.words[wordIndex]
+    if (endString) {
+      if (currentWord.nextSpace) {
+        isSpace = true
+        stringIndex = currentWord.word.length
+      }else {
+        stringIndex = currentWord.word.length - 1
+      }
+    }
+    input = currentWord.word.slice(0, stringIndex)
   }
+  checkCursorPosition()
 }
 
 function indexWord(word: ArticleWord) {

@@ -16,7 +16,7 @@ import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import {getDefaultArticle} from "@/types/func.ts";
 import BackIcon from "@/pages/pc/components/BackIcon.vue";
 
-const emit = defineEmits<{
+defineEmits<{
   importData: [val: Event]
   exportData: [val: string]
 }>()
