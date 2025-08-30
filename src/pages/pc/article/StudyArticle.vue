@@ -40,6 +40,7 @@ let articleData = $ref({
 let showEditArticle = $ref(false)
 let typingArticleRef = $ref<any>()
 let loading = $ref<boolean>(false)
+let allWrongWords = new Set()
 let editArticle = $ref<Article>(getDefaultArticle())
 
 function write() {
@@ -128,7 +129,6 @@ onMounted(() => {
   }
 })
 
-
 useStartKeyboardEventListener()
 useDisableEventListener(() => loading)
 
@@ -138,6 +138,7 @@ function setArticle(val: Article) {
   statisticsStore.total = 0
   statisticsStore.startDate = Date.now()
 
+  allWrongWords = new Set()
   articleData.list[store.sbook.lastLearnIndex] = val
   articleData.article = val
   articleData.sectionIndex = 0
@@ -186,12 +187,15 @@ function edit(val: Article = articleData.article) {
 }
 
 function wrong(word: Word) {
-  let lowerName = word.word.toLowerCase();
-  if (!store.wrong.words.find((v: Word) => v.word.toLowerCase() === lowerName)) {
-    store.wrong.words.push(word)
+  let temp = word.word.toLowerCase();
+  if (!allWrongWords.has(word.word.toLowerCase())) {
+    allWrongWords.add(word.word.toLowerCase())
+    statisticsStore.wrong++
   }
-  if (!store.allIgnoreWords.includes(lowerName)) {
-    //todo
+
+  if (!store.wrong.words.find((v: Word) => v.word.toLowerCase() === temp)) {
+    store.wrong.words.push(word)
+    store.wrong.length = store.wrong.words.length
   }
 }
 

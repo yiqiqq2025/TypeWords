@@ -26,6 +26,7 @@ export function getDefaultArticleWord(val: Partial<ArticleWord> = {}): ArticleWo
     nextSpace: true,
     isSymbol: false,
     symbolPosition: '',
+    input: '',
     ...val
   }) as ArticleWord
 }

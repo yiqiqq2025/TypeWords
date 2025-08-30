@@ -55,6 +55,7 @@ export interface ArticleWord extends Word {
   nextSpace: boolean,
   isSymbol: boolean,
   symbolPosition: 'start' | 'end' | '',
+  input:string
 }
 
 export interface Sentence {
