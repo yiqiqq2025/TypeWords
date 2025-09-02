@@ -4,6 +4,7 @@ import nlp from "compromise/one";
 import {usePlayWordAudio} from "@/hooks/sound.ts";
 import {getSentenceAllText, getSentenceAllTranslateText} from "@/hooks/translate.ts";
 import {getDefaultArticleWord} from "@/types/func.ts";
+import {useSettingStore} from "@/stores/setting.ts";
 
 interface KeyboardMap {
   Period: string,
@@ -534,6 +535,7 @@ export function getTranslateText(article: Article) {
 
 export function usePlaySentenceAudio() {
   const playWordAudio = usePlayWordAudio()
+  const settingStore = useSettingStore()
   let timer = $ref(0)
 
   function playSentenceAudio(sentence: Sentence, ref?: HTMLAudioElement, article?: Article) {
@@ -543,6 +545,7 @@ export function usePlaySentenceAudio() {
         ref.pause()
       }
       let start = sentence.audioPosition[0];
+      ref.volume = settingStore.wordSoundVolume / 100
       ref.currentTime = start
       ref.play()
       let end = sentence.audioPosition?.[1]

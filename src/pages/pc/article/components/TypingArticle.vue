@@ -35,7 +35,10 @@ const props = withDefaults(defineProps<IProps>(), {
 const emit = defineEmits<{
   ignore: [],
   wrong: [val: Word],
-  play: [val: Sentence],
+  play: [val: {
+    sentence: Sentence,
+    handle: boolean
+  }],
   nextWord: [val: ArticleWord],
   complete: [],
   next: [],
@@ -180,10 +183,10 @@ function nextSentence() {
       isEnd = true
       emit('complete')
     } else {
-      emit('play', props.article.sections[sectionIndex][0])
+      emit('play', {sentence: props.article.sections[sectionIndex][0], handle: false})
     }
   } else {
-    emit('play', currentSection[sentenceIndex])
+    emit('play', {sentence: currentSection[sentenceIndex], handle: false})
   }
   lockNextSentence = false
 }
@@ -224,7 +227,7 @@ function onTyping(e: KeyboardEvent) {
     playKeyboardAudio()
   } else {
     if (sectionIndex === 0 && sentenceIndex === 0 && wordIndex === 0 && stringIndex === 0) {
-      emit('play', currentSection[sentenceIndex])
+      emit('play', {sentence: currentSection[sentenceIndex], handle: false})
     }
     let letter = e.key
 
@@ -239,7 +242,7 @@ function onTyping(e: KeyboardEvent) {
       isRight = key === letter
     }
     if (!isRight) {
-      if (!currentWord.isSymbol){
+      if (!currentWord.isSymbol) {
         emit('wrong', currentWord)
       }
       playBeep()
@@ -273,7 +276,7 @@ function onTyping(e: KeyboardEvent) {
 
 function play() {
   let currentSection = props.article.sections[sectionIndex]
-  emit('play', currentSection[sentenceIndex])
+  emit('play', {sentence: currentSection[sentenceIndex], handle: true})
 }
 
 function del() {
@@ -347,13 +350,13 @@ function onContextMenu(e: MouseEvent, sentence: Sentence, i, j) {
           sentenceIndex = j
           wordIndex = 0
           stringIndex = 0
-          emit('play', sentence)
+          emit('play', {sentence: sentence, handle: false})
         }
       },
       {
         label: "播放",
         onClick: () => {
-          emit('play', sentence)
+          emit('play', {sentence: sentence, handle: false})
         }
       },
       {

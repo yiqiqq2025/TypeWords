@@ -149,6 +149,7 @@ function setArticle(val: Article) {
   articleData.article.sections.map((v, i) => {
     v.map((w, j) => {
       w.words.map(s => {
+        s.input = ''
         if (!ignoreList.includes(s.word.toLowerCase()) && !s.isSymbol) {
           statisticsStore.total++
         }
@@ -188,6 +189,10 @@ function edit(val: Article = articleData.article) {
 
 function wrong(word: Word) {
   let temp = word.word.toLowerCase();
+  //过滤简单词
+  if (settingStore.ignoreSimpleWord) {
+    if (this.simpleWords.includes(temp)) return
+  }
   if (!allWrongWords.has(word.word.toLowerCase())) {
     allWrongWords.add(word.word.toLowerCase())
     statisticsStore.wrong++
@@ -277,6 +282,12 @@ onUnmounted(() => {
 let audioRef = $ref<HTMLAudioElement>()
 const {playSentenceAudio} = usePlaySentenceAudio()
 
+function play2(e) {
+  if (settingStore.wordSound || e.handle) {
+    playSentenceAudio(e.sentence, audioRef, articleData.article)
+  }
+}
+
 </script>
 <template>
   <PracticeLayout
@@ -289,7 +300,7 @@ const {playSentenceAudio} = usePlaySentenceAudio()
           @wrong="wrong"
           @next="next"
           @nextWord="nextWord"
-          @play="e => playSentenceAudio(e,audioRef,articleData.article)"
+          @play="play2"
           :article="articleData.article"
       />
     </template>
