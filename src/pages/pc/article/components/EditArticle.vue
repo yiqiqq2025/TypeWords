@@ -445,7 +445,7 @@ function setStartTime(val: Sentence, i: number, j: number) {
                     <BaseIcon :icon="sentence.audioPosition?.length ? 'basil:edit-outline' : 'basil:add-outline'"
                               title="编辑"
                               @click="handleShowEditAudioDialog(sentence,indexI,indexJ)">
-                      <IconFluentSpeakerEdit20Regular v-if="!sentence.audioPosition?.length"/>
+                      <IconFluentSpeakerEdit20Regular v-if="sentence.audioPosition?.length && sentence.audioPosition[1]"/>
                       <IconFluentAddSquare20Regular v-else/>
                     </BaseIcon>
                     <BaseIcon

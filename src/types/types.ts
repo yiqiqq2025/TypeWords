@@ -93,11 +93,6 @@ export interface Statistics {
   wrong: number//错误数
 }
 
-export interface DisplayStatistics extends Statistics {
-  wrongWords: Word[]
-  inputWordNumber: number//输入数
-}
-
 export enum Sort {
   normal = 0,
   random = 1,
