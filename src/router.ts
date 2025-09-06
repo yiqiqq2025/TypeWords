@@ -42,9 +42,9 @@ export const routes: RouteRecordRaw[] = [
   {path: '/test', component: () => import("@/pages/test/test.vue")},
   {path: '/:pathMatch(.*)*', redirect: '/word'},
 ]
-
+console.log(import.meta.env.VITE_ROUTE_BASE)
 const router = VueRouter.createRouter({
-  history: VueRouter.createWebHistory(),
+  history: VueRouter.createWebHistory(import.meta.env.VITE_ROUTE_BASE),
   // history: VueRouter.createWebHashHistory(),
   routes,
   scrollBehavior(to, from, savedPosition) {
