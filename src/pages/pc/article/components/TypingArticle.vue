@@ -55,6 +55,7 @@ let input = $ref('')
 let wrong = $ref('')
 //是否是输入空格
 let isSpace = $ref(false)
+let isEnd = $ref(false)
 let hoverIndex = $ref({
   sectionIndex: -1,
   sentenceIndex: -1,
@@ -63,7 +64,6 @@ let cursor = $ref({
   top: 0,
   left: 0,
 })
-let isEnd = $ref(false)
 
 const currentIndex = $computed(() => {
   return `${sectionIndex}${sentenceIndex}${wordIndex}`
@@ -81,19 +81,30 @@ watch([() => sectionIndex, () => sentenceIndex, () => wordIndex, () => stringInd
   checkCursorPosition(a, b, c)
 })
 
-watch(() => props.article, () => {
-  isEnd = false
-  sectionIndex = props.sectionIndex
-  sentenceIndex = props.sentenceIndex
-  wordIndex = props.wordIndex
-  stringIndex = props.stringIndex
-  typeArticleRef?.scrollTo({top: 0, behavior: "smooth"})
-  checkTranslateLocation().then(() => checkCursorPosition())
-}, {immediate: true})
+watch(() => props.article, init, {immediate: true})
 
 watch(() => settingStore.translate, () => {
   checkTranslateLocation().then(() => checkCursorPosition())
 })
+
+function init() {
+  isSpace = isEnd = false
+  wrong = input = ''
+  sectionIndex = 0
+  sentenceIndex = 0
+  wordIndex = 0
+  stringIndex = 0
+  //todo 这在直接修改不太合理
+  props.article.sections.map((v, i) => {
+    v.map((w) => {
+      w.words.map(s => {
+        s.input = ''
+      })
+    })
+  })
+  typeArticleRef?.scrollTo({top: 0, behavior: "smooth"})
+  checkTranslateLocation().then(() => checkCursorPosition())
+}
 
 function checkCursorPosition(a = sectionIndex, b = sentenceIndex, c = wordIndex) {
   // console.log('checkCursorPosition')
@@ -350,6 +361,21 @@ function onContextMenu(e: MouseEvent, sentence: Sentence, i, j) {
           sentenceIndex = j
           wordIndex = 0
           stringIndex = 0
+          input = wrong = ''
+          isEnd = isSpace = false
+          let currentSection = props.article.sections[sectionIndex]
+          currentSection.slice(sentenceIndex).map(w => {
+            w.words.map(v => {
+              v.input = ''
+            })
+          })
+          props.article.sections.slice(sectionIndex + 1).map((v, i) => {
+            v.map((w) => {
+              w.words.map(v => {
+                v.input = ''
+              })
+            })
+          })
           emit('play', {sentence: sentence, handle: false})
         }
       },
@@ -396,7 +422,7 @@ onUnmounted(() => {
 
 defineExpose({showSentence, play, del, hideSentence, nextSentence})
 
-function isCurrent(i, j, w) {
+function isCurrent(i: number, j: number, w: number) {
   return `${i}${j}${w}` === currentIndex
 }
 
@@ -481,11 +507,16 @@ let showQuestions = $ref(false)
 
     <div class="options flex justify-center" v-if="isEnd">
       <BaseButton
+          @click="init">重新练习
+      </BaseButton>
+      <BaseButton
           v-if="store.currentBook.lastLearnIndex < store.currentBook.articles.length - 1"
           @click="emit('next')">下一篇
       </BaseButton>
     </div>
-
+    <BaseButton
+        @click="init">重新练习
+    </BaseButton>
     <template v-if="false">
       <div class="translate-bottom mb-10" v-if="settingStore.translate">
         <header class="mb-4">

@@ -147,9 +147,8 @@ function setArticle(val: Article) {
   articleData.stringIndex = 0
   let ignoreList = [store.allIgnoreWords, store.knownWords][settingStore.ignoreSimpleWord ? 0 : 1]
   articleData.article.sections.map((v, i) => {
-    v.map((w, j) => {
+    v.map((w) => {
       w.words.map(s => {
-        s.input = ''
         if (!ignoreList.includes(s.word.toLowerCase()) && !s.isSymbol) {
           statisticsStore.total++
         }
