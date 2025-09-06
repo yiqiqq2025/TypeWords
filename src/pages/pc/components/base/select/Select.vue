@@ -160,7 +160,8 @@ onBeforeUnmount(() => {
         {{ displayValue }}
       </div>
       <div class="select__suffix">
-        <IconMdiChevronDown
+        <IconFluentChevronLeft20Filled
+            class="arrow"
             :class="{ 'is-reverse': isOpen }"
             width="16"
         />
@@ -235,10 +236,14 @@ onBeforeUnmount(() => {
     display: flex;
     align-items: center;
     color: #999;
-    transition: transform 0.3s;
+
+    .arrow {
+      transform: rotate(-90deg);
+      transition: transform 0.3s;
+    }
 
     .is-reverse {
-      transform: rotate(180deg);
+      transform: rotate(90deg);
     }
   }
 }

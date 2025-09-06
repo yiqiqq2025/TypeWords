@@ -1,10 +1,3 @@
-import bookFlag from "@/assets/img/flags/book.png";
-import enFlag from "@/assets/img/flags/en.png";
-import jaFlag from "@/assets/img/flags/ja.png";
-import deFlag from "@/assets/img/flags/de.png";
-import codeFlag from "@/assets/img/flags/code.png";
-import myFlag from "@/assets/img/flags/my.png";
-
 export type Word = {
   id?: string,
   custom?: boolean,
@@ -62,6 +55,7 @@ export interface ArticleWord extends Word {
   nextSpace: boolean,
   isSymbol: boolean,
   symbolPosition: 'start' | 'end' | '',
+  input:string
 }
 
 export interface Sentence {
@@ -97,11 +91,6 @@ export interface Statistics {
   new: number//新学单词数量
   review: number//复习单词数量
   wrong: number//错误数
-}
-
-export interface DisplayStatistics extends Statistics {
-  wrongWords: Word[]
-  inputWordNumber: number//输入数
 }
 
 export enum Sort {
@@ -157,15 +146,6 @@ export const DefaultShortcutKeyMap = {
 export enum TranslateEngine {
   Baidu = 0,
 }
-
-export const languageCategoryOptions = [
-  {id: 'article', name: '文章', flag: bookFlag},
-  {id: 'en', name: '英语', flag: enFlag},
-  {id: 'ja', name: '日语', flag: jaFlag},
-  {id: 'de', name: '德语', flag: deFlag},
-  {id: 'code', name: 'Code', flag: codeFlag},
-  {id: 'my', name: '我的', flag: myFlag},
-]
 
 export type DictResource = {
   id: string

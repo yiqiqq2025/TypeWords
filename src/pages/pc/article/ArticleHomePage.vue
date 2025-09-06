@@ -14,6 +14,7 @@ import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
 import {onMounted, watch} from "vue";
 import {getDefaultDict} from "@/types/func.ts";
 import DeleteIcon from "@/components/icon/DeleteIcon.vue";
+import recommendBookList from "@/assets/book-list.json";
 
 const {nav} = useNav()
 const base = useBaseStore()
@@ -96,18 +97,16 @@ async function goBookDetail(val: DictResource) {
               base.currentBook.name || '请选择书籍开始学习'
             }}</span>
           <BaseIcon @click="router.push('/book-list')">
-            <IconGgArrowsExchange v-if="base.currentBook.name"/>
-            <IconFluentAdd20Filled v-else/>
+            <IconFluentArrowSort20Regular v-if="base.currentBook.name"/>
+            <IconFluentAdd16Filled v-else/>
           </BaseIcon>
         </div>
-        <BaseButton
-            size="large"
-            @click="startStudy"
-            :disabled="!base.currentBook.name"
-        >
+        <BaseButton size="large"
+                    @click="startStudy"
+                    :disabled="!base.currentBook.name">
           <div class="flex items-center gap-2">
-            <span>开始学习</span>
-            <IconIcons8RightRound class="text-2xl"/>
+            <span class="line-height-[2]">开始学习</span>
+            <IconFluentArrowCircleRight16Regular class="text-xl"/>
           </div>
         </BaseButton>
       </div>
@@ -138,6 +137,22 @@ async function goBookDetail(val: DictResource) {
               v-for="(item, j) in base.article.bookList"
               @click="goBookDetail(item)"/>
         <Book :is-add="true" @click="router.push('/book-list')"/>
+      </div>
+    </div>
+
+    <div class="card  flex flex-col">
+      <div class="flex justify-between">
+        <div class="title">推荐</div>
+        <div class="flex gap-4 items-center">
+          <div class="color-blue cursor-pointer" @click="router.push('/book-list')">更多</div>
+        </div>
+      </div>
+
+      <div class="flex gap-4 flex-wrap  mt-4">
+        <Book :is-add="false"
+              quantifier="篇"
+              :item="item as any"
+              v-for="(item, j) in recommendBookList[0]" @click="goBookDetail(item as any)"/>
       </div>
     </div>
   </BasePage>

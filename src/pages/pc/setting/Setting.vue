@@ -25,6 +25,7 @@ import {get, set} from "idb-keyval";
 import BaseInput from "@/pages/pc/components/base/BaseInput.vue";
 import Textarea from "@/pages/pc/components/base/Textarea.vue";
 import SettingItem from "@/pages/pc/setting/SettingItem.vue";
+import Checkbox from "@/pages/pc/components/base/checkbox/Checkbox.vue";
 
 const emit = defineEmits<{
   toggleDisabledDialogEscKey: [val: boolean]
@@ -173,27 +174,27 @@ function importOldData() {
       <div class="left mt-10">
         <div class="tabs">
           <div class="tab" :class="tabIndex === 0 && 'active'" @click="tabIndex = 0">
-            <IconBxHeadphone width="20"/>
-            <span>音效设置</span>
-          </div>
-          <div class="tab" :class="tabIndex === 1 && 'active'" @click="tabIndex = 1">
-            <IconIconParkOutlineSettingConfig width="20"/>
+            <IconFluentAppsList24Regular width="20"/>
             <span>练习设置</span>
           </div>
+          <div class="tab" :class="tabIndex === 1 && 'active'" @click="tabIndex = 1">
+            <IconFluentHeadphones20Regular width="20"/>
+            <span>音效设置</span>
+          </div>
           <div class="tab" :class="tabIndex === 2 && 'active'" @click="tabIndex = 2">
-            <IconMaterialSymbolsKeyboardOutline width="20"/>
+            <IconFluentKeyboardLayoutFloat20Regular width="20"/>
             <span>快捷键设置</span>
           </div>
           <div class="tab" :class="tabIndex === 3 && 'active'" @click="tabIndex = 3">
-            <IconMdiDatabaseCogOutline width="20"/>
+            <IconFluentDatabasePerson20Regular width="20"/>
             <span>数据管理</span>
           </div>
           <div class="tab" :class="tabIndex === 4 && 'active'" @click="tabIndex = 4">
-            <IconMingcuteServiceFill width="20"/>
+            <IconFluentMailEdit20Regular width="20"/>
             <span>反馈</span>
           </div>
           <div class="tab" :class="tabIndex === 5 && 'active'" @click="tabIndex = 5">
-            <IconMdiAboutCircleOutline width="20"/>
+            <IconFluentPerson20Regular width="20"/>
             <span>关于</span>
           </div>
         </div>
@@ -201,6 +202,117 @@ function importOldData() {
       <div class="content">
         <div class="page-title text-align-center">设置</div>
         <div v-if="tabIndex === 0">
+          <SettingItem title="单词练习模式">
+            <RadioGroup v-model="settingStore.wordPracticeMode" class="flex-col gap-0!">
+              <Radio :value="0" label="智能模式，系统自动计算复习单词与默写单词"/>
+              <Radio :value="1" label="自由模式，系统不强制复习与默写"/>
+            </RadioGroup>
+          </SettingItem>
+
+          <SettingItem title="显示上一个/下一个单词"
+                       desc="开启后，练习中会在上方显示上一个/下一个单词"
+          >
+            <Switch v-model="settingStore.showNearWord"/>
+          </SettingItem>
+
+          <SettingItem title="忽略大小写"
+                       desc="开启后，输入时不区分大小写，如输入“hello”和“Hello”都会被认为是正确的"
+          >
+            <Switch v-model="settingStore.ignoreCase"/>
+          </SettingItem>
+
+          <SettingItem title="允许默写模式下显示提示"
+                       :desc="`开启后，可以通过鼠标 hover 单词或者按快捷键 ${settingStore.shortcutKeyMap[ShortcutKey.ShowWord]} 显示正确答案`"
+          >
+            <Switch v-model="settingStore.allowWordTip"/>
+          </SettingItem>
+
+          <SettingItem title="不默认显示练习设置弹框"
+                       desc="在词典详情页面，点击学习按钮后，是否显示练习设置弹框"
+          >
+            <Switch v-model="settingStore.disableShowPracticeSettingDialog"/>
+          </SettingItem>
+
+          <SettingItem title="单词输入错误时，清空已输入内容"
+          >
+            <Switch v-model="settingStore.inputWrongClear"/>
+          </SettingItem>
+
+          <div class="line" v-if="settingStore.autoNextWord"></div>
+          <SettingItem title="自动切换下一个单词"
+          desc="未开启自动切换时，当输入完成后请使用空格键切换下一个"
+          >
+            <Switch v-model="settingStore.autoNextWord"/>
+          </SettingItem>
+
+          <SettingItem title="自动切换下一个单词时间"
+                       desc="正确输入单词后，自动跳转下一个单词的时间"
+                       v-if="settingStore.autoNextWord"
+          >
+            <InputNumber v-model="settingStore.waitTimeForChangeWord"
+                         :min="10"
+                         :max="100"
+                         type="number"
+            />
+            <span class="ml-4">毫秒</span>
+          </SettingItem>
+
+          <div class="line" v-if="settingStore.autoNextWord"></div>
+
+
+          <SettingItem title="单词循环设置" class="gap-0!">
+            <RadioGroup v-model="settingStore.repeatCount">
+              <Radio :value="1" size="default">1</Radio>
+              <Radio :value="2" size="default">2</Radio>
+              <Radio :value="3" size="default">3</Radio>
+              <Radio :value="5" size="default">5</Radio>
+              <Radio :value="100" size="default">自定义</Radio>
+            </RadioGroup>
+            <div class="ml-2 center gap-space" v-if="settingStore.repeatCount === 100">
+              <span>循环次数</span>
+              <InputNumber v-model="settingStore.repeatCustomCount"
+                           :min="6"
+                           :max="15"
+                           type="number"
+              />
+            </div>
+          </SettingItem>
+
+          <div class="line"></div>
+
+          <SettingItem title="字体设置(仅单词练习界面生效)"/>
+          <SettingItem title="外语字体">
+            <Slider
+                :min="10"
+                :max="100"
+                v-model="settingStore.fontSize.wordForeignFontSize"/>
+            <span class="w-10 pl-5">{{ settingStore.fontSize.wordForeignFontSize }}px</span>
+          </SettingItem>
+          <SettingItem title="中文字体">
+            <Slider
+                :min="10"
+                :max="100"
+                v-model="settingStore.fontSize.wordTranslateFontSize"/>
+            <span class="w-10 pl-5">{{ settingStore.fontSize.wordTranslateFontSize }}px</span>
+          </SettingItem>
+
+          <div class="line"></div>
+          <SettingItem title="简单词过滤"
+                       desc="开启后，练习单词中不会包含简单词；文章统计的总词数中不会包含简单词"
+          >
+            <Switch v-model="settingStore.ignoreSimpleWord"/>
+          </SettingItem>
+
+          <SettingItem title="简单词列表"
+                       class="items-start!"
+                       v-if="settingStore.ignoreSimpleWord"
+          >
+            <Textarea
+                placeholder="多个单词用英文逗号隔号"
+                v-model="simpleWords" :autosize="{minRows: 6, maxRows: 10}"/>
+          </SettingItem>
+        </div>
+        <div v-if="tabIndex === 1">
           <SettingItem mainTitle="所有音效">
             <Switch v-model="settingStore.allSound" @change="useChangeAllSound"/>
           </SettingItem>
@@ -265,88 +377,6 @@ function importOldData() {
             <span class="w-10 pl-5">{{ settingStore.effectSoundVolume }}%</span>
           </SettingItem>
         </div>
-        <div v-if="tabIndex === 1">
-          <SettingItem title="单词循环设置" class="gap-0!">
-            <RadioGroup v-model="settingStore.repeatCount">
-              <Radio :value="1" size="default">1</Radio>
-              <Radio :value="2" size="default">2</Radio>
-              <Radio :value="3" size="default">3</Radio>
-              <Radio :value="5" size="default">5</Radio>
-              <Radio :value="100" size="default">自定义</Radio>
-            </RadioGroup>
-            <div class="ml-2 center gap-space" v-if="settingStore.repeatCount === 100">
-              <span>循环次数</span>
-              <InputNumber v-model="settingStore.repeatCustomCount"
-                           :min="6"
-                           :max="15"
-                           type="number"
-              />
-            </div>
-          </SettingItem>
-
-          <SettingItem title="显示上一个/下一个单词"
-                       desc="开启后，练习中会在上方显示上一个/下一个单词"
-          >
-            <Switch v-model="settingStore.showNearWord"/>
-          </SettingItem>
-
-          <SettingItem title="忽略大小写"
-                       desc="开启后，输入时不区分大小写，如输入“hello”和“Hello”都会被认为是正确的"
-          >
-            <Switch v-model="settingStore.ignoreCase"/>
-          </SettingItem>
-
-          <SettingItem title="允许默写模式下显示提示"
-                       :desc="`开启后，可以通过鼠标 hover 单词或者按快捷键 ${settingStore.shortcutKeyMap[ShortcutKey.ShowWord]} 显示正确答案`"
-          >
-            <Switch v-model="settingStore.allowWordTip"/>
-          </SettingItem>
-
-          <div class="line"></div>
-          <SettingItem title="字体设置(仅可调整单词练习)"/>
-          <SettingItem title="外语字体">
-            <Slider
-                :min="10"
-                :max="100"
-                v-model="settingStore.fontSize.wordForeignFontSize"/>
-            <span class="w-10 pl-5">{{ settingStore.fontSize.wordForeignFontSize }}px</span>
-          </SettingItem>
-          <SettingItem title="中文字体">
-            <Slider
-                :min="10"
-                :max="100"
-                v-model="settingStore.fontSize.wordTranslateFontSize"/>
-            <span class="w-10 pl-5">{{ settingStore.fontSize.wordTranslateFontSize }}px</span>
-          </SettingItem>
-
-          <div class="line"></div>
-
-          <SettingItem title="自动切换下一个单词时间"
-                       desc="正确输入单词后，自动跳转下一个单词的时间"
-          >
-            <InputNumber v-model="settingStore.waitTimeForChangeWord"
-                         :min="10"
-                         :max="100"
-                         type="number"
-            />
-            <span class="ml-4">毫秒</span>
-          </SettingItem>
-
-          <div class="line"></div>
-          <SettingItem title="简单词过滤"
-                       desc="开启后，练习的单词中不会再出现简单词"
-          >
-            <Switch v-model="settingStore.ignoreSimpleWord"/>
-          </SettingItem>
-
-          <SettingItem title="简单词列表"
-                       class="items-start!"
-          >
-            <Textarea
-                placeholder="多个单词用英文逗号隔号"
-                v-model="simpleWords" :autosize="{minRows: 6, maxRows: 10}"/>
-          </SettingItem>
-        </div>
         <div class="body" v-if="tabIndex === 2">
           <div class="row">
             <label class="main-title">功能</label>
@@ -358,7 +388,7 @@ function importOldData() {
               <div class="wrapper" @click="editShortcutKey = item[0]">
                 <div class="set-key" v-if="editShortcutKey === item[0]">
                   <input :value="item[1]?item[1]:'未设置快捷键'" readonly type="text" @blur="editShortcutKey = ''">
-                  <span @click.stop="editShortcutKey = ''">直接按键盘进行设置</span>
+                  <span @click.stop="editShortcutKey = ''">按键盘进行设置，<span class="text-red!">设置完成点击这里</span></span>
                 </div>
                 <div v-else>
                   <div v-if="item[1]">{{ item[1] }}</div>

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-5">
+  <div class="flex gap-5" v-bind="$attrs">
     <slot/>
   </div>
 </template>

@@ -13,9 +13,11 @@ provide('tabIndex', computed(() => tabIndex))
 </script>
 <template>
   <Transition name="fade">
-    <div class="panel anim" v-show="settingStore.showPanel">
+    <div class="panel anim" v-bind="$attrs" v-show="settingStore.showPanel">
       <header class="flex justify-between items-center py-3 px-space">
-        <div class="color-main"><slot name="title"></slot></div>
+        <div class="color-main">
+          <slot name="title"></slot>
+        </div>
         <Tooltip
             :title="`关闭(${settingStore.shortcutKeyMap[ShortcutKey.TogglePanel]})`"
         >
@@ -37,8 +39,6 @@ provide('tabIndex', computed(() => tabIndex))
   height: 100%;
   display: flex;
   flex-direction: column;
-  transition: all .3s;
-  z-index: 1;
   border: 1px solid var(--color-item-border);
   box-shadow: var(--shadow);
 }

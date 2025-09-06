@@ -22,7 +22,7 @@
         "新概念英语"
       ],
       "url": "NCE_3.json",
-      "length": 3,
+      "length": 60,
       "translateLanguage": "common",
       "language": "en"
     },
@@ -35,7 +35,7 @@
         "新概念英语"
       ],
       "url": "NCE_4.json",
-      "length": 1,
+      "length": 48,
       "translateLanguage": "common",
       "language": "en"
     }

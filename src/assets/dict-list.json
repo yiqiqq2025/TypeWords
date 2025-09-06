@@ -2911,7 +2911,7 @@
       "tags": [
         "译林版"
       ],
-      "url": "./dicts/YiLin_1.json",
+      "url": "YiLin_1.json",
       "length": 276,
       "language": "en",
       "translateLanguage": "zh-CN"
@@ -2924,7 +2924,7 @@
       "tags": [
         "译林版"
       ],
-      "url": "./dicts/YiLin_2.json",
+      "url": "YiLin_2.json",
       "length": 297,
       "language": "en",
       "translateLanguage": "zh-CN"
@@ -2937,7 +2937,7 @@
       "tags": [
         "译林版"
       ],
-      "url": "./dicts/YiLin_3.json",
+      "url": "YiLin_3.json",
       "length": 295,
       "language": "en",
       "translateLanguage": "zh-CN"

@@ -37,10 +37,6 @@ defineEmits(['click'])
           width="18"
           :color="type === 'info'?'#000000':'#ffffff'"
       />
-      <div class="key-notice" v-if="keyboard">
-        <IconBiKeyboard width="14" color="#ffffff"/>
-        <span class="key">{{ keyboard }}</span>
-      </div>
     </div>
   </Tooltip>
 </template>
@@ -126,20 +122,6 @@ defineEmits(['click'])
 
   &.active {
     opacity: .4;
-  }
-}
-
-.key-notice {
-  margin-left: .6rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: .8rem;
-  color: white;
-  //gap: 2rem;
-
-  .key {
-    transform: scale(0.8);
   }
 }
 </style>

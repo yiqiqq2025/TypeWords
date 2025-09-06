@@ -4,6 +4,7 @@ import BaseIcon from "@/components/BaseIcon.vue";
 import Input from "@/pages/pc/components/Input.vue";
 import {cloneDeep, throttle} from "@/utils";
 import {Article} from "@/types/types.ts";
+import DeleteIcon from "@/components/icon/DeleteIcon.vue";
 
 interface IProps {
   list: T[]
@@ -125,14 +126,14 @@ defineExpose({scrollBottom})
           <BaseIcon
               @click="delItem(item)"
               title="删除">
-            <IconFluentDelete24Regular/>
+            <DeleteIcon/>
           </BaseIcon>
           <div
               @mousedown="draggable = true"
               @mouseup="draggable = false"
           >
             <BaseIcon>
-              <IconCarbonMove/>
+              <IconFluentArrowMove20Regular/>
             </BaseIcon>
           </div>
         </div>

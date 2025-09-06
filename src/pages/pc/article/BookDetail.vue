@@ -66,7 +66,7 @@ async function init() {
       if (runtimeStore.editDict.articles.length) {
         selectArticle = runtimeStore.editDict.articles[0]
       }
-      console.log('runtimeStore.editDict',runtimeStore.editDict)
+      console.log('runtimeStore.editDict', runtimeStore.editDict)
     }
   }
 }
@@ -89,7 +89,7 @@ const {
   <BasePage>
     <div class="card mb-0 h-[95vh] flex flex-col" v-if="showBookDetail">
       <div class="flex justify-between items-center relative">
-        <BackIcon class="z-2" @click="$router.back"/>
+        <BackIcon class="z-2"/>
         <div class="absolute text-2xl text-align-center w-full">{{ runtimeStore.editDict.name }}</div>
         <div class="flex">
           <BaseButton :loading="studyLoading||loading" type="info" @click="isEdit = true">编辑</BaseButton>
@@ -113,8 +113,8 @@ const {
                   :class="!isArticleCollect(item)?'collect':'fill'"
                   @click.stop="toggleArticleCollect(item)"
                   :title="!isArticleCollect(item) ? '收藏' : '取消收藏'">
-                <IconPhStar v-if="!isArticleCollect(item)"/>
-                <IconPhStarFill v-else/>
+                <IconFluentStar16Regular v-if="!isArticleCollect(item)"/>
+                <IconFluentStar16Filled v-else/>
               </BaseIcon>
             </template>
           </ArticleList>
@@ -146,7 +146,7 @@ const {
 
     <div class="card mb-0 h-[95vh]" v-else>
       <div class="flex justify-between items-center relative">
-        <BackIcon class="z-2" @click="isAdd ? $router.back:(isEdit = false)"/>
+        <BackIcon class="z-2" @click="isAdd ? $router.back():(isEdit = false)"/>
         <div class="absolute text-2xl text-align-center w-full">{{ runtimeStore.editDict.id ? '修改' : '创建' }}书籍
         </div>
       </div>

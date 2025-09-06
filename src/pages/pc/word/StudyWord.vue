@@ -25,6 +25,7 @@ import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import {getDefaultDict, getDefaultWord} from "@/types/func.ts";
 import ConflictNotice from "@/pages/pc/components/ConflictNotice.vue";
 import dict_list from "@/assets/dict-list.json";
+import PracticeLayout from "@/pages/pc/components/PracticeLayout.vue";
 
 interface IProps {
   new: Word[],
@@ -214,6 +215,11 @@ function next(isTyping: boolean = true) {
 
       //开始默写新词
       if (statStore.step === 0) {
+        if (settingStore.wordPracticeMode === 1) {
+          console.log('自由模式，全完学完了')
+          showStatDialog = true
+          return
+        }
         statStore.step++
         console.log('开始默写新词')
         settingStore.dictation = true
@@ -260,12 +266,11 @@ async function onKeyDown(e: KeyboardEvent) {
   }
 }
 
-
 useOnKeyboardEventListener(onKeyDown, onKeyUp)
 
 function repeat() {
   console.log('重学一遍')
-  settingStore.dictation = false
+  if (settingStore.wordPracticeMode === 0) settingStore.dictation = false
   if (store.sdict.lastLearnIndex === 0 && store.sdict.complete) {
     //如果是刚刚完成，那么学习进度要从length减回去，因为lastLearnIndex为0了，同时改complete为false
     store.sdict.lastLearnIndex = store.sdict.length - statStore.newWordNumber
@@ -336,7 +341,15 @@ function togglePanel() {
 }
 
 function continueStudy() {
-  settingStore.dictation = false
+  if (settingStore.wordPracticeMode === 0) settingStore.dictation = false
+  //这里判断是否显示结算弹框，如果显示了结算弹框的话，就不用加进度了
+  if (!showStatDialog) {
+    console.log('没学完，强行跳过')
+    store.sdict.lastLearnIndex = store.sdict.lastLearnIndex + statStore.newWordNumber
+  } else {
+    console.log('学完了，正常下一组')
+    showStatDialog = false
+  }
   studyData = getCurrentStudyWord()
 }
 
@@ -355,6 +368,7 @@ useEvents([
   [ShortcutKey.PlayWordPronunciation, play],
 
   [ShortcutKey.RepeatChapter, repeat],
+  [ShortcutKey.NextChapter, continueStudy],
   [ShortcutKey.ToggleShowTranslate, toggleTranslate],
   [ShortcutKey.ToggleDictation, toggleDictation],
   [ShortcutKey.ToggleTheme, toggleTheme],
@@ -365,48 +379,54 @@ useEvents([
 </script>
 
 <template>
-  <div class="practice-wrapper" v-loading="loading">
-    <div class="practice-word">
-      <div class="absolute z-1 top-4   w-full" v-if="settingStore.showNearWord">
-        <div class="center gap-2 cursor-pointer float-left"
-             @click="prev"
-             v-if="prevWord">
-          <IconBiArrowLeft class="arrow" width="22"/>
-          <Tooltip
-              :title="`上一个(${settingStore.shortcutKeyMap[ShortcutKey.Previous]})`"
-          >
-            <div class="word">{{ prevWord.word }}</div>
-          </Tooltip>
+  <PracticeLayout
+      v-loading="loading"
+      panelLeft="var(--word-panel-margin-left)">
+    <template v-slot:practice>
+      <div class="practice-word">
+        <div class="absolute z-1 top-4   w-full" v-if="settingStore.showNearWord">
+          <div class="center gap-2 cursor-pointer float-left"
+               @click="prev"
+               v-if="prevWord">
+            <IconFluentArrowLeft16Regular class="arrow" width="22"/>
+            <Tooltip
+                :title="`上一个(${settingStore.shortcutKeyMap[ShortcutKey.Previous]})`"
+            >
+              <div class="word">{{ prevWord.word }}</div>
+            </Tooltip>
+          </div>
+          <div class="center gap-2 cursor-pointer float-right "
+               @click="next(false)"
+               v-if="nextWord">
+            <Tooltip
+                :title="`下一个(${settingStore.shortcutKeyMap[ShortcutKey.Next]})`"
+            >
+              <div class="word" :class="settingStore.dictation && 'word-shadow'">{{ nextWord.word }}</div>
+            </Tooltip>
+            <IconFluentArrowRight16Regular class="arrow" width="22"/>
+          </div>
         </div>
-        <div class="center gap-2 cursor-pointer float-right "
-             @click="next(false)"
-             v-if="nextWord">
-          <Tooltip
-              :title="`下一个(${settingStore.shortcutKeyMap[ShortcutKey.Next]})`"
-          >
-            <div class="word" :class="settingStore.dictation && 'word-shadow'">{{ nextWord.word }}</div>
-          </Tooltip>
-          <IconBiArrowRight class="arrow" width="22"/>
-        </div>
+        <TypeWord
+            ref="typingRef"
+            :word="word"
+            @wrong="onTypeWrong"
+            @complete="next"
+        />
       </div>
-      <TypeWord
-          ref="typingRef"
-          :word="word"
-          @wrong="onTypeWrong"
-          @complete="next"
-      />
-      <Footer
-          :is-simple="isWordSimple(word)"
-          @toggle-simple="toggleWordSimpleWrapper"
-          :is-collect="isWordCollect(word)"
-          @toggle-collect="toggleWordCollect(word)"
-          @skip="next(false)"
-      />
-    </div>
-    <div class="word-panel-wrapper">
+    </template>
+    <template v-slot:panel>
       <Panel>
         <template v-slot:title>
-          <span>{{ store.sdict.name }} ({{ data.index + 1 }} / {{ data.words.length }})</span>
+          <!--          <span>{{ store.sdict.name }} ({{ data.index + 1 }} / {{ data.words.length }})</span>-->
+          <div class="center gap-space">
+            <span>{{ store.sdict.name }} ({{ store.sdict.lastLearnIndex }} / {{ store.sdict.length }})</span>
+
+            <BaseIcon
+                @click="continueStudy"
+                :title="`下一组(${settingStore.shortcutKeyMap[ShortcutKey.NextChapter]})`">
+              <IconFluentArrowRight16Regular class="arrow" width="22"/>
+            </BaseIcon>
+          </div>
         </template>
         <div class="panel-page-item pl-4">
           <WordList
@@ -424,24 +444,33 @@ useEvents([
                   :class="!isWordCollect(item)?'collect':'fill'"
                   @click.stop="toggleWordCollect(item)"
                   :title="!isWordCollect(item) ? '收藏' : '取消收藏'">
-                <IconPhStar v-if="!isWordCollect(item)"/>
-                <IconPhStarFill v-else/>
+                <IconFluentStar16Regular v-if="!isWordCollect(item)"/>
+                <IconFluentStar16Filled v-else/>
               </BaseIcon>
 
               <BaseIcon
                   :class="!isWordSimple(item)?'collect':'fill'"
                   @click.stop="toggleWordSimple(item)"
                   :title="!isWordSimple(item) ? '标记为已掌握' : '取消标记已掌握'">
-                <IconMaterialSymbolsCheckCircleOutlineRounded v-if="!isWordSimple(item)"/>
-                <IconMaterialSymbolsCheckCircleRounded v-else/>
+                <IconFluentCheckmarkCircle16Regular v-if="!isWordSimple(item)"/>
+                <IconFluentCheckmarkCircle16Filled v-else/>
               </BaseIcon>
             </template>
           </WordList>
           <Empty v-else/>
         </div>
       </Panel>
-    </div>
-  </div>
+    </template>
+    <template v-slot:footer>
+      <Footer
+          :is-simple="isWordSimple(word)"
+          @toggle-simple="toggleWordSimpleWrapper"
+          :is-collect="isWordCollect(word)"
+          @toggle-collect="toggleWordCollect(word)"
+          @skip="next(false)"
+      />
+    </template>
+  </PracticeLayout>
   <Statistics v-model="showStatDialog"/>
   <ConflictNotice/>
 </template>

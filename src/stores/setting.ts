@@ -5,9 +5,6 @@ import {SAVE_SETTING_KEY} from "@/utils/const.ts";
 import {get} from "idb-keyval";
 
 export interface SettingState {
-  showToolbar: boolean,
-  show: boolean,
-
   allSound: boolean,
   wordSound: boolean,
   wordSoundVolume: number,
@@ -18,22 +15,24 @@ export interface SettingState {
   keyboardSoundFile: string,
   effectSound: boolean,
   effectSoundVolume: number,
-  repeatCount: number,
-  repeatCustomCount?: number,
-  dictation: boolean,
-  translate: boolean,
-  showNearWord: boolean
-  ignoreCase: boolean
-  allowWordTip: boolean
-  waitTimeForChangeWord: number
+
+  repeatCount: number, //重复次数
+  repeatCustomCount?: number, //自定义重复次数
+  dictation: boolean,//显示默写
+  translate: boolean, //显示翻译
+  showNearWord: boolean //显示上/下一个词
+  ignoreCase: boolean //忽略大小写
+  allowWordTip: boolean //默写时时否允许查看提示
+  waitTimeForChangeWord: number // 切下一个词的等待时间
   fontSize: {
     articleForeignFontSize: number,
     articleTranslateFontSize: number,
     wordForeignFontSize: number,
     wordTranslateFontSize: number,
   },
-  showPanel: boolean,
-  sideExpand: boolean,
+  showToolbar: boolean, //收起/展开工具栏
+  showPanel: boolean, // 收起/展开面板
+  sideExpand: boolean, //收起/展开左侧侧边栏
   theme: string,
   shortcutKeyMap: Record<string, string>,
   first: boolean
@@ -41,11 +40,14 @@ export interface SettingState {
   load: boolean
   conflictNotice: boolean // 其他脚本/插件冲突提示
   ignoreSimpleWord: boolean // 忽略简单词
+  wordPracticeMode: number // 单词练习模式，0：智能模式，1：自由模式
+  disableShowPracticeSettingDialog: boolean // 不默认显示练习设置弹框
+  autoNextWord: boolean //自动切换下一个单词
+  inputWrongClear: boolean //单词输入错误，清空已输入内容
 }
 
 export const getDefaultSettingState = (): SettingState => ({
   showToolbar: true,
-  show: false,
   showPanel: true,
   sideExpand: false,
 
@@ -80,7 +82,11 @@ export const getDefaultSettingState = (): SettingState => ({
   firstTime: Date.now(),
   load: false,
   conflictNotice: true,
-  ignoreSimpleWord: false
+  ignoreSimpleWord: false,
+  wordPracticeMode: 0,
+  disableShowPracticeSettingDialog: false,
+  autoNextWord: true,
+  inputWrongClear: false
 })
 
 export const useSettingStore = defineStore('setting', {

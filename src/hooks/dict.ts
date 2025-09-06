@@ -120,6 +120,7 @@ export function getCurrentStudyWord() {
         }
         end++
       }
+
     } else {
       //从start往后取perDay个单词，作为当前练习单词
       for (let item of list) {
@@ -130,6 +131,7 @@ export function getCurrentStudyWord() {
         }
         end++
       }
+
       //从start往前取perDay个单词，作为当前复习单词，取到0为止
       list = dict.words.slice(0, start).toReversed()
       for (let item of list) {
@@ -142,6 +144,12 @@ export function getCurrentStudyWord() {
       }
     }
 
+    //如果是自由模式，那么统统设置到new字段里面去
+    if (settingStore.wordPracticeMode === 1) {
+      data.new = data.new.length ? data.new : data.review
+      data.review = []
+      return data
+    }
 
     // 上上次更早的单词
     //默认只取start之前的单词

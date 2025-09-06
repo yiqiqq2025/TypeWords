@@ -30,13 +30,13 @@ const studyProgress = $computed(() => {
   <div class="book relative overflow-hidden">
     <template v-if="!isAdd">
       <div>
-        <div>{{ item?.name }}</div>
+        <div class="text-base">{{ item?.name }}</div>
         <div class="text-sm line-clamp-3" v-opacity="item.name !== item.description">{{ item?.description }}</div>
       </div>
-      <div class="absolute bottom-4 right-4">
+      <div class="absolute bottom-4 right-3">
         <div>{{ studyProgress }}{{ item?.length }}{{ quantifier }}</div>
       </div>
-      <div class="absolute bottom-2 left-4 right-4">
+      <div class="absolute bottom-2 left-3 right-3">
         <Progress v-if="item?.lastLearnIndex || item.complete" class="mt-1"
                   :percentage="progress"
                   :show-text="false"></Progress>
@@ -44,15 +44,12 @@ const studyProgress = $computed(() => {
       <Checkbox v-if="showCheckbox"
                 :model-value="checked"
                 @change="$emit('check')"
-                class="absolute left-4 bottom-4"/>
+                class="absolute left-3 bottom-3"/>
       <div class="custom" v-if="item.custom">自定义</div>
     </template>
-    <div v-else class="center h-full">
-      <IconFluentAdd20Filled
-          width="40px"
-        />
+    <div v-else class="center h-full text-2xl">
+      <IconFluentAdd16Regular/>
     </div>
-
   </div>
 </template>
 

@@ -1,11 +1,7 @@
 import {onMounted, watch, watchEffect} from "vue"
 import {useSettingStore} from "@/stores/setting.ts";
 import {PronunciationApi} from "@/types/types.ts";
-import beep from "@/assets/sound/beep.wav";
-import correct from "@/assets/sound/correct.wav";
-
 import {SoundFileOptions} from "@/utils/const.ts";
-import {useBaseStore} from "@/stores/base.ts";
 
 export function useSound(audioSrcList?: string[], audioFileLength?: number) {
   let audioList: HTMLAudioElement[] = $ref([])
@@ -63,7 +59,7 @@ export function usePlayKeyboardAudio() {
 
 export function usePlayBeep() {
   const settingStore = useSettingStore()
-  const {play} = useSound([beep], 1)
+  const {play} = useSound([`/sound/beep.wav`], 1)
 
   function playAudio() {
     if (settingStore.effectSound) {
@@ -76,7 +72,7 @@ export function usePlayBeep() {
 
 export function usePlayCorrect() {
   const settingStore = useSettingStore()
-  const {play} = useSound([correct], 1)
+  const {play} = useSound([`/sound/correct.wav`], 1)
 
   function playAudio() {
     if (settingStore.effectSound) {
@@ -135,13 +131,13 @@ export function usePlayAudio(url: string) {
 export function getAudioFileUrl(name: string) {
   if (name === '机械键盘') {
     return [
-      `./sound/key-sounds/jixie/机械0.mp3`,
-      `./sound/key-sounds/jixie/机械1.mp3`,
-      `./sound/key-sounds/jixie/机械2.mp3`,
-      `./sound/key-sounds/jixie/机械3.mp3`,
+      `/sound/key-sounds/jixie/机械0.mp3`,
+      `/sound/key-sounds/jixie/机械1.mp3`,
+      `/sound/key-sounds/jixie/机械2.mp3`,
+      `/sound/key-sounds/jixie/机械3.mp3`,
     ]
   } else {
-    return [`./sound/key-sounds/${name}.mp3`]
+    return [`/sound/key-sounds/${name}.mp3`]
   }
 }
 

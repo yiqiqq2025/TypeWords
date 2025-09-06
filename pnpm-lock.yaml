@@ -44,9 +44,6 @@ importers:
       pinia:
         specifier: ^3.0.3
         version: 3.0.3(typescript@5.9.2)(vue@3.5.18(typescript@5.9.2))
-      sitemap:
-        specifier: ^8.0.0
-        version: 8.0.0
       string-comparison:
         specifier: ^1.3.0
         version: 1.3.0
@@ -63,90 +60,24 @@ importers:
       '@alicloud/pop-core':
         specifier: ^1.8.0
         version: 1.8.0
-      '@iconify-json/basil':
-        specifier: ^1.2.4
-        version: 1.2.4
-      '@iconify-json/bi':
-        specifier: ^1.2.6
-        version: 1.2.6
       '@iconify-json/bx':
         specifier: ^1.2.2
         version: 1.2.2
-      '@iconify-json/carbon':
-        specifier: ^1.2.13
-        version: 1.2.13
       '@iconify-json/eos-icons':
         specifier: ^1.2.4
         version: 1.2.4
-      '@iconify-json/ep':
-        specifier: ^1.2.3
-        version: 1.2.3
       '@iconify-json/fluent':
         specifier: ^1.2.28
         version: 1.2.28
-      '@iconify-json/formkit':
-        specifier: ^1.2.2
-        version: 1.2.2
-      '@iconify-json/gg':
-        specifier: ^1.2.2
-        version: 1.2.2
-      '@iconify-json/hugeicons':
-        specifier: ^1.2.10
-        version: 1.2.10
-      '@iconify-json/ic':
-        specifier: ^1.2.4
-        version: 1.2.4
-      '@iconify-json/icon-park-outline':
-        specifier: ^1.2.4
-        version: 1.2.4
-      '@iconify-json/iconamoon':
-        specifier: ^1.2.2
-        version: 1.2.2
-      '@iconify-json/icons8':
-        specifier: ^1.2.1
-        version: 1.2.1
-      '@iconify-json/ion':
-        specifier: ^1.2.6
-        version: 1.2.6
-      '@iconify-json/majesticons':
-        specifier: ^1.2.4
-        version: 1.2.4
       '@iconify-json/material-symbols':
-        specifier: ^1.2.32
-        version: 1.2.32
-      '@iconify-json/material-symbols-light':
-        specifier: ^1.2.32
-        version: 1.2.32
-      '@iconify-json/mdi':
-        specifier: ^1.2.3
-        version: 1.2.3
-      '@iconify-json/mingcute':
-        specifier: ^1.2.5
-        version: 1.2.5
-      '@iconify-json/ph':
-        specifier: ^1.2.2
-        version: 1.2.2
+        specifier: ^1.2.33
+        version: 1.2.33
       '@iconify-json/ri':
         specifier: ^1.2.5
         version: 1.2.5
-      '@iconify-json/solar':
-        specifier: ^1.2.4
-        version: 1.2.4
-      '@iconify-json/tabler':
-        specifier: ^1.2.22
-        version: 1.2.22
-      '@iconify-json/tdesign':
-        specifier: ^1.2.8
-        version: 1.2.8
-      '@iconify-json/twemoji':
-        specifier: ^1.2.4
-        version: 1.2.4
-      '@iconify-json/typcn':
-        specifier: ^1.2.2
-        version: 1.2.2
-      '@iconify-json/uil':
-        specifier: ^1.2.3
-        version: 1.2.3
+      '@iconify-json/simple-icons':
+        specifier: ^1.2.48
+        version: 1.2.48
       '@types/file-saver':
         specifier: ^2.0.7
         version: 2.0.7
@@ -195,6 +126,9 @@ importers:
       sass:
         specifier: ^1.89.2
         version: 1.90.0
+      sitemap:
+        specifier: ^8.0.0
+        version: 8.0.0
       tslib:
         specifier: ^2.8.1
         version: 2.8.1
@@ -547,89 +481,23 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@iconify-json/basil@1.2.4':
-    resolution: {integrity: sha512-KUL5JBdFDF7APY8XiuqvfpiecIby8pIbs6rm3WLgdVDqMlKH0WcWEwd+ilANby8X3AuHQVrjNjByh9MpfAR3lQ==}
-
-  '@iconify-json/bi@1.2.6':
-    resolution: {integrity: sha512-fWfLr1/+DJDe8+rIUXxMwvmWBZFlxRtM59sYnrezJ2xX87QKyXVw3QuforJ4kF2Orrz85J+JTRG6305vaJ7flA==}
-
   '@iconify-json/bx@1.2.2':
     resolution: {integrity: sha512-hZVx6LMEkYckScdRdUuQWcmv8Lm2au6Cnf799TLoR6YgiAfFvaJ4M5ElwcnExvCu8ntsS7jW89r0W5LwBAfZXQ==}
-
-  '@iconify-json/carbon@1.2.13':
-    resolution: {integrity: sha512-vXrFFKkfYaZSwf4WfnRQJQMnpEzxlPlupwZZlS1WvOAuNnWahsUudHycaMpoBzDqBfniH4KQ2b5qnw0VMKoJug==}
 
   '@iconify-json/eos-icons@1.2.4':
     resolution: {integrity: sha512-gp2BCSF3+aRgMqE7LRAVxT5nXJLOtfcvGnOYwJz4gc4zxcEqAaOByxFVLZej15jXPRJmUv2TSzMNrQ2gDtw4VA==}
 
-  '@iconify-json/ep@1.2.3':
-    resolution: {integrity: sha512-bESiKz5aTcbT4chTVSKjR5P+Nk81ibRtWgR7Gng5JPdF1Az+91+bIOof/OCUKThFRWqWsQ9A4XmSSrakvjuJDQ==}
-
   '@iconify-json/fluent@1.2.28':
     resolution: {integrity: sha512-Lnaf38ruWopJv8PdEsK8vXgxKpFSsKED2kI0/575ZXg6XHUMvzSuLlldAVAOEWZmMVPJFC0MXe07Ybnh1ziLvw==}
 
-  '@iconify-json/formkit@1.2.2':
-    resolution: {integrity: sha512-vrv5X44zie1F46e1AsPjN2MEi8ui+6SA1EvWETphAbkd+MaXmxyD4vra3hdTOYYNJDn5dkC7vMGf5WieCMu9zA==}
-
-  '@iconify-json/gg@1.2.2':
-    resolution: {integrity: sha512-8iQh8+Tdb/0jakNYy0+t2GVubjhbaJbuYoPsRhFw8IAs00IQV2BjE9GoB2kGF/UObaJCqvCelB3qRaUdizkrmg==}
-
-  '@iconify-json/hugeicons@1.2.10':
-    resolution: {integrity: sha512-LfbCMlxgM4aRlLdKfsr6+Yg+fOvFx5MQd6tVgoqSPaPL0iN8bZdsDv++TpTlOy043LUVcAbRAu0ZobmWCz6cHw==}
-
-  '@iconify-json/ic@1.2.4':
-    resolution: {integrity: sha512-pzPMmrZrBQuwT7nmtrYdkttun8KalRGgZPIL1Ny9KpF2zjRGIUPN+npTfuD3lrgO/OnSwAoJWuekQwBpt/Cqrw==}
-
-  '@iconify-json/icon-park-outline@1.2.4':
-    resolution: {integrity: sha512-NyZxXe2gD2TbTOyoRRMdtEJhr6i2KQCdDlYYoOn5oZLndQjwpIhw79hzeFhXvP38/o40D3gQ+l+IaSJgbB+0TQ==}
-
-  '@iconify-json/iconamoon@1.2.2':
-    resolution: {integrity: sha512-Xn7YeSDniPgutPr0qil/iQwQelq975OYQ/i2twGjcK4DjGOXBrBC+6q45WtVuQbFfXzM7bgijv4yVnxy0OqUdQ==}
-
-  '@iconify-json/icons8@1.2.1':
-    resolution: {integrity: sha512-YHEpcPkCgyiYiGyHKk5CK4RzELEP5XDueQiguWe7lXJlG5rSkXMVOgOYfmANkwnTRF+/RZX/uQE1uf3y+haDgw==}
-
-  '@iconify-json/ion@1.2.6':
-    resolution: {integrity: sha512-JftEXKfjvJNn3SrGeSBrG/waRkjeTpLdMLNLwpAX4NgI14QgJoAeXEh2iZjNPqioAkeIgErX4Bi6mnFwpjk3BQ==}
-
-  '@iconify-json/majesticons@1.2.4':
-    resolution: {integrity: sha512-8h6zfqN/8eKLNGcHzJd8LZ+vI6aC2MIGq+QTNoYD/H98TL1N/s8ufxal54OkzIsemylXxWLj+NLd0wXDLlVIIg==}
-
-  '@iconify-json/material-symbols-light@1.2.32':
-    resolution: {integrity: sha512-QbXhpJD+PHdl/G/esFrjBWwTOWzmUTILowa8m1yAMtS645+SKcN9R7HZt8Ir6OXbLaxv+6CzLW4oaTyu5nXaTA==}
-
-  '@iconify-json/material-symbols@1.2.32':
-    resolution: {integrity: sha512-Jw3wdiNV8X1MoiS0rFzlZFYek/yYS1GTh/64L3lZkqlPo+uJAb0xdtVWZR54tzY/0G2OuWXMDqeCCQ6I2wB9/w==}
-
-  '@iconify-json/mdi@1.2.3':
-    resolution: {integrity: sha512-O3cLwbDOK7NNDf2ihaQOH5F9JglnulNDFV7WprU2dSoZu3h3cWH//h74uQAB87brHmvFVxIOkuBX2sZSzYhScg==}
-
-  '@iconify-json/mingcute@1.2.5':
-    resolution: {integrity: sha512-LKlW4wahStprbfJcpzUnuayObOVAuztgYSy3v5oTke6cBJNfqEeE/mtMhHgpoSgGJvo5hhde2Q0+DoxKEldY2A==}
-
-  '@iconify-json/ph@1.2.2':
-    resolution: {integrity: sha512-PgkEZNtqa8hBGjHXQa4pMwZa93hmfu8FUSjs/nv4oUU6yLsgv+gh9nu28Kqi8Fz9CCVu4hj1MZs9/60J57IzFw==}
+  '@iconify-json/material-symbols@1.2.33':
+    resolution: {integrity: sha512-Bs0X1+/vpJydW63olrGh60zkR8/Y70sI14AIWaP7Z6YQXukzWANH4q3I0sIPklbIn1oL6uwLvh0zQyd6Vh79LQ==}
 
   '@iconify-json/ri@1.2.5':
     resolution: {integrity: sha512-kWGimOXMZrlYusjBKKXYOWcKhbOHusFsmrmRGmjS7rH0BpML5A9/fy8KHZqFOwZfC4M6amObQYbh8BqO5cMC3w==}
 
-  '@iconify-json/solar@1.2.4':
-    resolution: {integrity: sha512-ruAh+bbYimlzqXW6MtqmvWlfatvFjE7o1fZWieps1h42Dx7AaHu4Z/dgOYSO1RR4MIhNzD+2xgEbFjASgBcEyg==}
-
-  '@iconify-json/tabler@1.2.22':
-    resolution: {integrity: sha512-KmCtTzZyz7dtszdQGJ5wbWqko6exhI38e4aCQqWZE1Z2wGUqBsMXrRWawXkAp6/XNBebt54h0lcxFCaTYBwFJg==}
-
-  '@iconify-json/tdesign@1.2.8':
-    resolution: {integrity: sha512-Q/Ty43etGvXFkEVLYOW2cRaQFbjZoXcOvmOktJRludaN9SX5NeA86VvpriHAfsnsKnRGh0udLy8UscA5JumZKg==}
-
-  '@iconify-json/twemoji@1.2.4':
-    resolution: {integrity: sha512-REYJeXhzaLktNe32DxJJf3t65sYC5KO9K0Jh+RApXRBAo1/IB+jBqd8rny2sXci+wtQLBEfD4z4AGCLBrTMGWA==}
-
-  '@iconify-json/typcn@1.2.2':
-    resolution: {integrity: sha512-I7ckhJgsuvzO1JPgEIsbcjvANVoCs3046w7IcdVpMpz7rJPp2r8+PajvpQ84vHYkCTti297NmOTuTARTiaabTw==}
-
-  '@iconify-json/uil@1.2.3':
-    resolution: {integrity: sha512-if91+UBhDQc6glPsIaXecGIcXnbQZfEO4Gdv89TV2xQ+V5e9GWbY5rNl2fsKZd8COsRQ5lRQAKimVQVL0CZZVg==}
+  '@iconify-json/simple-icons@1.2.48':
+    resolution: {integrity: sha512-EACOtZMoPJtERiAbX1De0asrrCtlwI27+03c9OJlYWsly9w1O5vcD8rTzh+kDPjo+K8FOVnq2Qy+h/CzljSKDA==}
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
@@ -4252,19 +4120,7 @@ snapshots:
   '@esbuild/win32-x64@0.25.9':
     optional: true
 
-  '@iconify-json/basil@1.2.4':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/bi@1.2.6':
-    dependencies:
-      '@iconify/types': 2.0.0
-
   '@iconify-json/bx@1.2.2':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/carbon@1.2.13':
     dependencies:
       '@iconify/types': 2.0.0
 
@@ -4272,67 +4128,11 @@ snapshots:
     dependencies:
       '@iconify/types': 2.0.0
 
-  '@iconify-json/ep@1.2.3':
-    dependencies:
-      '@iconify/types': 2.0.0
-
   '@iconify-json/fluent@1.2.28':
     dependencies:
       '@iconify/types': 2.0.0
 
-  '@iconify-json/formkit@1.2.2':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/gg@1.2.2':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/hugeicons@1.2.10':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/ic@1.2.4':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/icon-park-outline@1.2.4':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/iconamoon@1.2.2':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/icons8@1.2.1':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/ion@1.2.6':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/majesticons@1.2.4':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/material-symbols-light@1.2.32':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/material-symbols@1.2.32':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/mdi@1.2.3':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/mingcute@1.2.5':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/ph@1.2.2':
+  '@iconify-json/material-symbols@1.2.33':
     dependencies:
       '@iconify/types': 2.0.0
 
@@ -4340,27 +4140,7 @@ snapshots:
     dependencies:
       '@iconify/types': 2.0.0
 
-  '@iconify-json/solar@1.2.4':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/tabler@1.2.22':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/tdesign@1.2.8':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/twemoji@1.2.4':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/typcn@1.2.2':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/uil@1.2.3':
+  '@iconify-json/simple-icons@1.2.48':
     dependencies:
       '@iconify/types': 2.0.0
 

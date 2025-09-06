@@ -2,9 +2,9 @@
 import {DictId} from "@/types/types.ts";
 
 import BasePage from "@/pages/pc/components/BasePage.vue";
-import {computed, onMounted, reactive, shallowReactive} from "vue";
+import {computed, onMounted, reactive, shallowReactive, watch} from "vue";
 import {useRuntimeStore} from "@/stores/runtime.ts";
-import {_getDictDataByUrl, _nextTick, cloneDeep, convertToWord} from "@/utils";
+import {_getDictDataByUrl, _nextTick, cloneDeep, convertToWord, useNav} from "@/utils";
 import {nanoid} from "nanoid";
 import BaseIcon from "@/components/BaseIcon.vue";
 import BaseTable from "@/pages/pc/components/BaseTable.vue";
@@ -22,6 +22,9 @@ import Textarea from "@/pages/pc/components/base/Textarea.vue";
 import FormItem from "@/pages/pc/components/base/form/FormItem.vue";
 import Form from "@/pages/pc/components/base/form/Form.vue";
 import DeleteIcon from "@/components/icon/DeleteIcon.vue";
+import {getCurrentStudyWord} from "@/hooks/dict.ts";
+import PracticeSettingDialog from "@/pages/pc/word/components/PracticeSettingDialog.vue";
+import {useSettingStore} from "@/stores/setting.ts";
 
 const runtimeStore = useRuntimeStore()
 const base = useBaseStore()
@@ -192,14 +195,44 @@ function formClose() {
   else router.back()
 }
 
+let showPracticeSettingDialog = $ref(false)
+
+
+const store = useBaseStore()
+const settingStore = useSettingStore()
+const {nav} = useNav()
+
+//todo 可以和首页合并
+function startPractice() {
+  if (store.sdict.id) {
+    if (!store.sdict.words.length) {
+      return Toast.warning('没有单词可学习！')
+    }
+    window.umami?.track('startStudyDict', {
+      name: store.sdict.name,
+      index: store.sdict.lastLearnIndex,
+      perDayStudyNumber: store.sdict.perDayStudyNumber,
+      custom: store.sdict.custom,
+      complete: store.sdict.complete,
+      wordPracticeMode: settingStore.wordPracticeMode
+    })
+    let currentStudy = getCurrentStudyWord()
+    nav('practice-words/' + store.sdict.id, {}, currentStudy)
+  } else {
+    window.umami?.track('no-dict')
+    Toast.warning('请先选择一本词典')
+  }
+}
+
 async function addMyStudyList() {
   studyLoading = true
   await base.changeDict(runtimeStore.editDict)
   studyLoading = false
-  if (route.query?.from) {
-    router.back()
+  if (!settingStore.disableShowPracticeSettingDialog) {
+    showPracticeSettingDialog = true
+    return
   }
-  router.back()
+  startPractice()
 }
 
 defineRender(() => {
@@ -208,7 +241,7 @@ defineRender(() => {
         {
           showBookDetail.value ? <div className="card mb-0 h-[95vh] flex flex-col">
                 <div class="flex justify-between items-center relative">
-                  <BackIcon class="z-2" onClick={router.back}/>
+                  <BackIcon class="z-2"/>
                   <div class="absolute page-title text-align-center w-full">{runtimeStore.editDict.name}</div>
                   <div class="flex">
                     <BaseButton loading={studyLoading || loading} type="info"
@@ -243,7 +276,7 @@ defineRender(() => {
                                           class="option-icon"
                                           onClick={() => editWord(val.item)}
                                           title="编辑">
-                                        <IconTablerEdit/>
+                                        <IconFluentTextEditStyle20Regular/>
                                       </BaseIcon>
                                       <PopConfirm title="确认删除？"
                                                   onConfirm={() => delWord(val.item.id)}
@@ -350,7 +383,13 @@ defineRender(() => {
               </div> :
               <div class="card mb-0 h-[95vh]">
                 <div class="flex justify-between items-center relative">
-                  <BackIcon class="z-2" onClick={isAdd ? router.back : (isEdit = false)}/>
+                  <BackIcon class="z-2" onClick={() => {
+                    if (isAdd) {
+                      router.back()
+                    } else {
+                      isEdit = false
+                    }
+                  }}/>
                   <div class="absolute page-title text-align-center w-full">
                     {runtimeStore.editDict.id ? '修改' : '创建'}词典
                   </div>
@@ -365,6 +404,12 @@ defineRender(() => {
                 </div>
               </div>
         }
+
+        <PracticeSettingDialog
+            showLeftOption
+            modelValue={showPracticeSettingDialog}
+            onUpdate:modelValue={val => (showPracticeSettingDialog = val)}
+            onOk={startPractice}/>
       </BasePage>
   )
 })

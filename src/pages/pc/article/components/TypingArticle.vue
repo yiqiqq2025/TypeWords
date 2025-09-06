@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, watch} from "vue"
+import {onMounted, onUnmounted, watch} from "vue"
 import {Article, ArticleWord, Sentence, Word} from "@/types/types.ts";
 import {useBaseStore} from "@/stores/base.ts";
-import {usePracticeStore} from "@/stores/practice.ts";
 import {useSettingStore} from "@/stores/setting.ts";
 import {usePlayBeep, usePlayCorrect, usePlayKeyboardAudio, usePlayWordAudio} from "@/hooks/sound.ts";
 import {emitter, EventKey} from "@/utils/eventBus.ts";
@@ -14,6 +13,8 @@ import BaseButton from "@/components/BaseButton.vue";
 import QuestionForm from "@/pages/pc/article/components/QuestionForm.vue";
 import {getDefaultArticle} from "@/types/func.ts";
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
+import TypingWord from "@/pages/pc/article/components/TypingWord.vue";
+import Space from "@/pages/pc/article/components/Space.vue";
 
 interface IProps {
   article: Article,
@@ -34,7 +35,10 @@ const props = withDefaults(defineProps<IProps>(), {
 const emit = defineEmits<{
   ignore: [],
   wrong: [val: Word],
-  play: [val: Sentence],
+  play: [val: {
+    sentence: Sentence,
+    handle: boolean
+  }],
   nextWord: [val: ArticleWord],
   complete: [],
   next: [],
@@ -61,7 +65,7 @@ let cursor = $ref({
 })
 let isEnd = $ref(false)
 
-const currentIndex = computed(() => {
+const currentIndex = $computed(() => {
   return `${sectionIndex}${sentenceIndex}${wordIndex}`
 })
 
@@ -71,7 +75,6 @@ const playKeyboardAudio = usePlayKeyboardAudio()
 const playWordAudio = usePlayWordAudio()
 
 const store = useBaseStore()
-const statisticsStore = usePracticeStore()
 const settingStore = useSettingStore()
 
 watch([() => sectionIndex, () => sentenceIndex, () => wordIndex, () => stringIndex], ([a, b, c,]) => {
@@ -145,6 +148,7 @@ let lockNextSentence = false
 
 function nextSentence() {
   if (lockNextSentence) return
+  checkTranslateLocation()
   lockNextSentence = true
   // wordData.words = [
   //   {"word": "pharmacy", "trans": ["药房；配药学，药剂学；制药业；一批备用药品"], "phonetic0": "'fɑrməsi", "phonetic1": "'fɑːməsɪ"},
@@ -153,6 +157,11 @@ function nextSentence() {
   // return
 
   let currentSection = props.article.sections[sectionIndex]
+  let currentSentence = currentSection[sentenceIndex]
+  //这里把未输入的单词补全，因为删除时会用到input
+  currentSentence.words.forEach((word, i) => {
+    word.input = word.input + word.word.slice(word.input?.length ?? 0)
+  })
 
   isSpace = false
   stringIndex = 0
@@ -164,6 +173,7 @@ function nextSentence() {
   //   statisticsStore.inputNumber++
   // }
 
+
   sentenceIndex++
   if (!currentSection[sentenceIndex]) {
     sentenceIndex = 0
@@ -173,10 +183,10 @@ function nextSentence() {
       isEnd = true
       emit('complete')
     } else {
-      emit('play', props.article.sections[sectionIndex][0])
+      emit('play', {sentence: props.article.sections[sectionIndex][0], handle: false})
     }
   } else {
-    emit('play', currentSection[sentenceIndex])
+    emit('play', {sentence: currentSection[sentenceIndex], handle: false})
   }
   lockNextSentence = false
 }
@@ -217,11 +227,12 @@ function onTyping(e: KeyboardEvent) {
     playKeyboardAudio()
   } else {
     if (sectionIndex === 0 && sentenceIndex === 0 && wordIndex === 0 && stringIndex === 0) {
-      emit('play', currentSection[sentenceIndex])
+      emit('play', {sentence: currentSection[sentenceIndex], handle: false})
     }
     let letter = e.key
 
     let key = currentWord.word[stringIndex]
+
     // console.log('key', key,)
 
     let isRight = false
@@ -230,31 +241,33 @@ function onTyping(e: KeyboardEvent) {
     } else {
       isRight = key === letter
     }
-    if (isRight) {
-      input += letter
-      wrong = ''
-      // console.log('匹配上了')
-      stringIndex++
-      //如果当前词没有index，说明这个词完了，下一个是空格
-      if (!currentWord.word[stringIndex]) {
-        input = wrong = ''
-        if (!currentWord.isSymbol) {
-          playCorrect()
-        }
-        if (currentWord.nextSpace) {
-          isSpace = true
-        } else {
-          nextWord()
-        }
+    if (!isRight) {
+      if (!currentWord.isSymbol) {
+        emit('wrong', currentWord)
       }
-    } else {
-      // emit('wrong', currentWord)
-      wrong = letter
       playBeep()
-      setTimeout(() => {
-        wrong = ''
-      }, 500)
-      // console.log('未匹配')
+    }
+
+    input += letter
+
+    if (!currentWord.input) currentWord.input = ''
+    currentWord.input = input
+    console.log(currentWord.input)
+
+    wrong = ''
+    // console.log('匹配上了')
+    stringIndex++
+    //如果当前词没有index，说明这个词完了，下一个是空格
+    if (!currentWord.word[stringIndex]) {
+      input = ''
+      if (!currentWord.isSymbol) {
+        playCorrect()
+      }
+      if (currentWord.nextSpace) {
+        isSpace = true
+      } else {
+        nextWord()
+      }
     }
     playKeyboardAudio()
   }
@@ -263,23 +276,55 @@ function onTyping(e: KeyboardEvent) {
 
 function play() {
   let currentSection = props.article.sections[sectionIndex]
-  emit('play', currentSection[sentenceIndex])
+  emit('play', {sentence: currentSection[sentenceIndex], handle: true})
 }
 
 function del() {
   if (wrong) {
     wrong = ''
   } else {
-    input = input.slice(0, -1)
+    if (isEnd) return;
+    if (isSpace) {
+      isSpace = false
+    }
+    let endSentence = false
+    let endWord = false
+    let endString = false
+    if (stringIndex === 0) {
+      if (wordIndex === 0) {
+        if (sentenceIndex === 0) {
+          if (sectionIndex === 0) {
+            return
+          } else {
+            endSentence = endString = endWord = true
+            sectionIndex--
+          }
+        } else {
+          endString = endWord = true
+          sentenceIndex--
+        }
+      } else {
+        endString = true
+        wordIndex--
+      }
+    } else stringIndex--
+    let currentSection = props.article.sections[sectionIndex]
+    if (endSentence) sentenceIndex = currentSection.length - 1
+    let currentSentence = currentSection[sentenceIndex]
+    if (endWord) wordIndex = currentSentence.words.length - 1
+    let currentWord: ArticleWord = currentSentence.words[wordIndex]
+    if (endString) {
+      checkTranslateLocation()
+      if (currentWord.nextSpace) {
+        isSpace = true
+        stringIndex = currentWord.word.length
+      } else {
+        stringIndex = currentWord.word.length - 1
+      }
+    }
+    input = currentWord.input = currentWord.input.slice(0, stringIndex)
   }
-}
-
-function indexWord(word: ArticleWord) {
-  return word.word.slice(input.length, input.length + 1)
-}
-
-function remainderWord(word: ArticleWord,) {
-  return word.word.slice(input.length + 1)
+  checkCursorPosition()
 }
 
 function showSentence(i1: number = sectionIndex, i2: number = sentenceIndex) {
@@ -303,13 +348,15 @@ function onContextMenu(e: MouseEvent, sentence: Sentence, i, j) {
         onClick: () => {
           sectionIndex = i
           sentenceIndex = j
-          emit('play', sentence)
+          wordIndex = 0
+          stringIndex = 0
+          emit('play', {sentence: sentence, handle: false})
         }
       },
       {
         label: "播放",
         onClick: () => {
-          emit('play', sentence)
+          emit('play', {sentence: sentence, handle: false})
         }
       },
       {
@@ -349,12 +396,15 @@ onUnmounted(() => {
 
 defineExpose({showSentence, play, del, hideSentence, nextSentence})
 
+function isCurrent(i, j, w) {
+  return `${i}${j}${w}` === currentIndex
+}
+
 let showQuestions = $ref(false)
 </script>
 
 <template>
   <div class="typing-article" ref="typeArticleRef">
-
     <header class="mb-4">
       <div class="title word">{{ props.article.title }}</div>
       <div class="titleTranslate" v-if="settingStore.translate">{{ props.article.titleTranslate }}</div>
@@ -387,36 +437,22 @@ let showQuestions = $ref(false)
                          (sectionIndex>=indexI &&sentenceIndex>=indexJ && wordIndex>=indexW && stringIndex>=word.word.length)
                         ?'wrote':
                         ''),
-                        (`${indexI}${indexJ}${indexW}` === currentIndex && !isSpace && wrong )?'word-wrong':'',
                         indexW === 0 && `word${indexI}-${indexJ}`
                         ]">
-                    <span class="word-wrap" v-if="`${indexI}${indexJ}${indexW}` === currentIndex && !isSpace">
-                      <span class="word-start" v-if="input">{{ input }}</span>
-                      <span class="word-end">
-                        <span class="wrong" :class="wrong === ' ' && 'bg-wrong'" v-if="wrong">{{ wrong }}</span>
-                        <span :class="!word.isSymbol && 'dictation-hide'" v-else>{{ indexWord(word) }}</span>
-                        <span class="dictation-hide">{{ remainderWord(word) }}</span>
-                      </span>
+                    <span class="word-wrap">
+                      <TypingWord :word="word"
+                                  :is-typing="true"
+                                  v-if="isCurrent(indexI,indexJ,indexW) && !isSpace"/>
+                      <TypingWord :word="word" :is-typing="false" v-else/>
                       <span class="border-bottom" v-if="settingStore.dictation"></span>
                     </span>
-                    <span v-else class="word-wrap">
-                      <span :class="!word.isSymbol && 'dictation-hide'">{{ word.word }}</span>
-                      <span class="border-bottom" v-if="settingStore.dictation"></span>
-                    </span>
-                    <span
-                        v-if="word.nextSpace"
-                        class="word-end"
-                        :class="[
-                           (`${indexI}${indexJ}${indexW}` === currentIndex && isSpace && wrong) && 'bg-wrong',
-                        ]"
-                    >
-                      <span class="word-space"
-                            :class="[
-                            settingStore.dictation && 'to-bottom',
-                            (`${indexI}${indexJ}${indexW}` === currentIndex && isSpace && !wrong ) && 'wait',
-                        ]"
-                      ></span>
-                    </span>
+                   <Space
+                       v-if="word.nextSpace"
+                       class="word-end"
+                       :is-wrong="false"
+                       :is-wait="isCurrent(indexI,indexJ,indexW) && isSpace"
+                       :is-shake="isCurrent(indexI,indexJ,indexW) && isSpace && wrong !== ''"
+                   />
                   </span>
                 </span>
         </div>
@@ -446,7 +482,7 @@ let showQuestions = $ref(false)
     <div class="options flex justify-center" v-if="isEnd">
       <BaseButton
           v-if="store.currentBook.lastLearnIndex < store.currentBook.articles.length - 1"
-          @click="emit('next')">下一章
+          @click="emit('next')">下一篇
       </BaseButton>
     </div>
 
@@ -477,20 +513,22 @@ let showQuestions = $ref(false)
 
 .wrote {
   color: grey;
-  //color: rgb(22, 163, 74);
 }
+
+$translate-lh: 3.2;
+$article-lh: 2.4;
 
 .typing-article {
   height: 100%;
-  width: 100%;
   overflow: auto;
   color: var(--color-article);
+  width: var(--article-width);
   font-size: 1.6rem;
 
   header {
     word-wrap: break-word;
     position: relative;
-    padding-top: 1rem;
+    padding-top: 3rem;
 
     .title {
       text-align: center;
@@ -509,28 +547,22 @@ let showQuestions = $ref(false)
 
   .article-content {
     position: relative;
-    //opacity: 0;
   }
 
   article {
-    line-height: 1.3;
     word-break: keep-all;
     word-wrap: break-word;
     white-space: pre-wrap;
     font-family: var(--en-article-family);
 
     &.dictation {
-      .dictation-hide {
-        opacity: 0;
-      }
-
       .border-bottom {
         display: inline-block !important;
       }
     }
 
     .wrote, .hover-show {
-      .dictation-hide {
+      :deep(.hide) {
         opacity: 1 !important;
       }
 
@@ -540,8 +572,13 @@ let showQuestions = $ref(false)
     }
 
     .hover-show {
+      border-radius: 0.2rem;
       background: var(--color-select-bg);
       color: white !important;
+
+      :deep(.hide) {
+        opacity: 1 !important;
+      }
 
       .wrote {
         color: white !important;
@@ -549,7 +586,7 @@ let showQuestions = $ref(false)
     }
 
     &.tall {
-      line-height: 2.2;
+      line-height: $article-lh;
     }
 
     .section {
@@ -557,7 +594,6 @@ let showQuestions = $ref(false)
 
       .sentence {
         transition: all .3s;
-
       }
 
       .word {
@@ -565,17 +601,17 @@ let showQuestions = $ref(false)
 
         .word-wrap {
           position: relative;
+        }
 
-          .border-bottom {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            left: 0;
-            top: 0;
-            border-bottom: 2px solid var(--color-article);
-            display: none;
-            transform: translateY(-0.2rem);
-          }
+        .border-bottom {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          left: 0;
+          top: 0;
+          border-bottom: 2px solid var(--color-article);
+          display: none;
+          transform: translateY(-0.2rem);
         }
       }
     }
@@ -589,7 +625,7 @@ let showQuestions = $ref(false)
     height: 100%;
     width: 100%;
     font-size: 1.2rem;
-    line-height: 3.0;
+    line-height: $translate-lh;
     letter-spacing: .2rem;
     font-family: var(--zh-article-family);
     font-weight: bold;
@@ -606,63 +642,6 @@ let showQuestions = $ref(false)
         display: inline-block;
       }
     }
-  }
-
-  .word-space {
-    position: relative;
-    display: inline-block;
-    width: 0.8rem;
-    height: 1.5rem;
-    margin: 0 1px;
-    box-sizing: border-box;
-
-    &.to-bottom {
-      transform: translateY(0.3rem);
-    }
-
-    &.wait {
-      border-bottom: 2px solid var(--color-article);
-
-      &::after {
-        content: ' ';
-        position: absolute;
-        width: 2px;
-        height: .25rem;
-        background: var(--color-article);
-        bottom: 0;
-        right: 0;
-      }
-
-      &::before {
-        content: ' ';
-        position: absolute;
-        width: 2px;
-        height: .26rem;
-        background: var(--color-article);
-        bottom: 0;
-        left: 0;
-      }
-    }
-  }
-
-  .word-start {
-    color: var(--color-select-bg);
-  }
-
-  .wrong {
-    color: rgba(red, 0.6);
-  }
-
-  .word-wrong {
-    display: inline-block;
-    animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-  }
-
-  .bg-wrong {
-    display: inline-block;
-    line-height: 1;
-    background: rgba(red, 0.6);
-    animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
   }
 }
 

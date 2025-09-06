@@ -1,6 +1,6 @@
 import {defineStore} from 'pinia'
 import {Dict, DictId, Word} from "../types/types.ts"
-import {_getStudyProgress, checkAndUpgradeSaveDict} from "@/utils";
+import {_getAccomplishDate, _getStudyProgress, checkAndUpgradeSaveDict} from "@/utils";
 import {SAVE_DICT_KEY} from "@/utils/const.ts";
 import {shallowReactive} from "vue";
 import {getDefaultDict} from "@/types/func.ts";
@@ -33,7 +33,7 @@ export const DefaultBaseState = (): BaseState => ({
     bookList: [
       getDefaultDict({id: DictId.wordCollect, name: '收藏'}),
       getDefaultDict({id: DictId.wordWrong, name: '错词'}),
-      getDefaultDict({id: DictId.wordKnown, name: '已掌握'}),
+      getDefaultDict({id: DictId.wordKnown, name: '已掌握',description:'已掌握后的单词不会出现在练习中'}),
       // getDefaultDict({
       //   id: 'nce-new-2',
       //   name: '新概念英语(新版)-2',
@@ -93,9 +93,14 @@ export const useBaseStore = defineStore('base', {
       return getDefaultDict()
     },
     currentStudyProgress(): number {
-      if (!this.sdict.words?.length) return 0
+      if (!this.sdict.length) return 0
       if (this.sdict.complete) return 100
-      return _getStudyProgress(this.sdict.lastLearnIndex, this.sdict.words?.length)
+      return _getStudyProgress(this.sdict.lastLearnIndex, this.sdict.length)
+    },
+    getDictCompleteDate(): number {
+      if (!this.sdict.length) return 0
+      if (!this.sdict.perDayStudyNumber) return 0
+      return Math.ceil((this.sdict.length - this.sdict.lastLearnIndex) / this.sdict.perDayStudyNumber)
     },
     currentBook(): Dict {
       return this.article.bookList[this.article.studyIndex] ?? {}
@@ -104,8 +109,9 @@ export const useBaseStore = defineStore('base', {
       return this.article.bookList[this.article.studyIndex] ?? {}
     },
     currentBookProgress(): number {
-      if (this.currentBook.name) return Number(Number(this.currentBook.lastLearnIndex / this.currentBook.length).toFixed(2))
-      return 0
+      if (!this.sbook.length) return 0
+      if (this.sbook.complete) return 100
+      return _getStudyProgress(this.sbook.lastLearnIndex, this.sbook.length)
     },
   },
   actions: {

@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="flex items-center gap-40" :class="desc ? 'mt-3' : 'my-3'" v-bind="$attrs">
+  <div class="flex items-center gap-40" :class="desc ? 'mt-4' : 'my-4'" v-bind="$attrs">
     <span v-if="title">{{ title }}</span>
     <span class="text-xl font-bold" v-if="mainTitle">{{ mainTitle }}</span>
     <div class="flex flex-1 justify-end">

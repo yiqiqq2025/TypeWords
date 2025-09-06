@@ -2,10 +2,10 @@
 import {useBaseStore} from "@/stores/base.ts";
 import {useRouter} from "vue-router";
 import BaseIcon from "@/components/BaseIcon.vue";
-import {_getAccomplishDate, _getAccomplishDays, _getDictDataByUrl, useNav} from "@/utils";
+import {_getAccomplishDate, _getDictDataByUrl, useNav} from "@/utils";
 import BasePage from "@/pages/pc/components/BasePage.vue";
 import {DictResource} from "@/types/types.ts";
-import {defineAsyncComponent, onMounted, watch} from "vue";
+import {watch} from "vue";
 import {getCurrentStudyWord} from "@/hooks/dict.ts";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 import Book from "@/pages/pc/components/Book.vue";
@@ -14,13 +14,16 @@ import Progress from '@/pages/pc/components/base/Progress.vue';
 import Toast from '@/pages/pc/components/base/toast/Toast.ts';
 import BaseButton from "@/components/BaseButton.vue";
 import {getDefaultDict} from "@/types/func.ts";
-import Slider from "@/pages/pc/components/base/Slider.vue";
 import DeleteIcon from "@/components/icon/DeleteIcon.vue";
-
-const Dialog = defineAsyncComponent(() => import('@/pages/pc/components/dialog/Dialog.vue'))
+import PracticeSettingDialog from "@/pages/pc/word/components/PracticeSettingDialog.vue";
+import ChangeLastPracticeIndexDialog from "@/pages/pc/word/components/ChangeLastPracticeIndexDialog.vue";
+import {useSettingStore} from "@/stores/setting.ts";
+import recommendDictList from "@/assets/recommend-dict-list.json";
+import CollectNotice from "@/pages/pc/components/CollectNotice.vue";
 
 
 const store = useBaseStore()
+const settingStore = useSettingStore()
 const router = useRouter()
 const {nav} = useNav()
 const runtimeStore = useRuntimeStore()
@@ -48,7 +51,7 @@ async function init() {
   loading = false
 }
 
-function startStudy() {
+function startPractice() {
   if (store.sdict.id) {
     if (!store.sdict.words.length) {
       return Toast.warning('没有单词可学习！')
@@ -59,6 +62,7 @@ function startStudy() {
       perDayStudyNumber: store.sdict.perDayStudyNumber,
       custom: store.sdict.custom,
       complete: store.sdict.complete,
+      wordPracticeMode: settingStore.wordPracticeMode
     })
     nav('practice-words/' + store.sdict.id, {}, currentStudy)
   } else {
@@ -67,22 +71,9 @@ function startStudy() {
   }
 }
 
-function setPerDayStudyNumber() {
-  if (store.sdict.id) {
-    show = true
-    tempPerDayStudyNumber = store.sdict.perDayStudyNumber
-  } else {
-    Toast.warning('请先选择一本词典')
-  }
-}
 
-let show = $ref(false)
-let tempPerDayStudyNumber = $ref(0)
-
-function changePerDayStudyNumber() {
-  store.sdict.perDayStudyNumber = tempPerDayStudyNumber
-  currentStudy = getCurrentStudyWord()
-}
+let showPracticeSettingDialog = $ref(false)
+let showChangeLastPracticeIndexDialog = $ref(false)
 
 async function goDictDetail(val: DictResource) {
   runtimeStore.editDict = getDefaultDict(val)
@@ -128,6 +119,13 @@ const progressTextRight = $computed(() => {
 })
 
 
+function check(cb: Function) {
+  if (!store.sdict.id) {
+    Toast.warning('请先选择一本词典')
+  } else {
+    cb()
+  }
+}
 </script>
 
 <template>
@@ -143,22 +141,24 @@ const progressTextRight = $computed(() => {
                       @click="router.push('/dict-list')"
 
             >
-              <IconGgArrowsExchange v-if="store.sdict.name"/>
+              <IconFluentArrowSort20Regular v-if="store.sdict.name"/>
               <IconFluentAdd20Filled v-else/>
             </BaseIcon>
           </div>
         </div>
-        <div class="">
-          <div class="text-sm flex justify-between">
-            <span>{{ progressTextLeft }}</span>
-            <span>{{ progressTextRight }} / {{ store.sdict.words.length }}</span>
+        <div class="flex items-end gap-space">
+          <div class="flex-1">
+            <div class="text-sm flex justify-between">
+              <span>{{ progressTextLeft }}</span>
+              <span>{{ progressTextRight }} / {{ store.sdict.words.length }}</span>
+            </div>
+            <Progress class="mt-1" :percentage="store.currentStudyProgress" :show-text="false"></Progress>
           </div>
-          <Progress class="mt-1" :percentage="store.currentStudyProgress" :show-text="false"></Progress>
+          <div class="color-blue cursor-pointer" @click="check(()=>showChangeLastPracticeIndexDialog = true)">更改</div>
         </div>
         <div class="text-sm text-align-end">
           预计完成日期：{{ _getAccomplishDate(store.sdict.words.length, store.sdict.perDayStudyNumber) }}
         </div>
-
       </div>
 
       <div class="w-3/10 flex flex-col justify-evenly">
@@ -168,34 +168,36 @@ const progressTextRight = $computed(() => {
             <div class="text-4xl font-bold">{{ currentStudy.new.length }}</div>
             <div class="text">新词</div>
           </div>
-          <div class="flex-1 flex flex-col items-center">
-            <div class="text-4xl font-bold">{{ currentStudy.review.length }}</div>
-            <div class="text">复习</div>
-          </div>
-          <div class="flex-1 flex flex-col items-center">
-            <div class="text-4xl font-bold">{{ currentStudy.write.length }}
+          <template v-if="settingStore.wordPracticeMode === 0">
+            <div class="flex-1 flex flex-col items-center">
+              <div class="text-4xl font-bold">{{ currentStudy.review.length }}</div>
+              <div class="text">复习</div>
             </div>
-            <div class="text">默写</div>
-          </div>
+            <div class="flex-1 flex flex-col items-center">
+              <div class="text-4xl font-bold">{{ currentStudy.write.length }}
+              </div>
+              <div class="text">默写</div>
+            </div>
+          </template>
         </div>
       </div>
 
       <div class="flex flex-col items-end justify-around ">
         <div class="flex gap-1 items-center">
           每日目标
-          <div style="color:#ac6ed1;" @click="setPerDayStudyNumber"
+          <div style="color:#ac6ed1;" @click="check(()=>showPracticeSettingDialog = true)"
                class="bg-third px-2 h-10 flex center text-2xl rounded cursor-pointer">
             {{ store.sdict.id ? store.sdict.perDayStudyNumber : 0 }}
           </div>
-          个单词 <span class="color-blue cursor-pointer" @click="setPerDayStudyNumber">更改</span>
+          个单词 <span class="color-blue cursor-pointer"
+                       @click="check(()=>showPracticeSettingDialog = true)">更改</span>
         </div>
         <BaseButton size="large" :disabled="!store.sdict.name"
                     :loading="loading"
-                    @click="startStudy">
-          <!--        <BaseButton size="large" @click="startStudy">-->
+                    @click="startPractice">
           <div class="flex items-center gap-2">
-            <span>开始学习</span>
-            <IconIcons8RightRound class="text-2xl"/>
+            <span class="line-height-[2]">开始学习</span>
+            <IconFluentArrowCircleRight16Regular class="text-xl"/>
           </div>
         </BaseButton>
       </div>
@@ -225,41 +227,37 @@ const progressTextRight = $computed(() => {
       </div>
     </div>
 
-    <Dialog v-model="show" title="每日目标" :footer="true" @ok="changePerDayStudyNumber">
-      <div class="target-modal color-main">
-        <div class="center text-2xl gap-2">
-          <span class="text-3xl" style="color:rgb(176,116,211)">{{
-              tempPerDayStudyNumber
-            }}</span>个单词
-        </div>
-        <div class="center text-sm" :style="{ opacity: tempPerDayStudyNumber === 20 ? 1 : 0 }">
-          推荐
-        </div>
-        <Slider :min="10"
-                :step="10"
-                show-stops
-                class="mt-3"
-                show-text
-                :max="200" v-model="tempPerDayStudyNumber"/>
-        <div class="flex gap-2 mb-2 mt-2 items-center">
-          <div>预计</div>
-          <span class="text-2xl" style="color:rgb(176,116,211)">{{
-              _getAccomplishDays(store.sdict.words.length, tempPerDayStudyNumber)
-            }}</span>天完成学习
-        </div>
-        <div>
-          想要达到最佳效果，就要坚持每天学习。每天学20个单词是最理想的，但就算再忙的时候每天学10个也有助你养成良好的学习习惯
+    <div class="card  flex flex-col">
+      <div class="flex justify-between">
+        <div class="title">推荐</div>
+        <div class="flex gap-4 items-center">
+          <div class="color-blue cursor-pointer" @click="router.push('/dict-list')">更多</div>
         </div>
       </div>
-    </Dialog>
 
+      <div class="flex gap-4 flex-wrap  mt-4">
+        <Book :is-add="false"
+              quantifier="个词"
+              :item="item as any"
+              v-for="(item, j) in recommendDictList" @click="goDictDetail(item as any)"/>
+      </div>
+    </div>
   </BasePage>
+
+  <PracticeSettingDialog
+      :show-left-option="false"
+      v-model="showPracticeSettingDialog" @ok="currentStudy = getCurrentStudyWord()"/>
+
+  <ChangeLastPracticeIndexDialog
+      v-model="showChangeLastPracticeIndexDialog"
+      @ok="e => {
+        store.sdict.lastLearnIndex = e
+        showChangeLastPracticeIndexDialog = false
+      }"
+  />
+
+  <CollectNotice/>
 </template>
 
 <style scoped lang="scss">
-.target-modal {
-  width: 30rem;
-  padding: var(--space);
-  padding-top: 0;
-}
 </style>

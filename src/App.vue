@@ -4,7 +4,6 @@ import {BaseState, useBaseStore} from "@/stores/base.ts";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 import {useSettingStore} from "@/stores/setting.ts";
 import useTheme from "@/hooks/theme.ts";
-import CollectNotice from "@/pages/pc/components/CollectNotice.vue";
 import {SAVE_DICT_KEY, SAVE_SETTING_KEY} from "@/utils/const.ts";
 import {shakeCommonDict} from "@/utils";
 import {routes} from "@/router.ts";
@@ -64,7 +63,6 @@ watch(() => route.path, (to, from) => {
       </keep-alive>
     </transition>
   </router-view>
-  <CollectNotice/>
 </template>
 
 <style scoped lang="scss">
