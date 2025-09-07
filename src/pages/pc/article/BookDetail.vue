@@ -11,15 +11,17 @@ import BaseButton from "@/components/BaseButton.vue";
 import {useRoute, useRouter} from "vue-router";
 import EditBook from "@/pages/pc/article/components/EditBook.vue";
 import {computed, onMounted} from "vue";
-import {_getDictDataByUrl} from "@/utils";
+import {_getDictDataByUrl, useNav} from "@/utils";
 import BaseIcon from "@/components/BaseIcon.vue";
 import {useArticleOptions} from "@/hooks/dict.ts";
 import {getDefaultArticle, getDefaultDict} from "@/types/func.ts";
+import Toast from "@/pages/pc/components/base/toast/Toast.ts";
 
 const runtimeStore = useRuntimeStore()
 const base = useBaseStore()
 const router = useRouter()
 const route = useRoute()
+const {nav} = useNav()
 
 let isEdit = $ref(false)
 let isAdd = $ref(false)
@@ -33,13 +35,22 @@ function handleCheckedChange(val) {
 }
 
 async function addMyStudyList() {
-  studyLoading = true
-  base.changeBook(runtimeStore.editDict)
-  studyLoading = false
-  if (route.query?.from) {
-    router.back()
+  let sbook = runtimeStore.editDict
+  if (!sbook.articles.length) {
+    return Toast.warning('没有文章可学习！')
   }
-  router.back()
+
+  studyLoading = true
+  base.changeBook(sbook)
+  studyLoading = false
+
+  window.umami?.track('startStudyArticle', {
+    name: sbook.name,
+    index: sbook.lastLearnIndex,
+    custom: sbook.custom,
+    complete: sbook.complete,
+  })
+  nav('/practice-articles/' + sbook.id)
 }
 
 const showBookDetail = computed(() => {
