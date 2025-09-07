@@ -23,6 +23,7 @@ import ConflictNotice from "@/pages/pc/components/ConflictNotice.vue";
 import {useRoute, useRouter} from "vue-router";
 import book_list from "@/assets/book-list.json";
 import PracticeLayout from "@/pages/pc/components/PracticeLayout.vue";
+import Switch from "@/pages/pc/components/base/Switch.vue";
 
 const store = useBaseStore()
 const settingStore = useSettingStore()
@@ -231,7 +232,7 @@ function show() {
 }
 
 function onKeyUp() {
-  typingArticleRef.hideSentence()
+  typingArticleRef?.hideSentence()
 }
 
 async function onKeyDown(e: KeyboardEvent) {
@@ -369,6 +370,7 @@ function play2(e) {
                    controls></audio>
             <div class="flex flex-col items-center justify-center gap-1">
               <div class="flex gap-2 center">
+                <Switch v-model="settingStore.wordSound"/>
                 <BaseIcon
                     :title="`下一句(${settingStore.shortcutKeyMap[ShortcutKey.Next]})`"
                     @click="skip">

@@ -59,6 +59,7 @@ let isEnd = $ref(false)
 let hoverIndex = $ref({
   sectionIndex: -1,
   sentenceIndex: -1,
+  wordIndex: -1,
 })
 let cursor = $ref({
   top: 0,
@@ -95,7 +96,7 @@ function init() {
   wordIndex = 0
   stringIndex = 0
   //todo 这在直接修改不太合理
-  props.article.sections.map((v, i) => {
+  props.article.sections.map((v) => {
     v.map((w) => {
       w.words.map(s => {
         s.input = ''
@@ -263,7 +264,7 @@ function onTyping(e: KeyboardEvent) {
 
     if (!currentWord.input) currentWord.input = ''
     currentWord.input = input
-    console.log(currentWord.input)
+    // console.log(currentWord.input)
 
     wrong = ''
     // console.log('匹配上了')
@@ -338,15 +339,17 @@ function del() {
   checkCursorPosition()
 }
 
-function showSentence(i1: number = sectionIndex, i2: number = sentenceIndex) {
-  hoverIndex = {sectionIndex: i1, sentenceIndex: i2}
+function showSentence(i1: number = sectionIndex, i2: number = sentenceIndex, i3: number = wordIndex) {
+  hoverIndex = {sectionIndex: i1, sentenceIndex: i2, wordIndex: i3}
 }
 
 function hideSentence() {
-  hoverIndex = {sectionIndex: -1, sentenceIndex: -1}
+  hoverIndex = {sectionIndex: -1, sentenceIndex: -1, wordIndex: -1}
 }
 
-function onContextMenu(e: MouseEvent, sentence: Sentence, i, j) {
+function onContextMenu(e: MouseEvent, sentence: Sentence, i, j,w) {
+  const selectedText = window.getSelection().toString();
+  console.log(selectedText);
   //prevent the browser's default menu
   e.preventDefault();
   //show your menu
@@ -359,7 +362,7 @@ function onContextMenu(e: MouseEvent, sentence: Sentence, i, j) {
         onClick: () => {
           sectionIndex = i
           sentenceIndex = j
-          wordIndex = 0
+          wordIndex = w
           stringIndex = 0
           input = wrong = ''
           isEnd = isSpace = false
@@ -443,16 +446,10 @@ let showQuestions = $ref(false)
       ]">
         <div class="section" v-for="(section,indexI) in props.article.sections">
                 <span class="sentence"
-                      :class="[
-                          hoverIndex.sectionIndex === indexI &&  hoverIndex.sentenceIndex === indexJ
-                          &&'hover-show'
-                      ]"
-                      @contextmenu="e=>onContextMenu(e,sentence,indexI,indexJ)"
-                      @mouseenter="settingStore.allowWordTip && showSentence(indexI,indexJ)"
-                      @mouseleave="hideSentence"
                       v-for="(sentence,indexJ) in section">
                   <span
                       v-for="(word,indexW) in sentence.words"
+                      @contextmenu="e=>onContextMenu(e,sentence,indexI,indexJ,indexW)"
                       class="word"
                       :class="[(sectionIndex>indexI
                         ?'wrote':
@@ -463,9 +460,16 @@ let showQuestions = $ref(false)
                          (sectionIndex>=indexI &&sentenceIndex>=indexJ && wordIndex>=indexW && stringIndex>=word.word.length)
                         ?'wrote':
                         ''),
-                        indexW === 0 && `word${indexI}-${indexJ}`
+                        indexW === 0 && `word${indexI}-${indexJ}`,
                         ]">
-                    <span class="word-wrap">
+                    <span class="word-wrap"
+                          @mouseenter="settingStore.allowWordTip && showSentence(indexI,indexJ,indexW)"
+                          @mouseleave="hideSentence"
+                          :class="[
+                           hoverIndex.sectionIndex === indexI && hoverIndex.sentenceIndex === indexJ && hoverIndex.wordIndex === indexW
+                          &&'hover-show'
+                          ]"
+                    >
                       <TypingWord :word="word"
                                   :is-typing="true"
                                   v-if="isCurrent(indexI,indexJ,indexW) && !isSpace"/>
@@ -514,9 +518,7 @@ let showQuestions = $ref(false)
           @click="emit('next')">下一篇
       </BaseButton>
     </div>
-    <BaseButton
-        @click="init">重新练习
-    </BaseButton>
+
     <template v-if="false">
       <div class="translate-bottom mb-10" v-if="settingStore.translate">
         <header class="mb-4">
@@ -604,15 +606,11 @@ $article-lh: 2.4;
 
     .hover-show {
       border-radius: 0.2rem;
-      background: var(--color-select-bg);
-      color: white !important;
+      //background: var(--color-select-bg);
+      @apply bg-green!;
 
       :deep(.hide) {
         opacity: 1 !important;
-      }
-
-      .wrote {
-        color: white !important;
       }
     }
 
@@ -632,6 +630,7 @@ $article-lh: 2.4;
 
         .word-wrap {
           position: relative;
+          transition: background-color .3s;
         }
 
         .border-bottom {
