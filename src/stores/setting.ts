@@ -9,7 +9,14 @@ export interface SettingState {
   wordSound: boolean,
   wordSoundVolume: number,
   wordSoundSpeed: number,
-  wordSoundType: string,
+  soundType: string,
+
+  articleSound: boolean,
+  articleSoundVolume: number,
+  articleSoundSpeed: number,
+  // articleSound: boolean,
+  
+
   keyboardSound: boolean,
   keyboardSoundVolume: number,
   keyboardSoundFile: string,
@@ -44,6 +51,7 @@ export interface SettingState {
   disableShowPracticeSettingDialog: boolean // 不默认显示练习设置弹框
   autoNextWord: boolean //自动切换下一个单词
   inputWrongClear: boolean //单词输入错误，清空已输入内容
+
 }
 
 export const getDefaultSettingState = (): SettingState => ({
@@ -52,10 +60,16 @@ export const getDefaultSettingState = (): SettingState => ({
   sideExpand: false,
 
   allSound: true,
+
   wordSound: true,
   wordSoundVolume: 100,
   wordSoundSpeed: 1,
-  wordSoundType: 'us',
+
+  articleSound: true,
+  articleSoundVolume: 100,
+  articleSoundSpeed: 1,
+
+  soundType: 'us',
   keyboardSound: true,
   keyboardSoundVolume: 100,
   keyboardSoundFile: '机械键盘2',

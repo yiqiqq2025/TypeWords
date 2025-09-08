@@ -158,7 +158,7 @@ onBeforeUnmount(onRelease)
   }
 
   &.is-disabled {
-    opacity: .7;
+    opacity: .3;
 
     .btn, .input-inner {
       cursor: not-allowed;

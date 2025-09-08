@@ -1,10 +1,12 @@
 import {Article, ArticleWord, Dict, DictType, Word} from "@/types/types.ts";
 import {shallowReactive} from "vue";
 import {cloneDeep} from "@/utils";
+import {nanoid} from "nanoid";
 
 export function getDefaultWord(val: Partial<Word> = {}): Word {
   return {
     custom: false,
+    id: nanoid(6),
     "word": "",
     "phonetic0": "",
     "phonetic1": "",

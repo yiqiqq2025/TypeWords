@@ -11,10 +11,13 @@ import ContextMenu from '@imengyu/vue3-context-menu'
 import {getTranslateText} from "@/hooks/article.ts";
 import BaseButton from "@/components/BaseButton.vue";
 import QuestionForm from "@/pages/pc/article/components/QuestionForm.vue";
-import {getDefaultArticle} from "@/types/func.ts";
+import {getDefaultArticle, getDefaultWord} from "@/types/func.ts";
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import TypingWord from "@/pages/pc/article/components/TypingWord.vue";
 import Space from "@/pages/pc/article/components/Space.vue";
+import {useWordOptions} from "@/hooks/dict.ts";
+import nlp from "compromise/three";
+import {nanoid} from "nanoid";
 
 interface IProps {
   article: Article,
@@ -74,6 +77,9 @@ const playBeep = usePlayBeep()
 const playCorrect = usePlayCorrect()
 const playKeyboardAudio = usePlayKeyboardAudio()
 const playWordAudio = usePlayWordAudio()
+const {
+  toggleWordCollect,
+} = useWordOptions()
 
 const store = useBaseStore()
 const settingStore = useSettingStore()
@@ -347,7 +353,7 @@ function hideSentence() {
   hoverIndex = {sectionIndex: -1, sentenceIndex: -1, wordIndex: -1}
 }
 
-function onContextMenu(e: MouseEvent, sentence: Sentence, i, j,w) {
+function onContextMenu(e: MouseEvent, sentence: Sentence, i, j, w) {
   const selectedText = window.getSelection().toString();
   console.log(selectedText);
   //prevent the browser's default menu
@@ -383,17 +389,46 @@ function onContextMenu(e: MouseEvent, sentence: Sentence, i, j,w) {
         }
       },
       {
-        label: "播放",
+        label: "添加到收藏",
         onClick: () => {
-          emit('play', {sentence: sentence, handle: false})
+          let word = props.article.sections[i][j].words[w]
+          let doc = nlp(word.word)
+          let text = word.word
+          // 优先判断是不是动词
+          if (doc.verbs().found) {
+            text = doc.verbs().toInfinitive().text()
+          }
+          // 如果是名词（复数 → 单数）
+          if (doc.nouns().found) {
+            text = doc.nouns().toSingular().text()
+          }
+          if (!text.length) text = word.word
+          console.log('text', text)
+          toggleWordCollect(getDefaultWord({word: text, id: nanoid()}))
+          Toast.success(text + ' 添加成功')
         }
       },
       {
-        label: "复制",
+        label: "复制句子",
         onClick: () => {
           navigator.clipboard.writeText(sentence.text).then(r => {
             Toast.success('已复制')
           })
+        }
+      },
+      {
+        label: "复制单词",
+        onClick: () => {
+          let word = props.article.sections[i][j].words[w]
+          navigator.clipboard.writeText(word.word).then(r => {
+            Toast.success('已复制')
+          })
+        }
+      },
+      {
+        label: "播放句子",
+        onClick: () => {
+          emit('play', {sentence: sentence, handle: true})
         }
       },
       {

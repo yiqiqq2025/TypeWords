@@ -1,6 +1,6 @@
 import {SAVE_DICT_KEY, SAVE_SETTING_KEY} from "@/utils/const.ts";
 import {BaseState, DefaultBaseState} from "@/stores/base.ts";
-import {getDefaultSettingState} from "@/stores/setting.ts";
+import {getDefaultSettingState, SettingState} from "@/stores/setting.ts";
 import {Dict, DictId, DictResource, DictType} from "@/types/types.ts";
 import {useRouter} from "vue-router";
 import {useRuntimeStore} from "@/stores/runtime.ts";
@@ -45,10 +45,7 @@ export function checkAndUpgradeSaveDict(val: any) {
       let version = Number(data.version)
       // console.log('state', state)
       if (version === SAVE_DICT_KEY.version) {
-        //防止人为删除数据，导致数据不完整报错
-        for (const [key, value] of Object.entries(defaultState)) {
-          if (state[key] !== undefined) defaultState[key] = state[key]
-        }
+        checkRiskKey(defaultState, state)
         return defaultState
       } else {
         if (version === 3) {
@@ -186,10 +183,7 @@ export function checkAndUpgradeSaveDict(val: any) {
             }
           })
         }
-        //防止人为删除数据，导致数据不完整报错
-        for (const [key, value] of Object.entries(defaultState)) {
-          if (state[key] !== undefined) defaultState[key] = state[key]
-        }
+        checkRiskKey(defaultState, state)
         return defaultState
       }
     } catch (e) {
@@ -213,7 +207,7 @@ export function checkAndUpgradeSaveSetting(val: any) {
         data = val
       }
       if (!data.version) return defaultState
-      let state: any = data.val
+      let state: SettingState & { [key: string]: any } = data.val
       if (typeof state !== 'object') return defaultState
       state.load = false
       let version = Number(data.version)
@@ -221,6 +215,9 @@ export function checkAndUpgradeSaveSetting(val: any) {
         checkRiskKey(defaultState, state)
         return defaultState
       } else {
+        if (version === 13) {
+          defaultState.soundType = state.soundType
+        }
         //为了保持永远是最新的快捷键选项列表，但保留住用户的自定义设置，去掉无效的快捷键选项
         //例: 2版本，可能有快捷键A。3版本没有了
         checkRiskKey(defaultState.shortcutKeyMap, state.shortcutKeyMap)

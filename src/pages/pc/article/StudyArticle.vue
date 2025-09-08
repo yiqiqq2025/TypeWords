@@ -12,7 +12,7 @@ import {_getDictDataByUrl, cloneDeep} from "@/utils";
 import {usePracticeStore} from "@/stores/practice.ts";
 import {useArticleOptions} from "@/hooks/dict.ts";
 import {genArticleSectionData, usePlaySentenceAudio} from "@/hooks/article.ts";
-import {getDefaultArticle, getDefaultDict} from "@/types/func.ts";
+import {getDefaultArticle, getDefaultDict, getDefaultWord} from "@/types/func.ts";
 import TypingArticle from "@/pages/pc/article/components/TypingArticle.vue";
 import BaseIcon from "@/components/BaseIcon.vue";
 import Panel from "@/pages/pc/components/Panel.vue";
@@ -191,7 +191,7 @@ function wrong(word: Word) {
   let temp = word.word.toLowerCase();
   //过滤简单词
   if (settingStore.ignoreSimpleWord) {
-    if (this.simpleWords.includes(temp)) return
+    if (store.simpleWords.includes(temp)) return
   }
   if (!allWrongWords.has(word.word.toLowerCase())) {
     allWrongWords.add(word.word.toLowerCase())
@@ -199,7 +199,7 @@ function wrong(word: Word) {
   }
 
   if (!store.wrong.words.find((v: Word) => v.word.toLowerCase() === temp)) {
-    store.wrong.words.push(word)
+    store.wrong.words.push(getDefaultWord(word))
     store.wrong.length = store.wrong.words.length
   }
 }
@@ -283,7 +283,7 @@ let audioRef = $ref<HTMLAudioElement>()
 const {playSentenceAudio} = usePlaySentenceAudio()
 
 function play2(e) {
-  if (settingStore.wordSound || e.handle) {
+  if (settingStore.articleSound || e.handle) {
     playSentenceAudio(e.sentence, audioRef, articleData.article)
   }
 }
@@ -370,7 +370,7 @@ function play2(e) {
                    controls></audio>
             <div class="flex flex-col items-center justify-center gap-1">
               <div class="flex gap-2 center">
-                <Switch v-model="settingStore.wordSound"/>
+                <Switch v-model="settingStore.articleSound"/>
                 <BaseIcon
                     :title="`下一句(${settingStore.shortcutKeyMap[ShortcutKey.Next]})`"
                     @click="skip">

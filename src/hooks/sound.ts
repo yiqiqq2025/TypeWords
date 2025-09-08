@@ -1,4 +1,4 @@
-import {onMounted, watch, watchEffect} from "vue"
+import {onMounted, watchEffect} from "vue"
 import {useSettingStore} from "@/stores/setting.ts";
 import {PronunciationApi} from "@/types/types.ts";
 import {SoundFileOptions} from "@/utils/const.ts";
@@ -89,7 +89,7 @@ export function usePlayWordAudio() {
 
   function playAudio(word: string) {
     let url = `${PronunciationApi}${word}&type=2`
-    if (settingStore.wordSoundType === 'uk') {
+    if (settingStore.soundType === 'uk') {
       url = `${PronunciationApi}${word}&type=1`
     }
     audio.src = url
@@ -139,25 +139,4 @@ export function getAudioFileUrl(name: string) {
   } else {
     return [`/sound/key-sounds/${name}.mp3`]
   }
-}
-
-export function useWatchAllSound() {
-  const settingStore = useSettingStore()
-
-  watch([
-    () => settingStore.wordSound,
-    () => settingStore.keyboardSound,
-    () => settingStore.effectSound,
-  ], (n) => {
-    settingStore.allSound = n.some(v => v);
-  })
-}
-
-export function useChangeAllSound(e: boolean) {
-  const settingStore = useSettingStore()
-
-  settingStore.allSound = e
-  settingStore.wordSound = e
-  settingStore.keyboardSound = e
-  settingStore.effectSound = e
 }

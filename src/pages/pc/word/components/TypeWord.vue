@@ -182,11 +182,11 @@ function mouseleave() {
   <div class="typing-word">
     <div class="flex flex-col items-center">
       <div class="flex gap-1 mt-26">
-        <div class="phonetic" v-if="settingStore.wordSoundType === 'us' && word.phonetic0">[{{
+        <div class="phonetic" v-if="settingStore.soundType === 'us' && word.phonetic0">[{{
             (settingStore.dictation && !showFullWord) ? '_'.repeat(word.phonetic0.length) : word.phonetic0
           }}]
         </div>
-        <div class="phonetic" v-if="settingStore.wordSoundType === 'uk' && word.phonetic1">[{{
+        <div class="phonetic" v-if="settingStore.soundType === 'uk' && word.phonetic1">[{{
             (settingStore.dictation && !showFullWord) ? '_'.repeat(word.phonetic1.length) : word.phonetic1
           }}]
         </div>
