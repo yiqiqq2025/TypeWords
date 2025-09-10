@@ -133,7 +133,7 @@ export function getCurrentStudyWord() {
       }
 
       //从start往前取perDay个单词，作为当前复习单词，取到0为止
-      list = dict.words.slice(0, start).toReversed()
+      list = dict.words.slice(0, start).reverse()
       for (let item of list) {
         if (!ignoreList.includes(item.word.toLowerCase())) {
           if (data.review.length < perDay) {
@@ -153,9 +153,9 @@ export function getCurrentStudyWord() {
 
     // 上上次更早的单词
     //默认只取start之前的单词
-    let candidateWords = dict.words.slice(0, start).toReversed()
+    let candidateWords = dict.words.slice(0, start).reverse()
     //但如果已完成，则滚动取值
-    if (complete) candidateWords = candidateWords.concat(dict.words.slice(end).toReversed())
+    if (complete) candidateWords = candidateWords.concat(dict.words.slice(end).reverse())
     candidateWords = candidateWords.filter(w => !ignoreList.includes(w.word.toLowerCase()));
     // console.log(candidateWords.map(v => v.word))
     //最终要获取的单词数量
