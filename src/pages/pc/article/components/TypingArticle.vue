@@ -368,7 +368,8 @@ function onContextMenu(e: MouseEvent, sentence: Sentence, i, j, w) {
         onClick: () => {
           sectionIndex = i
           sentenceIndex = j
-          wordIndex = w
+          //todo 这里有可能是符号，要处理下
+          wordIndex = w + 1
           stringIndex = 0
           input = wrong = ''
           isEnd = isSpace = false
@@ -440,6 +441,12 @@ function onContextMenu(e: MouseEvent, sentence: Sentence, i, j, w) {
               window.open('https://enpuz.com/')
             }, 1000)
           })
+        }
+      },
+      {
+        label: "有道词典",
+        onClick: () => {
+          window.open(`https://www.youdao.com/result?word=${sentence.text}&lang=en`, '_blank')
         }
       },
     ]
