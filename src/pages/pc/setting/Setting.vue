@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, watch} from "vue";
+import {ref, watch, nextTick} from "vue";
 import {useSettingStore} from "@/stores/setting.ts";
 import {getAudioFileUrl, usePlayAudio} from "@/hooks/sound.ts";
 import {getShortcutKey, useEventListener} from "@/hooks/event.ts";
@@ -47,16 +47,29 @@ const simpleWords = $computed({
 let editShortcutKey = $ref('')
 
 const disabledDefaultKeyboardEvent = $computed(() => {
-  return editShortcutKey && tabIndex === 2
+  return editShortcutKey && tabIndex === 3
 })
 
 watch(() => disabledDefaultKeyboardEvent, v => {
   emit('toggleDisabledDialogEscKey', !!v)
 })
 
+// 监听编辑快捷键状态变化，自动聚焦输入框
+watch(() => editShortcutKey, (newVal) => {
+  if (newVal) {
+    // 使用nextTick确保DOM已更新
+    nextTick(() => {
+      focusShortcutInput()
+    })
+  }
+})
+
 useEventListener('keydown', (e: KeyboardEvent) => {
   if (!disabledDefaultKeyboardEvent) return
+  
+  // 确保阻止浏览器默认行为
   e.preventDefault()
+  e.stopPropagation()
 
   let shortcutKey = getShortcutKey(e)
   // console.log('e', e, e.keyCode, e.ctrlKey, e.altKey, e.shiftKey)
@@ -71,6 +84,12 @@ useEventListener('keydown', (e: KeyboardEvent) => {
     if (shortcutKey === 'Delete') {
       settingStore.shortcutKeyMap[editShortcutKey] = ''
     } else {
+      // 忽略单独的修饰键
+      if (shortcutKey === 'Ctrl+' || shortcutKey === 'Alt+' || shortcutKey === 'Shift+' || 
+          e.key === 'Control' || e.key === 'Alt' || e.key === 'Shift') {
+        return;
+      }
+      
       for (const [k, v] of Object.entries(settingStore.shortcutKeyMap)) {
         if (v === shortcutKey && k !== editShortcutKey) {
           settingStore.shortcutKeyMap[editShortcutKey] = DefaultShortcutKeyMap[editShortcutKey]
@@ -81,6 +100,53 @@ useEventListener('keydown', (e: KeyboardEvent) => {
     }
   }
 })
+
+
+function handleInputBlur() {
+  // 输入框失焦时结束编辑状态
+  editShortcutKey = ''
+}
+
+function handleBodyClick() {
+  if (editShortcutKey) {
+    editShortcutKey = ''
+  }
+}
+
+function focusShortcutInput() {
+  // 找到当前正在编辑的快捷键输入框
+  const inputElements = document.querySelectorAll('.set-key input')
+  if (inputElements && inputElements.length > 0) {
+    // 聚焦第一个找到的输入框
+    const inputElement = inputElements[0] as HTMLInputElement
+    inputElement.focus()
+  }
+}
+
+// 快捷键中文名称映射
+function getShortcutKeyName(key: string): string {
+  const shortcutKeyNameMap = {
+    'ShowWord': '显示单词',
+    'EditArticle': '编辑文章',
+    'Next': '下一个',
+    'Replay': '重播',
+    'Previous': '上一个',
+    'ToggleSimple': '切换已掌握状态',
+    'ToggleCollect': '切换收藏状态',
+    'NextChapter': '下一组',
+    'PreviousChapter': '上一组',
+    'RepeatChapter': '重复本组',
+    'DictationChapter': '默写本组',
+    'PlayWordPronunciation': '播放发音',
+    'ToggleShowTranslate': '切换显示翻译',
+    'ToggleDictation': '切换默写模式',
+    'ToggleTheme': '切换主题',
+    'ToggleConciseMode': '切换简洁模式',
+    'TogglePanel': '切换面板'
+  }
+  
+  return shortcutKeyNameMap[key] || key
+}
 
 function resetShortcutKeyMap() {
   editShortcutKey = ''
@@ -434,10 +500,10 @@ function importOldData() {
           </div>
           <div class="scroll">
             <div class="row" v-for="item of Object.entries(settingStore.shortcutKeyMap)">
-              <label class="item-title">{{ item[0] }}</label>
+              <label class="item-title">{{ getShortcutKeyName(item[0]) }}</label>
               <div class="wrapper" @click="editShortcutKey = item[0]">
                 <div class="set-key" v-if="editShortcutKey === item[0]">
-                  <input :value="item[1]?item[1]:'未设置快捷键'" readonly type="text" @blur="editShortcutKey = ''">
+                  <input ref="shortcutInput" :value="item[1]?item[1]:'未设置快捷键'" readonly type="text" @blur="handleInputBlur">
                   <span @click.stop="editShortcutKey = ''">按键盘进行设置，<span
                       class="text-red!">设置完成点击这里</span></span>
                 </div>
@@ -590,6 +656,7 @@ function importOldData() {
             background: var(--color-second);
             color: var(--color-font-1);
           }
+          
         }
       }
 
