@@ -28,7 +28,7 @@
     <meta name="twitter:image" content="https://2study.top/favicon.png">
 
     <!--用于百度站长验证    -->
-    <meta name="baidu-site-verification" content="codeva-Kw33xFT3p2" />
+    <meta name="baidu-site-verification" content="codeva-Kw33xFT3p2"/>
 
     <script>
       ;(function () {
@@ -38,9 +38,6 @@
         document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
       })();
     </script>
-<!--    异常上报-->
-    <script src="https://js.fundebug.cn/fundebug.2.8.6.min.js" apikey="a30bfcc79c4bfa9483368adaa6b363412513d7bb5f3f43a3a6bc634cfc211286" crossorigin="anonymous"></script>
-    <script src="https://js.fundebug.cn/fundebug.revideo.0.7.1.min.js"></script>
     <script>
       if (!location.href.includes('localhost')
         && !location.href.includes('192.168')
@@ -66,6 +63,19 @@
           var s = document.getElementsByTagName("script")[0];
           s.parentNode.insertBefore(umami, s);
         })();
+
+        // 异常上报，只上报官方网站的，不然跨域的太多了
+        if (location.host === '2study.top') {
+          var a = document.createElement("script");
+          a.src = 'https://js.fundebug.cn/fundebug.2.8.6.min.js'
+          a.setAttribute("apikey", "a30bfcc79c4bfa9483368adaa6b363412513d7bb5f3f43a3a6bc634cfc211286");
+          var b = document.createElement("script");
+          b.src = 'https://js.fundebug.cn/fundebug.revideo.0.7.1.min.js'
+
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(a, s);
+          s.parentNode.insertBefore(b, s);
+        }
       }
     </script>
 </head>

@@ -4,7 +4,7 @@ import {onMounted, onUnmounted, watch} from "vue";
 import {useBaseStore} from "@/stores/base.ts";
 import {emitter, EventKey, useEvents} from "@/utils/eventBus.ts";
 import {useSettingStore} from "@/stores/setting.ts";
-import {Article, ArticleItem, ArticleWord, Dict, DictType, ShortcutKey, Word} from "@/types/types.ts";
+import {Article, ArticleItem, ArticleWord, Dict, DictType, ShortcutKey, Statistics, Word} from "@/types/types.ts";
 import {useDisableEventListener, useOnKeyboardEventListener, useStartKeyboardEventListener} from "@/hooks/event.ts";
 import useTheme from "@/hooks/theme.ts";
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
@@ -27,16 +27,12 @@ import Switch from "@/pages/pc/components/base/Switch.vue";
 
 const store = useBaseStore()
 const settingStore = useSettingStore()
-const statisticsStore = usePracticeStore()
+const statStore = usePracticeStore()
 const {toggleTheme} = useTheme()
 
 let articleData = $ref({
   list: [],
   article: getDefaultArticle(),
-  sectionIndex: 0,
-  sentenceIndex: 0,
-  wordIndex: 0,
-  stringIndex: 0,
 })
 let showEditArticle = $ref(false)
 let typingArticleRef = $ref<any>()
@@ -81,6 +77,7 @@ function toggleConciseMode() {
 
 function next() {
   if (store.sbook.lastLearnIndex >= articleData.list.length - 1) {
+    store.sbook.complete = true
     store.sbook.lastLearnIndex = 0
     //todo 这里应该弹窗
   } else store.sbook.lastLearnIndex++
@@ -134,28 +131,49 @@ useStartKeyboardEventListener()
 useDisableEventListener(() => loading)
 
 function setArticle(val: Article) {
-  statisticsStore.inputWordNumber = 0
-  statisticsStore.wrong = 0
-  statisticsStore.total = 0
-  statisticsStore.startDate = Date.now()
+  statStore.wrong = 0
+  statStore.total = 0
+  statStore.startDate = Date.now()
 
   allWrongWords = new Set()
   articleData.list[store.sbook.lastLearnIndex] = val
   articleData.article = val
-  articleData.sectionIndex = 0
-  articleData.sentenceIndex = 0
-  articleData.wordIndex = 0
-  articleData.stringIndex = 0
   let ignoreList = [store.allIgnoreWords, store.knownWords][settingStore.ignoreSimpleWord ? 0 : 1]
   articleData.article.sections.map((v, i) => {
     v.map((w) => {
       w.words.map(s => {
         if (!ignoreList.includes(s.word.toLowerCase()) && !s.isSymbol) {
-          statisticsStore.total++
+          statStore.total++
         }
       })
     })
   })
+}
+
+function complete() {
+  //todo 有空了改成实时保存
+  statStore.spend = Date.now() - statStore.startDate
+  let data: Partial<Statistics> & { title: string, id: string } = {
+    id: articleData.article.id,
+    title: articleData.article.title,
+    spend: statStore.spend,
+    startDate: statStore.startDate,
+    total: statStore.total,
+    wrong: statStore.wrong,
+  }
+  let reportData = {
+    ...data,
+    name: store.sbook.name,
+    spend: Number(statStore.spend / 1000 / 60).toFixed(1),
+    custom: store.sdict.custom,
+    complete: store.sdict.complete,
+    index: store.sdict.lastLearnIndex,
+    s: ''
+  }
+  reportData.s = `name:${store.sbook.name},title:${store.sbook.lastLearnIndex}.${data.title},spend:${Number(statStore.spend / 1000 / 60).toFixed(1)}`
+  window.umami?.track('studyWordArticle', reportData)
+  store.sbook.statistics.push(data as any)
+  console.log(data, reportData)
 }
 
 function getCurrentPractice() {
@@ -195,7 +213,7 @@ function wrong(word: Word) {
   }
   if (!allWrongWords.has(word.word.toLowerCase())) {
     allWrongWords.add(word.word.toLowerCase())
-    statisticsStore.wrong++
+    statStore.wrong++
   }
 
   if (!store.wrong.words.find((v: Word) => v.word.toLowerCase() === temp)) {
@@ -206,7 +224,7 @@ function wrong(word: Word) {
 
 function nextWord(word: ArticleWord) {
   if (!store.allIgnoreWords.includes(word.word.toLowerCase()) && !word.isSymbol) {
-    statisticsStore.inputWordNumber++
+    statStore.inputWordNumber++
   }
 }
 
@@ -271,7 +289,7 @@ let speedMinute = $ref(0)
 let timer = $ref(0)
 onMounted(() => {
   timer = setInterval(() => {
-    speedMinute = Math.floor((Date.now() - statisticsStore.startDate) / 1000 / 60)
+    speedMinute = Math.floor((Date.now() - statStore.startDate) / 1000 / 60)
   }, 1000)
 })
 
@@ -301,6 +319,7 @@ function play2(e) {
           @next="next"
           @nextWord="nextWord"
           @play="play2"
+          @complete="complete"
           :article="articleData.article"
       />
     </template>
@@ -351,7 +370,7 @@ function play2(e) {
               </div>
               <div class="row">
                 <div class="num center gap-1">
-                  {{ statisticsStore.total }}
+                  {{ statStore.total }}
                   <Tooltip>
                     <IconFluentQuestionCircle20Regular width="18"/>
                     <template #reference>

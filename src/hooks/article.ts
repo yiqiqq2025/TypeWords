@@ -75,8 +75,8 @@ export function genArticleSectionData(article: Article): number {
           nearSymbolPosition = 'end'
         } else {
           //TODO 可以优化成for+break
-          section.toReversed().map((sentenceItem, b) => {
-            sentenceItem.words.toReversed().map((wordItem, c) => {
+          section.slice().reverse().map((sentenceItem, b) => {
+            sentenceItem.words.slice().reverse().map((wordItem, c) => {
               if (wordItem.symbolPosition !== '' && nearSymbolPosition === null) {
                 nearSymbolPosition = wordItem.symbolPosition
               }
@@ -101,7 +101,7 @@ export function genArticleSectionData(article: Article): number {
           word3.nextSpace = true
 
           let addCurrent = false
-          sentence.words.toReversed().map((wordItem, c) => {
+          sentence.words.slice().reverse().map((wordItem, c) => {
             if (wordItem.symbolPosition === 'start' && !addCurrent) {
               addCurrent = true
             }
@@ -335,8 +335,8 @@ Its none of your business, the young man said rudely. This is a private conversa
           nearSymbolPosition = 'end'
         } else {
           //TODO 可以优化成for+break
-          section.toReversed().map((sentenceItem, b) => {
-            sentenceItem.words.toReversed().map((wordItem, c) => {
+          section.slice().reverse().map((sentenceItem, b) => {
+            sentenceItem.words.slice().reverse().map((wordItem, c) => {
               if (wordItem.symbolPosition !== '' && nearSymbolPosition === null) {
                 nearSymbolPosition = wordItem.symbolPosition
               }
@@ -361,7 +361,7 @@ Its none of your business, the young man said rudely. This is a private conversa
           word3.nextSpace = true
 
           let addCurrent = false
-          sentence.words.toReversed().map((wordItem, c) => {
+          sentence.words.slice().reverse().map((wordItem, c) => {
             if (wordItem.symbolPosition === 'start' && !addCurrent) {
               addCurrent = true
             }
