@@ -176,6 +176,36 @@ function mouseleave() {
   }, 50)
 }
 
+// 在释义中隐藏单词本身及其变形
+function hideWordInTranslation(text: string, word: string): string {
+  if (!text || !word) {
+    return text
+  }
+  
+  // 创建正则表达式，匹配单词本身及其常见变形（如复数、过去式等）
+  const wordBase = word.toLowerCase()
+  const patterns = [
+    `\\b${escapeRegExp(wordBase)}\\b`,  // 单词本身
+    `\\b${escapeRegExp(wordBase)}s\\b`, // 复数形式
+    `\\b${escapeRegExp(wordBase)}es\\b`, // 复数形式
+    `\\b${escapeRegExp(wordBase)}ed\\b`, // 过去式
+    `\\b${escapeRegExp(wordBase)}ing\\b`, // 进行时
+  ]
+  
+  let result = text
+  patterns.forEach(pattern => {
+    const regex = new RegExp(pattern, 'gi')
+    result = result.replace(regex, match => `<span class="word-shadow">${match}</span>`)
+  })
+  
+  return result
+}
+
+// 转义正则表达式特殊字符
+function escapeRegExp(string: string): string {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
 </script>
 
 <template>
@@ -221,7 +251,8 @@ function mouseleave() {
       >
         <div class="my-2 flex" v-for="(v,i) in word.trans">
           <div class="shrink-0" :class="v.pos && 'w-12'">{{ v.pos }}</div>
-          <span>{{ v.cn }}</span>
+          <span v-if="settingStore.dictation && !showFullWord" v-html="hideWordInTranslation(v.cn, word.word)"></span>
+          <span v-else>{{ v.cn }}</span>
         </div>
       </div>
     </div>
