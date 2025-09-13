@@ -55,7 +55,7 @@ export interface ArticleWord extends Word {
   nextSpace: boolean,
   isSymbol: boolean,
   symbolPosition: 'start' | 'end' | '',
-  input:string
+  input: string
 }
 
 export interface Sentence {
@@ -75,6 +75,7 @@ export interface Article {
   textAllWords: string[],
   sections: Sentence[][],
   audioSrc: string,
+  audioFileId: string,
   lrcPosition: number[][],
   questions: {
     stem: string,

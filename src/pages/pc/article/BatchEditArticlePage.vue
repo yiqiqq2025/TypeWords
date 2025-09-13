@@ -158,7 +158,7 @@ useWindowClick(() => showExport = false)
 <template>
   <div class="add-article">
     <div class="aslide">
-      <header class="flex justify-between items-center">
+      <header class="flex gap-2 items-center">
         <BackIcon/>
         <div class="text-xl">{{ runtimeStore.editDict.name }}</div>
       </header>
@@ -239,7 +239,7 @@ useWindowClick(() => showExport = false)
     display: flex;
     flex-direction: column;
 
-    $height: 4rem;
+    $height: 3rem;
 
     header {
       height: $height;
@@ -254,7 +254,7 @@ useWindowClick(() => showExport = false)
     }
 
     .add {
-      width: 16rem;
+      width: 100%;
       box-sizing: border-box;
       border-radius: .5rem;
       margin-bottom: .6rem;
@@ -262,8 +262,8 @@ useWindowClick(() => showExport = false)
       display: flex;
       justify-content: space-between;
       transition: all .3s;
-      color: var(--color-font-1);
-      background: var(--color-item-active);
+      color: var(--color-font-active-1);
+      background: var(--color-select-bg);
     }
 
     .footer {

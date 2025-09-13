@@ -34,15 +34,15 @@ export const routes: RouteRecordRaw[] = [
       {path: 'book-detail', component: BookDetail},
       {path: 'book-list', component: BookList},
       {path: 'edit-article', component: () => import("@/pages/pc/article/EditArticlePage.vue")},
-      {path: 'batch-edit-article', component: () => import("@/pages/pc/article/BatchEditArticlePage.vue")},
 
       {path: 'setting', component: Setting},
     ]
   },
+  {path: '/batch-edit-article', component: () => import("@/pages/pc/article/BatchEditArticlePage.vue")},
   {path: '/test', component: () => import("@/pages/test/test.vue")},
   {path: '/:pathMatch(.*)*', redirect: '/word'},
 ]
-console.log(import.meta.env.VITE_ROUTE_BASE)
+
 const router = VueRouter.createRouter({
   history: VueRouter.createWebHistory(import.meta.env.VITE_ROUTE_BASE),
   // history: VueRouter.createWebHashHistory(),
@@ -58,6 +58,8 @@ const router = VueRouter.createRouter({
 })
 
 router.beforeEach((to: any, from: any) => {
+  return true
+
   // console.log('beforeEach-to',to.path)
   // console.log('beforeEach-from',from.path)
   const runtimeStore = useRuntimeStore()
@@ -69,6 +71,7 @@ router.beforeEach((to: any, from: any) => {
     '/mobile',
     '/'
   ]
+
   if (noAnimation.indexOf(from.path) !== -1 && noAnimation.indexOf(to.path) !== -1) {
     return true
   }

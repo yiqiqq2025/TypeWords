@@ -538,8 +538,8 @@ export function usePlaySentenceAudio() {
   const settingStore = useSettingStore()
   let timer = $ref(0)
 
-  function playSentenceAudio(sentence: Sentence, ref?: HTMLAudioElement, article?: Article) {
-    if (sentence.audioPosition?.length && article.audioSrc && ref) {
+  function playSentenceAudio(sentence: Sentence, ref?: HTMLAudioElement,) {
+    if (sentence.audioPosition?.length && ref && ref.src) {
       clearTimeout(timer)
       if (ref.played) {
         ref.pause()

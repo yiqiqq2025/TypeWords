@@ -302,7 +302,7 @@ const {playSentenceAudio} = usePlaySentenceAudio()
 
 function play2(e) {
   if (settingStore.articleSound || e.handle) {
-    playSentenceAudio(e.sentence, audioRef, articleData.article)
+    playSentenceAudio(e.sentence, audioRef)
   }
 }
 

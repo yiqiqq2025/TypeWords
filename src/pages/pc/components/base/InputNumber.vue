@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, computed, onBeforeUnmount} from 'vue'
+import {ref, computed, onBeforeUnmount, watch} from 'vue'
 
 const props = defineProps({
   modelValue: {type: [Number, String], default: null},
@@ -59,6 +59,9 @@ const inner = ref<number | null>(normalizeToNumber(props.modelValue))
 let holdTimer: number | null = null
 let holdInterval: number | null = null
 
+watch(() => props.modelValue, (value: number) => {
+  inner.value = value
+})
 const displayValue = computed({
   get: () => inner.value === null ? '' : format(inner.value),
   set: v => {

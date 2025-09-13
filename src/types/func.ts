@@ -44,6 +44,7 @@ export function getDefaultArticle(val: Partial<Article> = {}): Article {
     textAllWords: [],
     sections: [],
     audioSrc: '',
+    audioFileId: '',
     lrcPosition: [],
     questions: [],
     ...cloneDeep(val)

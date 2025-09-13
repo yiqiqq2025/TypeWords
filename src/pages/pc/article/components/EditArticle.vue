@@ -17,6 +17,10 @@ import {Option, Select} from "@/pages/pc/components/base/select";
 import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
 import InputNumber from "@/pages/pc/components/base/InputNumber.vue";
 import {nanoid} from "nanoid";
+import {update} from "idb-keyval";
+import {LOCAL_FILE_KEY} from "@/utils/const.ts";
+import Audio from "@/pages/pc/article/components/Audio.vue";
+import BaseInput from "@/pages/pc/components/base/BaseInput.vue";
 
 const Dialog = defineAsyncComponent(() => import('@/pages/pc/components/dialog/Dialog.vue'))
 
@@ -50,7 +54,7 @@ watch(() => props.article, val => {
   editArticle = cloneDeep(val)
   progress = 0
   failCount = 0
-  // apply(false)
+  apply(false)
 }, {immediate: true})
 
 watch(() => editArticle.text, (s) => {
@@ -144,9 +148,12 @@ function save(option: 'save' | 'saveAndNext') {
       return resolve(false)
     }
 
+    console.log(editArticle)
+
     let d = cloneDeep(editArticle)
     if (!d.id) d.id = nanoid(6)
     delete d.sections
+    // copy(console.json(d, 2))
     copy(JSON.stringify(d, null, 2))
     const saveTemp = () => {
       emit(option as any, editArticle)
@@ -161,20 +168,24 @@ function save(option: 'save' | 'saveAndNext') {
 defineExpose({save, getEditArticle: () => cloneDeep(editArticle)})
 
 // 处理音频文件上传
-function handleAudioChange(e: any) {
-  // 获取上传的文件
+async function handleAudioChange(e: any) {
   let uploadFile = e.target?.files?.[0]
   if (!uploadFile) return
-  
-  // 创建一个临时的URL以访问文件
-  const audioURL = URL.createObjectURL(uploadFile)
-  
-  // 设置音频源
-  editArticle.audioSrc = audioURL
-  
+  let data = {
+    id: nanoid(6),
+    file: uploadFile,
+  }
+  //把文件存到indexDB
+  await update(LOCAL_FILE_KEY, (val) => {
+    if (val) val.push(data)
+    else val = [data]
+    return val
+  })
+  //保存id，后续从indexDb里读文件来使用
+  editArticle.audioFileId = data.id
+  editArticle.audioSrc = ''
   // 重置input，确保即使选择同一个文件也能触发change事件
   e.target.value = ''
-  
   Toast.success('音频添加成功')
 }
 
@@ -183,7 +194,7 @@ function handleChange(e: any) {
   // 获取上传的文件
   let uploadFile = e.target?.files?.[0]
   if (!uploadFile) return
-  
+
   // 读取文件内容
   let reader = new FileReader();
   reader.readAsText(uploadFile, 'UTF-8');
@@ -211,12 +222,12 @@ function handleChange(e: any) {
             return w.audioPosition ?? []
           })
         }).flat()
-        
+
         Toast.success('LRC文件解析成功')
       }
     }
   }
-  
+
   // 重置input，确保即使选择同一个文件也能触发change事件
   e.target.value = ''
 }
@@ -225,15 +236,15 @@ let currentSentence = $ref<Sentence>({} as any)
 let editSentence = $ref<Sentence>({} as any)
 let preSentence = $ref<Sentence>({} as any)
 let showEditAudioDialog = $ref(false)
-let sentenceAudioRef = $ref<HTMLAudioElement>()
-let audioRef = $ref<HTMLAudioElement>()
+let sentenceAudioRef = $ref<{ el: HTMLAudioElement }>({el: null})
+let audioRef = $ref<{ el: HTMLAudioElement }>({el: null})
 
 function handleShowEditAudioDialog(val: Sentence, i: number, j: number) {
   showEditAudioDialog = true
   currentSentence = val
   editSentence = cloneDeep(val)
   preSentence = null
-  audioRef.pause()
+  audioRef.el.pause()
   if (j == 0) {
     if (i != 0) {
       preSentence = last(editArticle.sections[i - 1])
@@ -248,22 +259,25 @@ function handleShowEditAudioDialog(val: Sentence, i: number, j: number) {
     }
   }
   _nextTick(() => {
-    sentenceAudioRef.currentTime = editSentence.audioPosition[0]
+    sentenceAudioRef.el.currentTime = editSentence.audioPosition[0]
   })
 }
 
 function recordStart() {
-  if (sentenceAudioRef.paused) {
-    sentenceAudioRef.play()
+  if (sentenceAudioRef.el.paused) {
+    sentenceAudioRef.el.play()
   }
-  editSentence.audioPosition[0] = Number(sentenceAudioRef.currentTime.toFixed(2))
+  editSentence.audioPosition[0] = Number(sentenceAudioRef.el.currentTime.toFixed(2))
+  if (editSentence.audioPosition[0] > editSentence.audioPosition[1]) {
+    editSentence.audioPosition[1] = editSentence.audioPosition[0]
+  }
 }
 
 function recordEnd() {
-  if (!sentenceAudioRef.paused) {
-    sentenceAudioRef.pause()
+  if (!sentenceAudioRef.el.paused) {
+    sentenceAudioRef.el.pause()
   }
-  editSentence.audioPosition[1] = Number(sentenceAudioRef.currentTime.toFixed(2))
+  editSentence.audioPosition[1] = Number(sentenceAudioRef.el.currentTime.toFixed(2))
 }
 
 const {playSentenceAudio} = usePlaySentenceAudio()
@@ -275,7 +289,7 @@ function saveLrcPosition() {
 }
 
 function jumpAudio(time: number) {
-  sentenceAudioRef.currentTime = time
+  sentenceAudioRef.el.currentTime = time
 }
 
 function setPreEndTimeToCurrentStartTime() {
@@ -296,8 +310,15 @@ function setStartTime(val: Sentence, i: number, j: number) {
   if (preSentence) {
     val.audioPosition[0] = preSentence.audioPosition[1]
   } else {
-    val.audioPosition[0] = Number(Number(audioRef.currentTime).toFixed(2))
+    val.audioPosition[0] = Number(Number(audioRef.el.currentTime).toFixed(2))
   }
+  if (val.audioPosition[0] > val.audioPosition[1]) {
+    val.audioPosition[1] = val.audioPosition[0]
+  }
+}
+
+function uploadFileTrigger(id: string) {
+  document.querySelector('#' + id).click()
 }
 
 </script>
@@ -306,14 +327,15 @@ function setStartTime(val: Sentence, i: number, j: number) {
   <div class="content">
     <div class="row flex flex-col gap-2">
       <div class="title">原文</div>
-      <div class="">标题：</div>
-      <input
-          v-model="editArticle.title"
-          type="text"
-          class="base-input"
-          placeholder="请填写原文标题"
-      />
-      <div class="">正文：</div>
+      <div class="flex gap-2 items-center">
+        <div class="shrink-0">标题：</div>
+        <BaseInput
+            v-model="editArticle.title"
+            type="text"
+            placeholder="请填写原文标题"
+        />
+      </div>
+      <div class="">正文：<span class="text-sm color-gray">一行一句，段落间空一行</span></div>
       <textarea
           v-model="editArticle.text"
           :readonly="![100,0].includes(progress)"
@@ -346,19 +368,15 @@ function setStartTime(val: Sentence, i: number, j: number) {
     </div>
     <div class="row flex flex-col gap-2">
       <div class="title">译文</div>
-      <div class="flex gap-2">
-        标题
+      <div class="flex gap-2 items-center">
+        <div class="shrink-0">标题：</div>
+        <BaseInput
+            v-model="editArticle.titleTranslate"
+            type="text"
+            placeholder="请填写翻译标题"
+        />
       </div>
-      <input
-          v-model="editArticle.titleTranslate"
-          type="text"
-          class="base-input"
-          placeholder="请填写翻译标题"
-      />
-
-      <div class="flex">
-        <span>正文：</span>
-      </div>
+      <div class="">正文：<span class="text-sm color-gray">一行一句，段落间空一行</span></div>
       <textarea
           v-model="editArticle.textTranslate"
           :readonly="![100,0].includes(progress)"
@@ -409,35 +427,49 @@ function setStartTime(val: Sentence, i: number, j: number) {
       </div>
     </div>
     <div class="row flex flex-col gap-2">
-      <div class="title">结果</div>
-      <div class="center">正文、译文与结果均可编辑，编辑后点击应用按钮会自动同步</div>
       <div class="flex gap-2">
-        <div class="upload relative">
-          <BaseButton>添加音频</BaseButton>
-          <input type="file"
-                 accept="audio/*"
-                 @change="handleAudioChange"
-                 class="w-full h-full absolute left-0 top-0 opacity-0"/>
+        <div class="title">结果</div>
+        <div class="flex gap-2">
+          <div class="upload relative">
+            <BaseButton>添加音频</BaseButton>
+            <input type="file"
+                   accept="audio/*"
+                   @change="handleAudioChange"
+                   class="w-full h-full absolute left-0 top-0 opacity-0"/>
+          </div>
+          <div class="upload relative">
+            <BaseButton>添加音频LRC文件</BaseButton>
+            <input type="file"
+                   accept=".lrc"
+                   @change="handleChange"
+                   class="w-full h-full absolute left-0 top-0 opacity-0"/>
+          </div>
+          <Audio ref="audioRef" :article="editArticle"/>
         </div>
-        <div class="upload relative">
-          <BaseButton>添加音频LRC文件</BaseButton>
-          <input type="file"
-                 accept=".lrc"
-                 @change="handleChange"
-                 class="w-full h-full absolute left-0 top-0 opacity-0"/>
-        </div>
-        <audio ref="audioRef" :src="editArticle.audioSrc" controls></audio>
       </div>
       <template v-if="editArticle?.sections?.length">
         <div class="flex-1 overflow-auto flex flex-col">
-          <div class="flex justify-between bg-black/10 py-2">
-            <div class="center flex-[7]">内容</div>
+          <div class="flex justify-between bg-black/10 py-2 rounded-lt-md rounded-rt-md">
+            <div class="center flex-[7]">内容：
+              <span class="text-sm color-black/70">均可编辑，编辑后点击应用按钮会自动同步</span></div>
             <div>|</div>
-            <div class="center flex-[3]">音频</div>
+            <div class="center flex-[3] gap-2">
+              <span>音频</span>
+              <BaseIcon title="添加音频"
+                        @click="uploadFileTrigger('updateFile1')"
+              >
+                <IconIconParkOutlineAddMusic/>
+              </BaseIcon>
+              <input type="file"
+                     id="updateFile1"
+                     accept="audio/*"
+                     @change="handleAudioChange"
+                     class="w-0 h-0 absolute left-0 top-0 opacity-0"/>
+            </div>
           </div>
           <div class="article-translate">
-            <div class="section " v-for="(item,indexI) in editArticle.sections">
-              <div class="section-title">第{{ indexI + 1 }}段</div>
+            <div class="section  rounded-md " v-for="(item,indexI) in editArticle.sections">
+              <div class="section-title text-lg font-bold">第{{ indexI + 1 }}段</div>
               <div class="sentence" v-for="(sentence,indexJ) in item">
                 <div class="flex-[7]">
                   <EditAbleText
@@ -468,7 +500,7 @@ function setStartTime(val: Sentence, i: number, j: number) {
                       <div v-if="sentence.audioPosition?.[1] !== -1">{{ sentence.audioPosition?.[1] ?? 0 }}s</div>
                       <div v-else> 结束</div>
                       <BaseIcon
-                          @click="sentence.audioPosition[1] = Number(Number(audioRef.currentTime).toFixed(2))"
+                          @click="sentence.audioPosition[1] = Number(Number(audioRef.el.currentTime).toFixed(2))"
                           title="设置结束时间"
                       >
                         <IconFluentMyLocation20Regular/>
@@ -479,13 +511,14 @@ function setStartTime(val: Sentence, i: number, j: number) {
                     <BaseIcon :icon="sentence.audioPosition?.length ? 'basil:edit-outline' : 'basil:add-outline'"
                               title="编辑"
                               @click="handleShowEditAudioDialog(sentence,indexI,indexJ)">
-                      <IconFluentSpeakerEdit20Regular v-if="sentence.audioPosition?.length && sentence.audioPosition[1]"/>
+                      <IconFluentSpeakerEdit20Regular
+                          v-if="sentence.audioPosition?.length && sentence.audioPosition[1]"/>
                       <IconFluentAddSquare20Regular v-else/>
                     </BaseIcon>
                     <BaseIcon
                         title="播放"
                         v-if="sentence.audioPosition?.length"
-                              @click="playSentenceAudio(sentence,audioRef,editArticle)">
+                        @click="playSentenceAudio(sentence,audioRef.el)">
                       <IconFluentPlay20Regular/>
                     </BaseIcon>
                   </div>
@@ -506,7 +539,7 @@ function setStartTime(val: Sentence, i: number, j: number) {
               翻译完成！
             </div>
           </div>
-          <div class="left">
+          <div>
             <BaseButton @click="save('save')">保存</BaseButton>
             <BaseButton v-if="type === 'batch'" @click="save('saveAndNext')">保存并添加下一篇</BaseButton>
           </div>
@@ -525,7 +558,7 @@ function setStartTime(val: Sentence, i: number, j: number) {
           教程：点击音频播放按钮，当播放到句子开始时，点击开始时间的 <span class="color-red">记录</span>
           按钮；当播放到句子结束时，点击结束时间的 <span class="color-red">记录</span> 按钮，最后再试听是否正确
         </div>
-        <audio ref="sentenceAudioRef" :src="editArticle.audioSrc" controls class="w-full"></audio>
+        <Audio ref="sentenceAudioRef" :article="editArticle" class="w-full"/>
         <div class="flex items-center gap-2 space-between mb-2" v-if="editSentence.audioPosition?.length">
           <div>{{ editSentence.text }}</div>
           <div class="flex items-center gap-2 shrink-0">
@@ -536,7 +569,7 @@ function setStartTime(val: Sentence, i: number, j: number) {
             </div>
             <BaseIcon
                 title="播放"
-                @click="playSentenceAudio(editSentence,sentenceAudioRef,editArticle)">
+                @click="playSentenceAudio(editSentence,sentenceAudioRef.el)">
               <IconFluentPlay20Regular/>
             </BaseIcon>
           </div>
@@ -549,13 +582,14 @@ function setStartTime(val: Sentence, i: number, j: number) {
                 <InputNumber v-model="editSentence.audioPosition[0]" :precision="2" :step="0.1"/>
                 <BaseIcon
                     @click="jumpAudio(editSentence.audioPosition[0])"
-                    title="跳转"
+                    :title='`跳转至${editSentence.audioPosition[0]}秒`'
                 >
                   <IconFluentMyLocation20Regular/>
                 </BaseIcon>
                 <BaseIcon
+                    v-if="preSentence"
                     @click="setPreEndTimeToCurrentStartTime"
-                    title="使用前一句的结束时间"
+                    :title="`使用前一句的结束时间：${preSentence?.audioPosition?.[1]||0}秒`"
                 >
                   <IconFluentPaddingLeft20Regular/>
                 </BaseIcon>
@@ -588,8 +622,8 @@ function setStartTime(val: Sentence, i: number, j: number) {
   box-sizing: border-box;
   display: flex;
   gap: var(--space);
-  padding: var(--space);
-  padding-top: .6rem;
+  padding: 0.6rem;
+  padding-left: 0;
 }
 
 .row {
@@ -607,7 +641,6 @@ function setStartTime(val: Sentence, i: number, j: number) {
   .title {
     font-weight: bold;
     font-size: 1.4rem;
-    text-align: center;
   }
 
   .article-translate {
@@ -629,7 +662,7 @@ function setStartTime(val: Sentence, i: number, j: number) {
 
       .sentence {
         display: flex;
-        padding: 0.5rem 1.5rem;
+        padding: 0.5rem;
         line-height: 1.2;
         border-bottom: 1px solid var(--color-item-border);
 
@@ -662,11 +695,6 @@ function setStartTime(val: Sentence, i: number, j: number) {
       align-items: center;
       font-size: 1.2rem;
       color: #67C23A;
-    }
-
-    .left {
-      gap: var(--space);
-      display: flex;
     }
   }
 }

@@ -2,7 +2,7 @@ declare global {
   interface Console {
     parse(v: any): void
 
-    json(v: any, space: number): void
+    json(v: any, space: number): string
   }
 
   interface Window {

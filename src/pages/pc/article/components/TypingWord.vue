@@ -31,7 +31,10 @@ const list = $computed(() => {
       }
     }
     props.word.input.split('').forEach((k, i) => {
-      if (k === ' ') t.push({type: 'space'})
+      if (k === ' ') {
+        right = wrong = ''
+        t.push({type: 'space'})
+      }
       else {
         if (compare(k, props.word.word[i])) {
           right += k

@@ -240,6 +240,12 @@ export function shakeCommonDict(n: BaseState): BaseState {
   })
   data.article.bookList.map((v: Dict) => {
     if (!v.custom && ![DictId.articleCollect].includes(v.id)) v.articles = []
+    else {
+      v.articles.map(a => {
+        //运行时再生成
+        a.sections = []
+      })
+    }
   })
   return data
 }

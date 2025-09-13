@@ -71,6 +71,8 @@ declare module 'vue' {
     IconFluentTranslateOff16Regular: typeof import('~icons/fluent/translate-off16-regular')['default']
     IconFluentWeatherMoon16Regular: typeof import('~icons/fluent/weather-moon16-regular')['default']
     IconFluentWeatherSunny16Regular: typeof import('~icons/fluent/weather-sunny16-regular')['default']
+    IconIconParkOutlineAddMusic: typeof import('~icons/icon-park-outline/add-music')['default']
+    IconIconParkSolidAddMusic: typeof import('~icons/icon-park-solid/add-music')['default']
     IconMaterialSymbolsMail: typeof import('~icons/material-symbols/mail')['default']
     IconRiTwitterFill: typeof import('~icons/ri/twitter-fill')['default']
     IconSimpleIconsGithub: typeof import('~icons/simple-icons/github')['default']

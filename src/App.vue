@@ -4,20 +4,47 @@ import {BaseState, useBaseStore} from "@/stores/base.ts";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 import {useSettingStore} from "@/stores/setting.ts";
 import useTheme from "@/hooks/theme.ts";
-import {SAVE_DICT_KEY, SAVE_SETTING_KEY} from "@/utils/const.ts";
+import {LOCAL_FILE_KEY, SAVE_DICT_KEY, SAVE_SETTING_KEY} from "@/utils/const.ts";
 import {shakeCommonDict} from "@/utils";
 import {routes} from "@/router.ts";
-import {set} from 'idb-keyval'
+import {get, set} from 'idb-keyval'
 
 import {useRoute} from "vue-router";
+import {DictId} from "@/types/types.ts";
+import {curry} from "lodash-es";
 
 const store = useBaseStore()
 const runtimeStore = useRuntimeStore()
 const settingStore = useSettingStore()
 const {setTheme} = useTheme()
 
+let lastAudioFileIdList = []
 watch(store.$state, (n: BaseState) => {
-  set(SAVE_DICT_KEY.key, JSON.stringify({val: shakeCommonDict(n), version: SAVE_DICT_KEY.version}))
+  let data = shakeCommonDict(n)
+  set(SAVE_DICT_KEY.key, JSON.stringify({val: data, version: SAVE_DICT_KEY.version}))
+
+  //筛选自定义和收藏
+  let bookList = data.article.bookList.filter(v => v.custom || [DictId.articleCollect].includes(v.id))
+  let audioFileIdList = []
+  bookList.forEach(v => {
+    //筛选 audioFileId 字体有值的
+    v.articles.filter(s => !s.audioSrc && s.audioFileId).forEach(a => {
+      //所有 id 存起来，下次直接判断字符串是否相等，因为这个watch会频繁调用
+      audioFileIdList.push(a.audioFileId)
+    })
+  })
+  if (audioFileIdList.toString() !== lastAudioFileIdList.toString()) {
+    let result = []
+    //删除未使用到的文件
+    get(LOCAL_FILE_KEY).then((fileList: Array<{ id: string, file: Blob }>) => {
+      audioFileIdList.forEach(a => {
+        let item = fileList.find(b => b.id === a)
+        item && result.push(item)
+      })
+      set(LOCAL_FILE_KEY, result)
+      lastAudioFileIdList = audioFileIdList
+    })
+  }
 })
 
 watch(settingStore.$state, (n) => {
@@ -36,6 +63,7 @@ onMounted(init)
 let transitionName = $ref('go')
 const route = useRoute()
 watch(() => route.path, (to, from) => {
+  return transitionName = ''
   // console.log('watch', to, from)
   // //footer下面的5个按钮，对跳不要用动画
   let noAnimation = [
@@ -56,13 +84,14 @@ watch(() => route.path, (to, from) => {
 </script>
 
 <template>
-  <router-view v-slot="{ Component }">
-    <transition :name="transitionName">
-      <keep-alive :exclude="runtimeStore.excludeRoutes">
-        <component :is="Component"/>
-      </keep-alive>
-    </transition>
-  </router-view>
+<!--  <router-view v-slot="{ Component }">-->
+<!--    <transition :name="transitionName">-->
+<!--      <keep-alive :exclude="runtimeStore.excludeRoutes">-->
+<!--        <component :is="Component"/>-->
+<!--      </keep-alive>-->
+<!--    </transition>-->
+<!--  </router-view>-->
+  <router-view></router-view>
 </template>
 
 <style scoped lang="scss">
