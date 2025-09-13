@@ -44,6 +44,16 @@ let displayWord = $computed(() => {
   return props.word.word.slice(input.length + wrong.length)
 })
 
+// 在全局对象中存储当前单词信息，以便其他模块可以访问
+function updateCurrentWordInfo() {
+  window.__CURRENT_WORD_INFO__ = {
+    word: props.word.word,
+    input: input,
+    inputLock: inputLock,
+    containsSpace: props.word.word.includes(' ')
+  };
+}
+
 watch(() => props.word, () => {
   wrong = input = ''
   wordRepeatCount = 0
@@ -51,11 +61,22 @@ watch(() => props.word, () => {
   if (settingStore.wordSound) {
     volumeIconRef?.play(400, true)
   }
+  // 更新当前单词信息
+  updateCurrentWordInfo();
 }, {deep: true})
 
+// 监听输入变化，更新当前单词信息
+watch(() => input, () => {
+  updateCurrentWordInfo();
+})
+
 onMounted(() => {
+  // 初始化当前单词信息
+  updateCurrentWordInfo();
+  
   emitter.on(EventKey.resetWord, () => {
     wrong = input = ''
+    updateCurrentWordInfo();
   })
 
   emitter.on(EventKey.onTyping, onTyping)
@@ -80,7 +101,8 @@ function repeat() {
 
 async function onTyping(e: KeyboardEvent) {
   if (inputLock) {
-    //如果是锁定状态，说明要么输入太快；要么就是设置了不自动跳转，然后输入完了，当这种情况时，监听空格键，按下切换下一个
+    //如果是锁定状态，说明要么输入太快；要么就是设置了不自动跳转，然后输入完了
+    //当单词全部输入完成后，空格键用于切换到下一个单词
     if (e.code === 'Space' && input.toLowerCase() === props.word.word.toLowerCase()) {
       return emit('complete')
     }
@@ -88,6 +110,22 @@ async function onTyping(e: KeyboardEvent) {
   }
   let letter = e.key
   inputLock = true
+  
+  // 检查当前单词是否包含空格
+  const wordContainsSpace = props.word.word.includes(' ')
+  
+  // 如果是空格键，需要判断是作为输入还是切换单词
+  if (letter === ' ' || e.code === 'Space') {
+    // 如果当前单词包含空格
+    if (wordContainsSpace && props.word.word[input.length] === ' ') {
+      letter = ' '
+    } 
+    // 如果当前单词不包含空格，且已经输入完成，则视为切换单词的信号
+    else if (!wordContainsSpace && input.toLowerCase() === props.word.word.toLowerCase()) {
+      return emit('complete')
+    }
+  }
+  
   let isTypingRight = false
   if (settingStore.ignoreCase) {
     isTypingRight = letter.toLowerCase() === props.word.word[input.length].toLowerCase()
@@ -98,6 +136,8 @@ async function onTyping(e: KeyboardEvent) {
     input += letter
     wrong = ''
     playKeyboardAudio()
+    // 更新当前单词信息
+    updateCurrentWordInfo();
   } else {
     emit('wrong')
     wrong = letter
@@ -106,6 +146,8 @@ async function onTyping(e: KeyboardEvent) {
     await sleep(500)
     if (settingStore.inputWrongClear) input = ''
     wrong = ''
+    // 更新当前单词信息
+    updateCurrentWordInfo();
   }
 
   if (input.toLowerCase() === props.word.word.toLowerCase()) {
@@ -140,6 +182,9 @@ function del() {
   } else {
     input = input.slice(0, -1)
   }
+  
+  // 更新当前单词信息
+  updateCurrentWordInfo();
 }
 
 const statStore = usePracticeStore()
