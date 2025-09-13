@@ -147,7 +147,7 @@ function save(option: 'save' | 'saveAndNext') {
     let d = cloneDeep(editArticle)
     if (!d.id) d.id = nanoid(6)
     delete d.sections
-    copy(console.json(d, 2))
+    copy(JSON.stringify(d, null, 2))
     const saveTemp = () => {
       emit(option as any, editArticle)
       return resolve(true)
@@ -160,9 +160,31 @@ function save(option: 'save' | 'saveAndNext') {
 //不知道为什么直接用editArticle，取到是空的默认值
 defineExpose({save, getEditArticle: () => cloneDeep(editArticle)})
 
-function handleChange(e: any) {
+// 处理音频文件上传
+function handleAudioChange(e: any) {
+  // 获取上传的文件
   let uploadFile = e.target?.files?.[0]
   if (!uploadFile) return
+  
+  // 创建一个临时的URL以访问文件
+  const audioURL = URL.createObjectURL(uploadFile)
+  
+  // 设置音频源
+  editArticle.audioSrc = audioURL
+  
+  // 重置input，确保即使选择同一个文件也能触发change事件
+  e.target.value = ''
+  
+  Toast.success('音频添加成功')
+}
+
+// 处理LRC文件上传
+function handleChange(e: any) {
+  // 获取上传的文件
+  let uploadFile = e.target?.files?.[0]
+  if (!uploadFile) return
+  
+  // 读取文件内容
   let reader = new FileReader();
   reader.readAsText(uploadFile, 'UTF-8');
   reader.onload = function (e) {
@@ -189,9 +211,14 @@ function handleChange(e: any) {
             return w.audioPosition ?? []
           })
         }).flat()
+        
+        Toast.success('LRC文件解析成功')
       }
     }
   }
+  
+  // 重置input，确保即使选择同一个文件也能触发change事件
+  e.target.value = ''
 }
 
 let currentSentence = $ref<Sentence>({} as any)
@@ -385,10 +412,17 @@ function setStartTime(val: Sentence, i: number, j: number) {
       <div class="title">结果</div>
       <div class="center">正文、译文与结果均可编辑，编辑后点击应用按钮会自动同步</div>
       <div class="flex gap-2">
-        <BaseButton>添加音频</BaseButton>
+        <div class="upload relative">
+          <BaseButton>添加音频</BaseButton>
+          <input type="file"
+                 accept="audio/*"
+                 @change="handleAudioChange"
+                 class="w-full h-full absolute left-0 top-0 opacity-0"/>
+        </div>
         <div class="upload relative">
           <BaseButton>添加音频LRC文件</BaseButton>
           <input type="file"
+                 accept=".lrc"
                  @change="handleChange"
                  class="w-full h-full absolute left-0 top-0 opacity-0"/>
         </div>

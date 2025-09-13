@@ -8,6 +8,12 @@ declare global {
   interface Window {
     umami: {
       track(name: string, data?: any): void
+    },
+    __CURRENT_WORD_INFO__?: {
+      word: string,
+      input: string,
+      inputLock: boolean,
+      containsSpace: boolean
     }
   }
 }

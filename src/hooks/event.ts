@@ -2,6 +2,7 @@ import {onMounted, onUnmounted, watch, onDeactivated} from "vue";
 import {emitter, EventKey} from "@/utils/eventBus.ts";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 import {useSettingStore} from "@/stores/setting.ts";
+import {ShortcutKey} from "@/types/types.ts";
 
 export function useWindowClick(cb: (e: PointerEvent) => void) {
   onMounted(() => {
@@ -53,6 +54,24 @@ export function useStartKeyboardEventListener() {
 
   useEventListener('keydown', (e: KeyboardEvent) => {
     if (!runtimeStore.disableEventListener) {
+
+      // 检查当前单词是否包含空格，如果包含，则空格键应该被视为输入
+      if (e.code === 'Space') {
+        // 获取当前正在输入的单词信息
+        const currentWord = window.__CURRENT_WORD_INFO__;
+        
+        // 如果当前单词包含空格，且下一个字符应该是空格，则将空格键视为输入
+        // 或者如果当前处于输入锁定状态（等待空格输入），也将空格键视为输入
+        if (currentWord && 
+            ((currentWord.word && 
+             currentWord.word.includes(' ') && 
+             currentWord.word[currentWord.input.length] === ' ') ||
+             currentWord.inputLock === true)) {
+          e.preventDefault();
+          return emitter.emit(EventKey.onTyping, e);
+        }
+      }
+      
       let shortcutKey = getShortcutKey(e)
       // console.log('shortcutKey', shortcutKey)
 
@@ -71,9 +90,15 @@ export function useStartKeyboardEventListener() {
         emitter.emit(shortcutEvent, e)
       } else {
         //非英文模式下，输入区域的 keyCode 均为 229时，
+        // 空格键始终应该被转发到onTyping函数，由它来决定是作为输入还是切换单词
+        if (e.code === 'Space') {
+          e.preventDefault();
+          return emitter.emit(EventKey.onTyping, e);
+        }
+        
         if (((e.keyCode >= 65 && e.keyCode <= 90)
           || (e.keyCode >= 48 && e.keyCode <= 57)
-          || e.code === 'Space'
+          // 空格键已经在上面处理过了
           || e.code === 'Slash'
           || e.code === 'Quote'
           || e.code === 'Comma'
