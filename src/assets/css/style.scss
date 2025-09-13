@@ -1,6 +1,7 @@
 @use "anim" as *;
 
 :root {
+  --color-reverse: blank;
   --color-item-bg: rgb(228, 230, 232);
   --color-item-hover: white;
   //--color-item-active: rgb(75, 110, 175);
@@ -50,6 +51,7 @@
   --color-primary: #E6E8EB;
   --color-second: rgb(247, 247, 247);
   --color-third: rgb(226 232 240 / 1);
+  --color-fourth: rgb(193, 193, 193);
 
   --color-card-active: #FED7AA;
   --color-list-item-active: rgb(253, 246, 236);
@@ -101,7 +103,7 @@ html.dark {
 
   --btn-info: transparent;
 
-  --color-input-color:white;
+  --color-input-color: white;
   --color-input-bg: rgba(14, 18, 23, 1);
   --color-input-icon: #383737;
 

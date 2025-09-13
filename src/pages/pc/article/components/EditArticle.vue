@@ -19,7 +19,8 @@ import InputNumber from "@/pages/pc/components/base/InputNumber.vue";
 import {nanoid} from "nanoid";
 import {update} from "idb-keyval";
 import {LOCAL_FILE_KEY} from "@/utils/const.ts";
-import Audio from "@/pages/pc/article/components/Audio.vue";
+// import Audio from "@/pages/pc/article/components/Audio.vue";
+import Audio from "@/pages/pc/components/base/Audio.vue";
 import BaseInput from "@/pages/pc/components/base/BaseInput.vue";
 
 const Dialog = defineAsyncComponent(() => import('@/pages/pc/components/dialog/Dialog.vue'))
@@ -318,7 +319,7 @@ function setStartTime(val: Sentence, i: number, j: number) {
 }
 
 function uploadFileTrigger(id: string) {
-  document.querySelector('#' + id).click()
+  (document.querySelector('#' + id) as HTMLDivElement)?.click()
 }
 
 </script>
@@ -429,14 +430,7 @@ function uploadFileTrigger(id: string) {
     <div class="row flex flex-col gap-2">
       <div class="flex gap-2">
         <div class="title">结果</div>
-        <div class="flex gap-2">
-          <div class="upload relative">
-            <BaseButton>添加音频</BaseButton>
-            <input type="file"
-                   accept="audio/*"
-                   @change="handleAudioChange"
-                   class="w-full h-full absolute left-0 top-0 opacity-0"/>
-          </div>
+        <div class="flex gap-2 flex-1">
           <div class="upload relative">
             <BaseButton>添加音频LRC文件</BaseButton>
             <input type="file"
@@ -444,7 +438,8 @@ function uploadFileTrigger(id: string) {
                    @change="handleChange"
                    class="w-full h-full absolute left-0 top-0 opacity-0"/>
           </div>
-          <Audio ref="audioRef" :article="editArticle"/>
+<!--          <Audio ref="audioRef" :article="editArticle"/>-->
+          <Audio ref="audioRef" :src="editArticle.audioSrc"/>
         </div>
       </div>
       <template v-if="editArticle?.sections?.length">
@@ -464,7 +459,7 @@ function uploadFileTrigger(id: string) {
                      id="updateFile1"
                      accept="audio/*"
                      @change="handleAudioChange"
-                     class="w-0 h-0 absolute left-0 top-0 opacity-0"/>
+                     class="w-0 h-0"/>
             </div>
           </div>
           <div class="article-translate">

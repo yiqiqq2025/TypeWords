@@ -11,7 +11,6 @@ import {get, set} from 'idb-keyval'
 
 import {useRoute} from "vue-router";
 import {DictId} from "@/types/types.ts";
-import {curry} from "lodash-es";
 
 const store = useBaseStore()
 const runtimeStore = useRuntimeStore()

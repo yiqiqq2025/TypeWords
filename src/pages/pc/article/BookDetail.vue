@@ -16,6 +16,7 @@ import BaseIcon from "@/components/BaseIcon.vue";
 import {useArticleOptions} from "@/hooks/dict.ts";
 import {getDefaultArticle, getDefaultDict} from "@/types/func.ts";
 import Toast from "@/pages/pc/components/base/toast/Toast.ts";
+import Audio from "@/pages/pc/components/base/Audio.vue";
 
 const runtimeStore = useRuntimeStore()
 const base = useBaseStore()
@@ -135,7 +136,9 @@ const {
           <div v-if="selectArticle.id">
             <div class="en-article-family title text-xl">
               <div class="text-center text-2xl" v-if="selectArticle.audioSrc">
+
                 <audio :src="selectArticle.audioSrc" controls></audio>
+                <Audio :src="selectArticle.audioSrc" controls></Audio>
               </div>
               <div class="text-center text-2xl">{{ selectArticle.title }}</div>
               <div class="text-2xl" v-if="selectArticle.text">

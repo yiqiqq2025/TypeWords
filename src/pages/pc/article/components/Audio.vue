@@ -9,6 +9,7 @@ const props = defineProps<{
 }>()
 
 let file = $ref(null)
+//这里不能用$ref，不然父组件获取不到
 let el = ref()
 
 watch(() => props.article.audioFileId, async () => {
@@ -25,10 +26,13 @@ defineExpose({el})
 </script>
 
 <template>
-  <audio v-bind="$attrs" ref="el" v-if="props.article.audioSrc" :src="props.article.audioSrc" controls></audio>
-  <audio ref="el" v-else-if="file" :src="file" controls></audio>
+  <div>
+    <audio v-bind="$attrs" ref="el" v-if="props.article.audioSrc" :src="props.article.audioSrc" controls></audio>
+    <audio ref="el" v-else-if="file" :src="file" controls></audio>
+  </div>
 </template>
 
 <style scoped lang="scss">
+
 
 </style>
