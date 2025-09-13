@@ -196,6 +196,7 @@ function nextSentence() {
   if (!currentSection[sentenceIndex]) {
     sentenceIndex = 0
     sectionIndex++
+    
     if (!props.article.sections[sectionIndex]) {
       console.log('打完了')
       isEnd = true
@@ -206,7 +207,25 @@ function nextSentence() {
   } else {
     emit('play', {sentence: currentSection[sentenceIndex], handle: false})
   }
+  
+  // 如果有新的单词，更新当前单词信息
+  if (!isEnd && props.article.sections[sectionIndex] && 
+      props.article.sections[sectionIndex][sentenceIndex] && 
+      props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]) {
+    updateCurrentWordInfo(props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]);
+  }
+  
   lockNextSentence = false
+}
+
+// 在全局对象中存储当前单词信息，以便其他模块可以访问
+function updateCurrentWordInfo(currentWord: ArticleWord) {
+  window.__CURRENT_WORD_INFO__ = {
+    word: currentWord.word,
+    input: currentWord.input || '',
+    inputLock: isSpace,
+    containsSpace: currentWord.word.includes(' ')
+  };
 }
 
 function onTyping(e: KeyboardEvent) {
@@ -216,6 +235,9 @@ function onTyping(e: KeyboardEvent) {
   let currentSection = props.article.sections[sectionIndex]
   let currentSentence = currentSection[sentenceIndex]
   let currentWord: ArticleWord = currentSentence.words[wordIndex]
+  
+  // 更新当前单词信息
+  updateCurrentWordInfo(currentWord);
 
   const nextWord = () => {
     isSpace = false
@@ -224,15 +246,45 @@ function onTyping(e: KeyboardEvent) {
 
     emit('nextWord', currentWord)
 
-    if (!currentSentence.words[wordIndex]) {
-      wordIndex = 0
-      nextSentence()
+    // 只在需要时更新当前单词信息，不自动跳转到下一句话
+    if (wordIndex < currentSentence.words.length) {
+      // 更新当前单词信息
+      updateCurrentWordInfo(currentSentence.words[wordIndex]);
     }
   }
 
   if (isSpace) {
+    // 在单词之间的空格处理
     if (e.code === 'Space') {
-      nextWord()
+      // 检查下一个单词是否存在
+      const hasNextWord = wordIndex + 1 < currentSentence.words.length;
+      
+      // 当按下空格键时，移动到下一个单词，而不是下跳过句子，末尾跳转到下一个
+      if (hasNextWord) {
+        // 重置isSpace状态
+        isSpace = false;
+        stringIndex = 0;
+        wordIndex++;
+        input = '';
+        
+        emit('nextWord', currentWord);
+        
+        // 获取下一个单词
+        currentWord = currentSentence.words[wordIndex];
+        
+        if (currentWord && currentWord.word && currentWord.word[0] === ' ') {
+          input = ' ';
+          if (!currentWord.input) currentWord.input = '';
+          currentWord.input = input;
+          stringIndex = 1;
+        }
+        
+        // 更新当前单词信息
+        updateCurrentWordInfo(currentWord);
+      } else {
+        // 句子末尾跳转到下一句话
+        nextSentence();
+      }
     } else {
       wrong = ' '
       playBeep()
@@ -248,6 +300,14 @@ function onTyping(e: KeyboardEvent) {
       emit('play', {sentence: currentSection[sentenceIndex], handle: false})
     }
     let letter = e.key
+    
+    // 如果是空格键，需要判断是作为输入还是切换单词
+    if (letter === ' ' || e.code === 'Space') {
+      // 如果当前单词包含空格，且当前输入位置应该是空格，则视为正常输入
+      if (currentWord.word.includes(' ') && currentWord.word[stringIndex] === ' ') {
+        letter = ' '
+      }
+    }
 
     let key = currentWord.word[stringIndex]
 
@@ -281,12 +341,25 @@ function onTyping(e: KeyboardEvent) {
       if (!currentWord.isSymbol) {
         playCorrect()
       }
-      if (currentWord.nextSpace) {
-        isSpace = true
+      
+      // 检查是否是句子的最后一个单词
+      const isLastWordInSentence = wordIndex + 1 >= currentSentence.words.length;
+      
+      if (isLastWordInSentence) {
+        // 如果是句子的最后一个单词，自动跳转到下一句
+        nextSentence();
+      } else if (currentWord.nextSpace) {
+        // 如果不是最后一个单词，且需要空格，设置等待空格输入
+        isSpace = true;
       } else {
-        nextWord()
+        // 如果不需要空格，直接移动到下一个单词
+        nextWord();
       }
     }
+    
+    // 更新当前单词信息
+    updateCurrentWordInfo(currentWord);
+    
     playKeyboardAudio()
   }
   e.preventDefault()
@@ -454,8 +527,23 @@ function onContextMenu(e: MouseEvent, sentence: Sentence, i, j, w) {
 }
 
 onMounted(() => {
+  // 初始化当前单词信息
+  if (props.article.sections && 
+      props.article.sections[sectionIndex] && 
+      props.article.sections[sectionIndex][sentenceIndex] && 
+      props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]) {
+    updateCurrentWordInfo(props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]);
+  }
+  
   emitter.on(EventKey.resetWord, () => {
     wrong = input = ''
+    // 重置时更新当前单词信息
+    if (props.article.sections && 
+        props.article.sections[sectionIndex] && 
+        props.article.sections[sectionIndex][sentenceIndex] && 
+        props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]) {
+      updateCurrentWordInfo(props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]);
+    }
   })
   emitter.on(EventKey.onTyping, onTyping)
 })
