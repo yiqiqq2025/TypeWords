@@ -19,8 +19,7 @@ import InputNumber from "@/pages/pc/components/base/InputNumber.vue";
 import {nanoid} from "nanoid";
 import {update} from "idb-keyval";
 import {LOCAL_FILE_KEY} from "@/utils/const.ts";
-// import Audio from "@/pages/pc/article/components/Audio.vue";
-import Audio from "@/pages/pc/components/base/Audio.vue";
+import ArticleAudio from "@/pages/pc/article/components/ArticleAudio.vue";
 import BaseInput from "@/pages/pc/components/base/BaseInput.vue";
 
 const Dialog = defineAsyncComponent(() => import('@/pages/pc/components/dialog/Dialog.vue'))
@@ -160,7 +159,6 @@ function save(option: 'save' | 'saveAndNext') {
       emit(option as any, editArticle)
       return resolve(true)
     }
-
     saveTemp()
   })
 }
@@ -237,15 +235,16 @@ let currentSentence = $ref<Sentence>({} as any)
 let editSentence = $ref<Sentence>({} as any)
 let preSentence = $ref<Sentence>({} as any)
 let showEditAudioDialog = $ref(false)
-let sentenceAudioRef = $ref<{ el: HTMLAudioElement }>({el: null})
-let audioRef = $ref<{ el: HTMLAudioElement }>({el: null})
+let showAudioDialog = $ref(false)
+let sentenceAudioRef = $ref<HTMLAudioElement>()
+let audioRef = $ref<HTMLAudioElement>()
 
 function handleShowEditAudioDialog(val: Sentence, i: number, j: number) {
   showEditAudioDialog = true
   currentSentence = val
   editSentence = cloneDeep(val)
   preSentence = null
-  audioRef.el.pause()
+  audioRef.pause()
   if (j == 0) {
     if (i != 0) {
       preSentence = last(editArticle.sections[i - 1])
@@ -260,25 +259,25 @@ function handleShowEditAudioDialog(val: Sentence, i: number, j: number) {
     }
   }
   _nextTick(() => {
-    sentenceAudioRef.el.currentTime = editSentence.audioPosition[0]
+    sentenceAudioRef.currentTime = editSentence.audioPosition[0]
   })
 }
 
 function recordStart() {
-  if (sentenceAudioRef.el.paused) {
-    sentenceAudioRef.el.play()
+  if (sentenceAudioRef.paused) {
+    sentenceAudioRef.play()
   }
-  editSentence.audioPosition[0] = Number(sentenceAudioRef.el.currentTime.toFixed(2))
+  editSentence.audioPosition[0] = Number(sentenceAudioRef.currentTime.toFixed(2))
   if (editSentence.audioPosition[0] > editSentence.audioPosition[1]) {
     editSentence.audioPosition[1] = editSentence.audioPosition[0]
   }
 }
 
 function recordEnd() {
-  if (!sentenceAudioRef.el.paused) {
-    sentenceAudioRef.el.pause()
+  if (!sentenceAudioRef.paused) {
+    sentenceAudioRef.pause()
   }
-  editSentence.audioPosition[1] = Number(sentenceAudioRef.el.currentTime.toFixed(2))
+  editSentence.audioPosition[1] = Number(sentenceAudioRef.currentTime.toFixed(2))
 }
 
 const {playSentenceAudio} = usePlaySentenceAudio()
@@ -290,7 +289,7 @@ function saveLrcPosition() {
 }
 
 function jumpAudio(time: number) {
-  sentenceAudioRef.el.currentTime = time
+  sentenceAudioRef.currentTime = time
 }
 
 function setPreEndTimeToCurrentStartTime() {
@@ -311,15 +310,11 @@ function setStartTime(val: Sentence, i: number, j: number) {
   if (preSentence) {
     val.audioPosition[0] = preSentence.audioPosition[1]
   } else {
-    val.audioPosition[0] = Number(Number(audioRef.el.currentTime).toFixed(2))
+    val.audioPosition[0] = Number(Number(audioRef.currentTime).toFixed(2))
   }
   if (val.audioPosition[0] > val.audioPosition[1]) {
     val.audioPosition[1] = val.audioPosition[0]
   }
-}
-
-function uploadFileTrigger(id: string) {
-  (document.querySelector('#' + id) as HTMLDivElement)?.click()
 }
 
 </script>
@@ -430,16 +425,8 @@ function uploadFileTrigger(id: string) {
     <div class="row flex flex-col gap-2">
       <div class="flex gap-2">
         <div class="title">结果</div>
-        <div class="flex gap-2 flex-1">
-          <div class="upload relative">
-            <BaseButton>添加音频LRC文件</BaseButton>
-            <input type="file"
-                   accept=".lrc"
-                   @change="handleChange"
-                   class="w-full h-full absolute left-0 top-0 opacity-0"/>
-          </div>
-<!--          <Audio ref="audioRef" :article="editArticle"/>-->
-          <Audio ref="audioRef" :src="editArticle.audioSrc"/>
+        <div class="flex gap-2 flex-1 justify-end">
+          <ArticleAudio ref="audioRef" :article="editArticle"/>
         </div>
       </div>
       <template v-if="editArticle?.sections?.length">
@@ -450,16 +437,9 @@ function uploadFileTrigger(id: string) {
             <div>|</div>
             <div class="center flex-[3] gap-2">
               <span>音频</span>
-              <BaseIcon title="添加音频"
-                        @click="uploadFileTrigger('updateFile1')"
-              >
+              <BaseIcon title="音频管理" @click="showAudioDialog = true">
                 <IconIconParkOutlineAddMusic/>
               </BaseIcon>
-              <input type="file"
-                     id="updateFile1"
-                     accept="audio/*"
-                     @change="handleAudioChange"
-                     class="w-0 h-0"/>
             </div>
           </div>
           <div class="article-translate">
@@ -495,7 +475,7 @@ function uploadFileTrigger(id: string) {
                       <div v-if="sentence.audioPosition?.[1] !== -1">{{ sentence.audioPosition?.[1] ?? 0 }}s</div>
                       <div v-else> 结束</div>
                       <BaseIcon
-                          @click="sentence.audioPosition[1] = Number(Number(audioRef.el.currentTime).toFixed(2))"
+                          @click="sentence.audioPosition[1] = Number(Number(audioRef.currentTime).toFixed(2))"
                           title="设置结束时间"
                       >
                         <IconFluentMyLocation20Regular/>
@@ -513,7 +493,7 @@ function uploadFileTrigger(id: string) {
                     <BaseIcon
                         title="播放"
                         v-if="sentence.audioPosition?.length"
-                        @click="playSentenceAudio(sentence,audioRef.el)">
+                        @click="playSentenceAudio(sentence,audioRef)">
                       <IconFluentPlay20Regular/>
                     </BaseIcon>
                   </div>
@@ -553,7 +533,7 @@ function uploadFileTrigger(id: string) {
           教程：点击音频播放按钮，当播放到句子开始时，点击开始时间的 <span class="color-red">记录</span>
           按钮；当播放到句子结束时，点击结束时间的 <span class="color-red">记录</span> 按钮，最后再试听是否正确
         </div>
-        <Audio ref="sentenceAudioRef" :article="editArticle" class="w-full"/>
+        <ArticleAudio ref="sentenceAudioRef" :article="editArticle" class="w-full"/>
         <div class="flex items-center gap-2 space-between mb-2" v-if="editSentence.audioPosition?.length">
           <div>{{ editSentence.text }}</div>
           <div class="flex items-center gap-2 shrink-0">
@@ -564,7 +544,7 @@ function uploadFileTrigger(id: string) {
             </div>
             <BaseIcon
                 title="播放"
-                @click="playSentenceAudio(editSentence,sentenceAudioRef.el)">
+                @click="playSentenceAudio(editSentence,sentenceAudioRef)">
               <IconFluentPlay20Regular/>
             </BaseIcon>
           </div>
@@ -603,6 +583,35 @@ function uploadFileTrigger(id: string) {
               <BaseButton @click="recordEnd">记录</BaseButton>
             </div>
           </div>
+        </div>
+      </div>
+    </Dialog>
+
+    <Dialog title="音频管理"
+            v-model="showAudioDialog"
+            :footer="false"
+            @close="showAudioDialog = false"
+    >
+      <div class="p-4 pt-0 color-main w-150 flex flex-col gap-2">
+        <div class="">
+          1、上传的文件保存在本地电脑上，更换电脑数据将丢失，请及时备份数据
+          <br>
+          2、LRC 文件用于解析句子对应音频的位置，不一定准确，后续可自行修改
+        </div>
+        <!--        <ArticleAudio ref="sentenceAudioRef" :article="editArticle" class="w-full"/>-->
+        <div class="upload relative">
+          <BaseButton>上传音频</BaseButton>
+          <input type="file"
+                 accept="audio/*"
+                 @change="handleAudioChange"
+                 class="w-full h-full absolute left-0 top-0 opacity-0"/>
+        </div>
+        <div class="upload relative">
+          <BaseButton>上传 LRC 文件</BaseButton>
+          <input type="file"
+                 accept=".lrc"
+                 @change="handleChange"
+                 class="w-full h-full absolute left-0 top-0 opacity-0"/>
         </div>
       </div>
     </Dialog>

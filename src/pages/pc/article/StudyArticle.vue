@@ -24,6 +24,8 @@ import {useRoute, useRouter} from "vue-router";
 import book_list from "@/assets/book-list.json";
 import PracticeLayout from "@/pages/pc/components/PracticeLayout.vue";
 import Switch from "@/pages/pc/components/base/Switch.vue";
+import Audio from "@/pages/pc/components/base/Audio.vue";
+import ArticleAudio from "@/pages/pc/article/components/ArticleAudio.vue";
 
 const store = useBaseStore()
 const settingStore = useSettingStore()
@@ -361,7 +363,7 @@ function play2(e) {
               color="#999"/>
         </Tooltip>
         <div class="bottom">
-          <div class="flex justify-between items-center">
+          <div class="flex justify-between items-center gap-2">
             <div class="stat">
               <div class="row">
                 <div class="num">{{ speedMinute }}分钟</div>
@@ -385,8 +387,7 @@ function play2(e) {
                 <div class="name">单词总数</div>
               </div>
             </div>
-            <audio ref="audioRef" v-if="articleData.article.audioSrc" :src="articleData.article.audioSrc"
-                   controls></audio>
+            <ArticleAudio ref="audioRef" :article="articleData.article"></ArticleAudio>
             <div class="flex flex-col items-center justify-center gap-1">
               <div class="flex gap-2 center">
                 <Switch v-model="settingStore.articleSound"/>

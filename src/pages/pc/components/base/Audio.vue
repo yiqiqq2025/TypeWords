@@ -72,29 +72,6 @@ const togglePlay = async () => {
   }
 };
 
-const seekTo = (event: MouseEvent) => {
-  if (!audioRef.value || !progressBarRef.value || props.disabled) return;
-
-  const rect = progressBarRef.value.getBoundingClientRect();
-  const clickX = event.clientX - rect.left;
-  const percentage = Math.max(0, Math.min(1, clickX / rect.width));
-  const newTime = percentage * duration.value;
-
-  audioRef.value.currentTime = newTime;
-  currentTime.value = newTime;
-};
-
-const setVolume = (event: MouseEvent) => {
-  if (!audioRef.value || !volumeBarRef.value || props.disabled) return;
-
-  const rect = volumeBarRef.value.getBoundingClientRect();
-  const clickX = event.clientX - rect.left;
-  const percentage = Math.max(0, Math.min(1, clickX / rect.width));
-
-  volume.value = percentage;
-  audioRef.value.volume = percentage;
-};
-
 const toggleMute = () => {
   if (!audioRef.value || props.disabled) return;
 
@@ -129,9 +106,6 @@ const handleLoadedData = () => {
 
 const handleLoadedMetadata = () => {
   duration.value = audioRef.value?.duration || 0;
-};
-
-const handleCanPlay = () => {
 };
 
 const handleCanPlayThrough = () => {
@@ -282,14 +256,14 @@ const handleVolumeMouseDown = (event: MouseEvent) => {
 
   // 立即跳转到点击位置
   const clickY = event.clientY - rect.top;
-  // 反转百分比，因为我们希望底部是0%，顶部是100%
-  const percentage = Math.max(0, Math.min(1, 1 - (clickY / rect.height)));
+  // 计算百分比，最上面是0%，最下面是100%
+  const percentage = Math.max(0, Math.min(1, clickY / rect.height));
 
   // 直接更新DOM样式
   if (volumeFill && volumeThumb) {
     volumeFill.style.height = `${percentage * 100}%`;
-    // 设置bottom而不是left
-    volumeThumb.style.bottom = `${percentage * 100}%`;
+    // 设置top而不是bottom
+    volumeThumb.style.top = `${percentage * 100}%`;
     // 重置left样式
     volumeThumb.style.left = '50%';
   }
@@ -316,14 +290,14 @@ const handleVolumeMouseDown = (event: MouseEvent) => {
 
     const rect = volumeBarRef.value!.getBoundingClientRect();
     const clickY = e.clientY - rect.top;
-    // 反转百分比，因为我们希望底部是0%，顶部是100%
-    const percentage = Math.max(0, Math.min(1, 1 - (clickY / rect.height)));
+    // 计算百分比，最上面是0%，最下面是100%
+    const percentage = Math.max(0, Math.min(1, clickY / rect.height));
 
     // 直接更新DOM样式，不使用响应式变量
     if (volumeFill && volumeThumb) {
       volumeFill.style.height = `${percentage * 100}%`;
-      // 设置bottom而不是left
-      volumeThumb.style.bottom = `${percentage * 100}%`;
+      // 设置top而不是bottom
+      volumeThumb.style.top = `${percentage * 100}%`;
     }
 
     // 更新响应式变量和音频音量
@@ -355,10 +329,6 @@ const handleVolumeMouseDown = (event: MouseEvent) => {
 
   document.addEventListener('mousemove', handleMouseMove);
   document.addEventListener('mouseup', handleMouseUp);
-};
-
-const endVolumeDrag = () => {
-  isVolumeDragging.value = false;
 };
 
 // 监听属性变化
@@ -403,12 +373,13 @@ watch(() => props.playbackRate, (newRate) => {
   }
 });
 
+defineExpose({audioRef})
 </script>
 
 <template>
   <div
       class="custom-audio"
-      :class="{ 'disabled': disabled, 'has-error': error }"
+      :class="{ 'disabled': disabled||error, 'has-error': error }"
       v-bind="attrs"
   >
     <!-- 隐藏的原生audio元素 -->
@@ -422,7 +393,6 @@ watch(() => props.playbackRate, (newRate) => {
         @loadstart="handleLoadStart"
         @loadeddata="handleLoadedData"
         @loadedmetadata="handleLoadedMetadata"
-        @canplay="handleCanPlay"
         @canplaythrough="handleCanPlayThrough"
         @play="handlePlay"
         @pause="handlePause"
@@ -438,7 +408,7 @@ watch(() => props.playbackRate, (newRate) => {
       <!-- 播放/暂停按钮 -->
       <button
           class="play-button"
-          :class="{ 'playing': isPlaying, 'loading': isLoading }"
+          :class="{ 'loading': isLoading }"
           @click="togglePlay"
           :disabled="disabled"
           :aria-label="isPlaying ? '暂停' : '播放'"
@@ -455,8 +425,7 @@ watch(() => props.playbackRate, (newRate) => {
       <!-- 进度条区域 -->
       <div class="progress-section">
         <!-- 时间显示 -->
-        <span class="time-display">{{ formatTime(currentTime) }}</span>
-
+        <span class="time-display">{{ formatTime(currentTime) }} / {{ formatTime(duration) }}</span>
         <!-- 进度条 -->
         <div
             class="progress-container"
@@ -475,8 +444,6 @@ watch(() => props.playbackRate, (newRate) => {
           </div>
         </div>
 
-        <!-- 总时长 -->
-        <span class="time-display">{{ formatTime(duration) }}</span>
       </div>
 
       <!-- 音量控制 -->
@@ -491,17 +458,9 @@ watch(() => props.playbackRate, (newRate) => {
             :disabled="disabled"
             :aria-label="volume > 0 ? '静音' : '取消静音'"
         >
-          <svg v-if="volume === 0" class="icon" viewBox="0 0 24 24" fill="currentColor">
-            <path
-                d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 = 13.5 21 = 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 = 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
-          </svg>
-          <svg v-else-if="volume < 0.5" class="icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
-          </svg>
-          <svg v-else class="icon" viewBox="0 0 24 24" fill="currentColor">
-            <path
-                d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-          </svg>
+          <IconBxVolumeMute v-if="volume === 0" class="icon"></IconBxVolumeMute>
+          <IconBxVolumeLow v-else-if="volume < 0.5" class="icon"></IconBxVolumeLow>
+          <IconBxVolumeFull v-else class="icon"></IconBxVolumeFull>
         </button>
 
         <!-- 音量下拉控制条 -->
@@ -514,11 +473,11 @@ watch(() => props.playbackRate, (newRate) => {
             <div class="volume-track">
               <div
                   class="volume-fill"
-                  :style="{ height: volumeProgress + '%' }"
+                  :style="{ height: volumeProgress + '%', top: 0 }"
               ></div>
               <div
                   class="volume-thumb"
-                  :style="{ bottom: volumeProgress + '%' }"
+                  :style="{ top: volumeProgress + '%' }"
               ></div>
             </div>
           </div>
@@ -543,41 +502,30 @@ watch(() => props.playbackRate, (newRate) => {
 
 <style scoped lang="scss">
 .custom-audio {
-  // CSS变量定义，可以通过外部覆盖来自定义样式
-  --audio-bg: #fff;
   --audio-border-radius: 8px;
-  --audio-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  --audio-container-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --audio-text-color: white;
+  --audio-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
   --audio-button-bg: rgba(255, 255, 255, 0.2);
-  --audio-button-hover-bg: rgba(255, 255, 255, 0.3);
-  --audio-button-playing-bg: rgba(255, 255, 255, 0.3);
-  --audio-progress-bg: rgba(255, 255, 255, 0.3);
-  --audio-progress-fill: rgba(255, 255, 255, 0.8);
-  --audio-thumb-bg: white;
   --audio-thumb-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   --audio-volume-thumb-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  --audio-speed-button-bg: rgba(255, 255, 255, 0.1);
   --audio-speed-button-border: rgba(255, 255, 255, 0.3);
-  --audio-speed-button-hover-bg: rgba(255, 255, 255, 0.2);
-  --audio-speed-button-hover-border: rgba(255, 255, 255, 0.5);
   --audio-error-bg: #f56c6c;
-  --audio-error-color: white;
+  --height: 32px;
   --gap: 8px;
 
   display: inline-block;
+  box-sizing: border-box;
   width: 100%;
   max-width: 600px;
   background: var(--color-primary);
   border-radius: var(--audio-border-radius);
   box-shadow: var(--audio-box-shadow);
-  color: black;
-  //overflow: hidden;
+  color: var(--color-reverse-black);
   transition: all 0.3s ease;
   font-family: var(--font-family);
+  padding: 0.3rem 0.4rem;
+  position: relative;
 
   &.disabled {
-    opacity: 0.6;
     pointer-events: none;
   }
 
@@ -596,26 +544,18 @@ watch(() => props.playbackRate, (newRate) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border: none;
+  width: var(--height);
+  height: var(--height);
+  color: var(--color-reverse-black);
   border-radius: 50%;
   background: var(--color-second);
   cursor: pointer;
   transition: all 0.3s ease;
   flex-shrink: 0;
+  border: 1px solid var(--audio-speed-button-border);
 
-  &:hover:not(:disabled) {
-    background: var(--audio-button-hover-bg);
-    transform: scale(1.05);
-  }
-
-  &:active:not(:disabled) {
-    transform: scale(0.95);
-  }
-
-  &.playing {
-    background: var(--audio-button-playing-bg);
+  &:hover {
+    background: var(--color-card-active) !important;
   }
 
   &.loading {
@@ -655,7 +595,6 @@ watch(() => props.playbackRate, (newRate) => {
 
 .progress-container {
   flex: 1;
-  height: 20px;
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -667,9 +606,7 @@ watch(() => props.playbackRate, (newRate) => {
   width: 100%;
   height: 6px;
   background: var(--color-second);
-  //background: white;
   border-radius: 2px;
-  overflow: hidden;
 }
 
 .progress-fill {
@@ -683,8 +620,8 @@ watch(() => props.playbackRate, (newRate) => {
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   background: var(--color-fourth);
   border-radius: 50%;
   box-shadow: var(--audio-thumb-shadow);
@@ -709,17 +646,17 @@ watch(() => props.playbackRate, (newRate) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: none;
+  width: var(--height);
+  height: var(--height);
   border-radius: 4px;
   background: var(--color-second);
-  color: inherit;
   cursor: pointer;
+  color: var(--color-reverse-black);
   transition: all 0.2s ease;
+  border: 1px solid var(--audio-speed-button-border);
 
-  &:hover:not(:disabled) {
-    background: var(--audio-button-hover-bg);
+  &:hover {
+    background: var(--color-card-active);
   }
 
   .icon {
@@ -747,17 +684,6 @@ watch(() => props.playbackRate, (newRate) => {
     opacity: 1;
     visibility: visible;
   }
-
-  &:before {
-    content: '';
-    position: absolute;
-    top: -4px;
-    left: 50%;
-    transform: translateX(-50%) rotate(45deg);
-    width: 8px;
-    height: 8px;
-    background: var(--audio-container-bg);
-  }
 }
 
 .volume-container {
@@ -772,30 +698,30 @@ watch(() => props.playbackRate, (newRate) => {
 
 .volume-track {
   position: relative;
-  width: 4px;
+  width: 6px;
   height: 100%;
-  background: var(--audio-progress-bg);
+  background: var(--color-second);
   border-radius: 2px;
   overflow: hidden;
 }
 
 .volume-fill {
   position: absolute;
-  bottom: 0;
+  top: 0;
   width: 100%;
   height: var(--fill-height);
-  background: var(--audio-progress-fill);
+  background: var(--color-fourth);
   border-radius: 2px;
 }
 
 .volume-thumb {
   position: absolute;
   left: 50%;
-  bottom: var(--thumb-bottom);
-  transform: translate(-50%, 50%);
+  top: var(--thumb-top);
+  transform: translate(-50%, -50%);
   width: 10px;
   height: 10px;
-  background: var(--audio-thumb-bg);
+  background: var(--color-fourth);
   border-radius: 50%;
   box-shadow: var(--audio-volume-thumb-shadow);
   cursor: grab;
@@ -808,28 +734,33 @@ watch(() => props.playbackRate, (newRate) => {
 }
 
 .speed-button {
-  padding: 6px 12px;
+  padding: 0 0.5rem;
   border: 1px solid var(--audio-speed-button-border);
   border-radius: 4px;
   background: var(--color-second);
-  font-size: 12px;
-  font-weight: 500;
+  height: var(--height);
   cursor: pointer;
+  color: var(--color-reverse-black);
   transition: all 0.2s ease;
-  flex-shrink: 0;
 
-  &:hover:not(:disabled) {
-    background: var(--audio-speed-button-hover-bg);
-    border-color: var(--audio-speed-button-hover-border);
+  &:hover {
+    background: var(--color-card-active);
   }
 }
 
 .error-message {
-  padding: 8px 16px;
+  position: absolute;
+  right: 0;
+  left: 2.6rem;
+  top: 0;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background: var(--audio-error-bg);
-  color: var(--audio-error-color);
+  color: var(--color-reverse-white);
   font-size: 12px;
-  text-align: center;
+  border-radius: var(--audio-border-radius);
 }
 
 // 动画
@@ -841,60 +772,4 @@ watch(() => props.playbackRate, (newRate) => {
     transform: rotate(360deg);
   }
 }
-
-// 响应式设计
-@media (max-width: 480px) {
-  .custom-audio {
-    max-width: 100%;
-  }
-
-  .audio-container {
-    padding: 8px 12px;
-    gap: 8px;
-    min-height: 50px;
-  }
-
-  .play-button {
-    width: 36px;
-    height: 36px;
-
-    .icon {
-      width: 18px;
-      height: 18px;
-    }
-  }
-
-  .progress-section {
-    gap: 8px;
-  }
-
-  .time-display {
-    font-size: 11px;
-    min-width: 35px;
-  }
-
-  .volume-section {
-    gap: 6px;
-  }
-
-  .volume-button {
-    width: 28px;
-    height: 28px;
-
-    .icon {
-      width: 14px;
-      height: 14px;
-    }
-  }
-
-  .volume-container {
-    width: 50px;
-  }
-
-  .speed-button {
-    padding: 4px 8px;
-    font-size: 11px;
-  }
-}
-
 </style>

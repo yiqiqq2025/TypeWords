@@ -555,7 +555,7 @@ export function usePlaySentenceAudio() {
         timer = setTimeout(() => {
           console.log('停')
           ref.pause()
-        }, (end - start) * 1000)
+        }, (end - start) / ref.playbackRate * 1000)
       }
     } else {
       playWordAudio(sentence.text)

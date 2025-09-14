@@ -1,7 +1,8 @@
 @use "anim" as *;
 
 :root {
-  --color-reverse: blank;
+  --color-reverse-white: white;
+  --color-reverse-black: black;
   --color-item-bg: rgb(228, 230, 232);
   --color-item-hover: white;
   //--color-item-active: rgb(75, 110, 175);
@@ -76,6 +77,9 @@
 }
 
 html.dark {
+  --color-reverse-white: black;
+  --color-reverse-black: white;
+
   --color-primary: #0E1217;
   --color-second: rgb(30, 31, 34);
   --color-third: rgb(43, 45, 48);

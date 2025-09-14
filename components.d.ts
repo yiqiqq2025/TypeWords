@@ -16,6 +16,7 @@ declare module 'vue' {
     IconBxVolume: typeof import('~icons/bx/volume')['default']
     IconBxVolumeFull: typeof import('~icons/bx/volume-full')['default']
     IconBxVolumeLow: typeof import('~icons/bx/volume-low')['default']
+    IconBxVolumeMute: typeof import('~icons/bx/volume-mute')['default']
     IconEosIconsLoading: typeof import('~icons/eos-icons/loading')['default']
     IconFluentAdd16Filled: typeof import('~icons/fluent/add16-filled')['default']
     IconFluentAdd16Regular: typeof import('~icons/fluent/add16-regular')['default']
