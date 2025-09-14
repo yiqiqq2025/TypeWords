@@ -9,6 +9,7 @@ declare global {
     umami: {
       track(name: string, data?: any): void
     },
+    JSZip: any,
     __CURRENT_WORD_INFO__?: {
       word: string,
       input: string,
@@ -17,6 +18,7 @@ declare global {
     }
   }
 }
+
 
 console.json = function (v: any, space = 0) {
   const json = JSON.stringify(

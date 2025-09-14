@@ -18,7 +18,7 @@ export const SAVE_SETTING_KEY = {
 }
 export const EXPORT_DATA_KEY = {
   key: 'typing-word-export',
-  version: 1
+  version: 2
 }
 
 export const LOCAL_FILE_KEY = 'typing-word-files'

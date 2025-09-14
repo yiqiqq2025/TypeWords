@@ -135,7 +135,7 @@ const {
         <div class="right flex-[4] shrink-0 pl-4 overflow-auto">
           <div v-if="selectArticle.id">
             <div class="en-article-family title text-xl">
-              <div class="text-center text-2xl my-2" v-if="selectArticle.audioSrc">
+              <div class="text-center text-2xl my-2">
                 <ArticleAudio :article="selectArticle"></ArticleAudio>
               </div>
               <div class="text-center text-2xl">{{ selectArticle.title }}</div>

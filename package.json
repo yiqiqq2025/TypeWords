@@ -24,7 +24,6 @@
     "dayjs": "^1.11.13",
     "file-saver": "^2.0.5",
     "idb-keyval": "^6.2.2",
-    "libarchive-wasm": "^1.2.0",
     "md5": "^2.2.1",
     "mitt": "^3.0.1",
     "nanoid": "^5.1.5",

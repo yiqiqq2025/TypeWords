@@ -6,7 +6,14 @@ import {getShortcutKey, useEventListener} from "@/hooks/event.ts";
 import {checkAndUpgradeSaveDict, checkAndUpgradeSaveSetting, cloneDeep, shakeCommonDict} from "@/utils";
 import {DefaultShortcutKeyMap, ShortcutKey} from "@/types/types.ts";
 import BaseButton from "@/components/BaseButton.vue";
-import {APP_NAME, EXPORT_DATA_KEY, SAVE_DICT_KEY, SAVE_SETTING_KEY, SoundFileOptions} from "@/utils/const.ts";
+import {
+  APP_NAME,
+  EXPORT_DATA_KEY,
+  LOCAL_FILE_KEY,
+  SAVE_DICT_KEY,
+  SAVE_SETTING_KEY,
+  SoundFileOptions
+} from "@/utils/const.ts";
 import VolumeIcon from "@/components/icon/VolumeIcon.vue";
 import {useBaseStore} from "@/stores/base.ts";
 import {saveAs} from "file-saver";
@@ -23,6 +30,8 @@ import InputNumber from "@/pages/pc/components/base/InputNumber.vue";
 import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
 import Textarea from "@/pages/pc/components/base/Textarea.vue";
 import SettingItem from "@/pages/pc/setting/SettingItem.vue";
+// import {ArchiveReader, libarchiveWasm} from "libarchive-wasm";
+import {get, set} from "idb-keyval";
 
 const emit = defineEmits<{
   toggleDisabledDialogEscKey: [val: boolean]
@@ -66,7 +75,7 @@ watch(() => editShortcutKey, (newVal) => {
 
 useEventListener('keydown', (e: KeyboardEvent) => {
   if (!disabledDefaultKeyboardEvent) return
-  
+
   // 确保阻止浏览器默认行为
   e.preventDefault()
   e.stopPropagation()
@@ -85,11 +94,11 @@ useEventListener('keydown', (e: KeyboardEvent) => {
       settingStore.shortcutKeyMap[editShortcutKey] = ''
     } else {
       // 忽略单独的修饰键
-      if (shortcutKey === 'Ctrl+' || shortcutKey === 'Alt+' || shortcutKey === 'Shift+' || 
+      if (shortcutKey === 'Ctrl+' || shortcutKey === 'Alt+' || shortcutKey === 'Shift+' ||
           e.key === 'Control' || e.key === 'Alt' || e.key === 'Shift') {
         return;
       }
-      
+
       for (const [k, v] of Object.entries(settingStore.shortcutKeyMap)) {
         if (v === shortcutKey && k !== editShortcutKey) {
           settingStore.shortcutKeyMap[editShortcutKey] = DefaultShortcutKeyMap[editShortcutKey]
@@ -100,7 +109,6 @@ useEventListener('keydown', (e: KeyboardEvent) => {
     }
   }
 })
-
 
 function handleInputBlur() {
   // 输入框失焦时结束编辑状态
@@ -144,7 +152,7 @@ function getShortcutKeyName(key: string): string {
     'ToggleConciseMode': '切换简洁模式',
     'TogglePanel': '切换面板'
   }
-  
+
   return shortcutKeyNameMap[key] || key
 }
 
@@ -154,7 +162,24 @@ function resetShortcutKeyMap() {
   Toast.success('恢复成功')
 }
 
-function exportData(notice = '导出成功！') {
+async function loadJSZip() {
+  if (window.JSZip) return window.JSZip;
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    // script.src = "https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js";
+    script.src = "https://2study.top/libs/jszip.min.js";
+    script.onload = () => resolve(window.JSZip);
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
+let exportLoading = $ref(false)
+let importLoading = $ref(false)
+
+async function exportData(notice = '导出成功！') {
+  exportLoading = true
+  const JSZip = await loadJSZip();
   let data = {
     version: EXPORT_DATA_KEY.version,
     val: {
@@ -168,42 +193,94 @@ function exportData(notice = '导出成功！') {
       }
     }
   }
-  let blob = new Blob([JSON.stringify(data)], {type: "text/plain;charset=utf-8"});
-  saveAs(blob, `${APP_NAME}-User-Data-${dayjs().format('YYYY-MM-DD HH-mm-ss')}.json`);
+  const zip = new JSZip();
+  zip.file("data.json", JSON.stringify(data));
+
+  const mp3 = zip.folder("mp3");
+  const allRecords = await get(LOCAL_FILE_KEY);
+  for (const rec of allRecords) {
+    mp3.file(rec.id + ".mp3", rec.file);
+  }
+  exportLoading = false
+  zip.generateAsync({type: "blob"}).then(function (content) {
+    saveAs(content, `${APP_NAME}-User-Data-${dayjs().format('YYYY-MM-DD HH-mm-ss')}.zip`);
+  });
   Toast.success(notice)
 }
 
-function importData(e) {
-  let file = e.target.files[0]
-  if (!file) return
-  // no()
-  let reader = new FileReader();
-  reader.onload = function (v) {
-    let str: any = v.target.result;
-    if (str) {
-      let obj = {
-        version: -1,
-        val: {
-          setting: {},
-          dict: {},
-        }
-      }
-      try {
-        obj = JSON.parse(str)
-        let data = obj.val
-        let settingState = checkAndUpgradeSaveSetting(data.setting)
-        settingState.load = true
-        settingStore.setState(settingState)
-        let baseState = checkAndUpgradeSaveDict(data.dict)
-        baseState.load = true
-        store.setState(baseState)
-        Toast.success('导入成功！')
-      } catch (err) {
-        return Toast.error('导入失败！')
-      }
+function importJson(str: string, notice: boolean = true) {
+  let obj = {
+    version: -1,
+    val: {
+      setting: {},
+      dict: {},
     }
   }
-  reader.readAsText(file);
+  try {
+    obj = JSON.parse(str)
+    let data = obj.val
+    let settingState = checkAndUpgradeSaveSetting(data.setting)
+    settingState.load = true
+    settingStore.setState(settingState)
+    let baseState = checkAndUpgradeSaveDict(data.dict)
+    baseState.load = true
+    store.setState(baseState)
+    notice && Toast.success('导入成功！')
+  } catch (err) {
+    return Toast.error('导入失败！')
+  }
+}
+
+async function importData(e) {
+  let file = e.target.files[0]
+  if (!file) return
+  if (file.name.endsWith(".json")) {
+    let reader = new FileReader();
+    reader.onload = function (v) {
+      let str: any = v.target.result;
+      if (str) {
+        importJson(str)
+      }
+    }
+    reader.readAsText(file);
+  } else if (file.name.endsWith(".zip")) {
+    try {
+      importLoading = true
+      const JSZip = await loadJSZip();
+      const zip = await JSZip.loadAsync(file);
+
+      const dataFile = zip.file("data.json");
+      if (!dataFile) {
+        return Toast.error("缺少 data.json，导入失败");
+      }
+
+      const mp3Folder = zip.folder("mp3");
+      if (mp3Folder) {
+        const records: { id: string; file: Blob }[] = [];
+        for (const filename in zip.files) {
+          if (filename.startsWith("mp3/") && filename.endsWith(".mp3")) {
+            const entry = zip.file(filename);
+            if (!entry) continue;
+            const blob = await entry.async("blob");
+            const id = filename.replace(/^mp3\//, "").replace(/\.mp3$/, "");
+            records.push({ id, file: blob });
+          }
+        }
+        await set(LOCAL_FILE_KEY, records);
+      }
+
+      const str = await dataFile.async("string");
+      importJson(str, false)
+
+      Toast.success("导入成功！");
+    } catch (e) {
+      Toast.error("导入失败！");
+    } finally {
+      importLoading = false
+    }
+  } else {
+    Toast.error("不支持的文件类型");
+  }
 }
 
 function importOldData() {
@@ -299,9 +376,9 @@ function importOldData() {
                 v-model="simpleWords" :autosize="{minRows: 6, maxRows: 10}"/>
           </SettingItem>
 
-<!--          音效-->
-<!--          音效-->
-<!--          音效-->
+          <!--          音效-->
+          <!--          音效-->
+          <!--          音效-->
           <div class="line"></div>
           <SettingItem main-title="音效"/>
           <SettingItem title="单词/句子发音口音">
@@ -354,9 +431,9 @@ function importOldData() {
         </div>
 
 
-<!--        单词练习设置-->
-<!--        单词练习设置-->
-<!--        单词练习设置-->
+        <!--        单词练习设置-->
+        <!--        单词练习设置-->
+        <!--        单词练习设置-->
         <div v-if="tabIndex === 1">
           <SettingItem title="练习模式">
             <RadioGroup v-model="settingStore.wordPracticeMode" class="flex-col gap-0!">
@@ -401,9 +478,9 @@ function importOldData() {
           </SettingItem>
 
 
-<!--          发音-->
-<!--          发音-->
-<!--          发音-->
+          <!--          发音-->
+          <!--          发音-->
+          <!--          发音-->
           <div class="line"></div>
           <SettingItem mainTitle="音效"/>
           <SettingItem title="自动发音">
@@ -419,9 +496,9 @@ function importOldData() {
           </SettingItem>
 
 
-<!--          自动切换-->
-<!--          自动切换-->
-<!--          自动切换-->
+          <!--          自动切换-->
+          <!--          自动切换-->
+          <!--          自动切换-->
           <div class="line"></div>
           <SettingItem mainTitle="自动切换"/>
           <SettingItem title="自动切换下一个单词"
@@ -444,9 +521,9 @@ function importOldData() {
           </SettingItem>
 
 
-<!--          字体设置-->
-<!--          字体设置-->
-<!--          字体设置-->
+          <!--          字体设置-->
+          <!--          字体设置-->
+          <!--          字体设置-->
           <div class="line"></div>
           <SettingItem mainTitle="字体设置"/>
           <SettingItem title="外语字体">
@@ -466,10 +543,9 @@ function importOldData() {
         </div>
 
 
-
-<!--        文章练习设置-->
-<!--        文章练习设置-->
-<!--        文章练习设置-->
+        <!--        文章练习设置-->
+        <!--        文章练习设置-->
+        <!--        文章练习设置-->
         <div v-if="tabIndex === 2">
           <!--          发音-->
           <!--          发音-->
@@ -492,7 +568,6 @@ function importOldData() {
         </div>
 
 
-
         <div class="body" v-if="tabIndex === 3">
           <div class="row">
             <label class="main-title">功能</label>
@@ -503,7 +578,8 @@ function importOldData() {
               <label class="item-title">{{ getShortcutKeyName(item[0]) }}</label>
               <div class="wrapper" @click="editShortcutKey = item[0]">
                 <div class="set-key" v-if="editShortcutKey === item[0]">
-                  <input ref="shortcutInput" :value="item[1]?item[1]:'未设置快捷键'" readonly type="text" @blur="handleInputBlur">
+                  <input ref="shortcutInput" :value="item[1]?item[1]:'未设置快捷键'" readonly type="text"
+                         @blur="handleInputBlur">
                   <span @click.stop="editShortcutKey = ''">按键盘进行设置，<span
                       class="text-red!">设置完成点击这里</span></span>
                 </div>
@@ -527,7 +603,7 @@ function importOldData() {
             <b class="text-red">仅保存在本地</b>。如果您需要在不同的设备、浏览器或者其他非官方部署上使用 {{ APP_NAME }}，
             您需要手动进行数据同步和保存。
           </div>
-          <BaseButton class="mt-3" @click="exportData()">导出数据</BaseButton>
+          <BaseButton :loading="exportLoading" class="mt-3" @click="exportData()">导出数据</BaseButton>
 
           <div class="line my-3"></div>
 
@@ -535,9 +611,9 @@ function importOldData() {
           </div>
           <div class="flex gap-space mt-3">
             <div class="import hvr-grow">
-              <BaseButton>导入数据</BaseButton>
+              <BaseButton :loading="importLoading">导入数据</BaseButton>
               <input type="file"
-                     accept="application/json"
+                     accept="application/json,.zip,application/zip"
                      @change="importData">
             </div>
             <PopConfirm
@@ -656,7 +732,7 @@ function importOldData() {
             background: var(--color-second);
             color: var(--color-font-1);
           }
-          
+
         }
       }
 

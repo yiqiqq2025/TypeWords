@@ -171,7 +171,7 @@ async function handleAudioChange(e: any) {
   let uploadFile = e.target?.files?.[0]
   if (!uploadFile) return
   let data = {
-    id: nanoid(6),
+    id: nanoid(),
     file: uploadFile,
   }
   //把文件存到indexDB
