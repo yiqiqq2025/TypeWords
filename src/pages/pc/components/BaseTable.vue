@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 
-import {nextTick, useSlots} from "vue";
+import {nextTick, useSlots, withDirectives} from "vue";
 import {Sort} from "@/types/types.ts";
 import MiniDialog from "@/pages/pc/components/dialog/MiniDialog.vue";
 import BaseIcon from "@/components/BaseIcon.vue";
@@ -13,18 +13,23 @@ import Pagination from '@/pages/pc/components/base/Pagination.vue'
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import Checkbox from "@/pages/pc/components/base/checkbox/Checkbox.vue";
 import DeleteIcon from "@/components/icon/DeleteIcon.vue";
+import loadingDirective from "@/directives/loading.tsx";
 
 let list = defineModel('list')
 
 const props = withDefaults(defineProps<{
   loading?: boolean
   showToolbar?: boolean
+  exportLoading?: boolean
+  importLoading?: boolean
   del?: Function
   batchDel?: Function
   add?: Function
 }>(), {
   loading: true,
   showToolbar: true,
+  exportLoading: false,
+  importLoading: false,
   del: () => void 0,
   add: () => void 0,
   batchDel: () => void 0
@@ -35,6 +40,8 @@ const emit = defineEmits<{
     item: any,
     index: number
   }],
+  importData: [e: Event]
+  exportData: []
 }>()
 
 let listRef: any = $ref()
@@ -167,6 +174,29 @@ defineRender(
                                   </PopConfirm>
                                   : null
                             }
+                            <div>
+                              <BaseIcon
+                                  onClick={() => {
+                                    let d: HTMLDivElement = document.querySelector('#update-dict')
+                                    d.click()
+                                  }}
+                                  icon="fluent:add-20-filled"
+                                  title="导入">
+                                {props.importLoading ? <IconEosIconsLoading/> : <IconSystemUiconsImport/>}
+                              </BaseIcon>
+                              <input
+                                  id="update-dict"
+                                  type="file"
+                                  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                                  onChange={e => emit('importData', e)}
+                                  class="w-0 h-0 opacity-0"/>
+                            </div>
+                            <BaseIcon
+                                onClick={() => emit('exportData')}
+                                icon="fluent:add-20-filled"
+                                title="导出">
+                              {props.exportLoading ? <IconEosIconsLoading/> : <IconPhExportLight/>}
+                            </BaseIcon>
                             <BaseIcon
                                 onClick={props.add}
                                 icon="fluent:add-20-filled"

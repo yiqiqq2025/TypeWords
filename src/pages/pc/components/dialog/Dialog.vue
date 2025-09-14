@@ -167,7 +167,7 @@ async function cancel() {
         </div>
         <div class="modal-body" :class="{padding}">
           <slot></slot>
-          <div v-if="content" class="content">{{ content }}</div>
+          <div v-if="content" class="content max-h-60vh">{{ content }}</div>
         </div>
         <div class="modal-footer" v-if="footer">
           <div class="left flex items-end">

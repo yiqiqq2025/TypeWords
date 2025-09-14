@@ -619,3 +619,14 @@ export function splitIntoN(arr: any[], n: number) {
   }
   return result
 }
+
+export async function loadJsLib(key: string, url: string) {
+  if (window[key]) return window[key];
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = url;
+    script.onload = () => resolve(window[key]);
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}

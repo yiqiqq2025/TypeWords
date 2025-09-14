@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import {ref, watch, nextTick} from "vue";
+import {nextTick, ref, watch} from "vue";
 import {useSettingStore} from "@/stores/setting.ts";
 import {getAudioFileUrl, usePlayAudio} from "@/hooks/sound.ts";
 import {getShortcutKey, useEventListener} from "@/hooks/event.ts";
-import {checkAndUpgradeSaveDict, checkAndUpgradeSaveSetting, cloneDeep, shakeCommonDict} from "@/utils";
+import {checkAndUpgradeSaveDict, checkAndUpgradeSaveSetting, cloneDeep, loadJsLib, shakeCommonDict} from "@/utils";
 import {DefaultShortcutKeyMap, ShortcutKey} from "@/types/types.ts";
 import BaseButton from "@/components/BaseButton.vue";
 import {
   APP_NAME,
+  APP_VERSION,
   EXPORT_DATA_KEY,
   LOCAL_FILE_KEY,
   SAVE_DICT_KEY,
@@ -17,7 +18,7 @@ import {
 import VolumeIcon from "@/components/icon/VolumeIcon.vue";
 import {useBaseStore} from "@/stores/base.ts";
 import {saveAs} from "file-saver";
-import {GITHUB} from "@/config/ENV.ts";
+import {Origin} from "@/config/ENV.ts";
 import dayjs from "dayjs";
 import BasePage from "@/pages/pc/components/BasePage.vue";
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
@@ -30,8 +31,8 @@ import InputNumber from "@/pages/pc/components/base/InputNumber.vue";
 import PopConfirm from "@/pages/pc/components/PopConfirm.vue";
 import Textarea from "@/pages/pc/components/base/Textarea.vue";
 import SettingItem from "@/pages/pc/setting/SettingItem.vue";
-// import {ArchiveReader, libarchiveWasm} from "libarchive-wasm";
 import {get, set} from "idb-keyval";
+import {useRuntimeStore} from "@/stores/runtime.ts";
 
 const emit = defineEmits<{
   toggleDisabledDialogEscKey: [val: boolean]
@@ -39,6 +40,7 @@ const emit = defineEmits<{
 
 const tabIndex = $ref(0)
 const settingStore = useSettingStore()
+const runtimeStore = useRuntimeStore()
 const store = useBaseStore()
 //@ts-ignore
 const gitLastCommitHash = ref(LATEST_COMMIT_HASH);
@@ -162,24 +164,12 @@ function resetShortcutKeyMap() {
   Toast.success('恢复成功')
 }
 
-async function loadJSZip() {
-  if (window.JSZip) return window.JSZip;
-  return new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    // script.src = "https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js";
-    script.src = "https://2study.top/libs/jszip.min.js";
-    script.onload = () => resolve(window.JSZip);
-    script.onerror = reject;
-    document.head.appendChild(script);
-  });
-}
-
 let exportLoading = $ref(false)
 let importLoading = $ref(false)
 
 async function exportData(notice = '导出成功！') {
   exportLoading = true
-  const JSZip = await loadJSZip();
+  const JSZip = await loadJsLib('JSZip', `${Origin}/libs/jszip.min.js`);
   let data = {
     version: EXPORT_DATA_KEY.version,
     val: {
@@ -198,7 +188,7 @@ async function exportData(notice = '导出成功！') {
 
   const mp3 = zip.folder("mp3");
   const allRecords = await get(LOCAL_FILE_KEY);
-  for (const rec of allRecords) {
+  for (const rec of allRecords ?? []) {
     mp3.file(rec.id + ".mp3", rec.file);
   }
   exportLoading = false
@@ -246,7 +236,7 @@ async function importData(e) {
   } else if (file.name.endsWith(".zip")) {
     try {
       importLoading = true
-      const JSZip = await loadJSZip();
+      const JSZip = await loadJsLib('JSZip', `${Origin}/libs/jszip.min.js`);
       const zip = await JSZip.loadAsync(file);
 
       const dataFile = zip.file("data.json");
@@ -332,13 +322,14 @@ function importOldData() {
             <IconFluentDatabasePerson20Regular width="20"/>
             <span>数据管理</span>
           </div>
-          <div class="tab" :class="tabIndex === 7 && 'active'" @click="tabIndex = 7">
+          <div class="tab" :class="tabIndex === 5 && 'active'" @click="()=>{
+            tabIndex = 5
+            runtimeStore.isNew = false
+            set(APP_VERSION.key,APP_VERSION.version)
+          }">
             <IconFluentTextBulletListSquare20Regular width="20"/>
             <span>更新日志</span>
-          </div>
-          <div class="tab" :class="tabIndex === 5 && 'active'" @click="tabIndex = 5">
-            <IconFluentMailEdit20Regular width="20"/>
-            <span>反馈</span>
+            <div class="red-point" v-if="runtimeStore.isNew"></div>
           </div>
           <div class="tab" :class="tabIndex === 6 && 'active'" @click="tabIndex = 6">
             <IconFluentPerson20Regular width="20"/>
@@ -599,9 +590,10 @@ function importOldData() {
             </div>
           </div>
         </div>
+
         <div v-if="tabIndex === 4">
           <div>
-            目前用户的所有数据(自定义设置、自定义词典、自定义文章、学习进度等)
+            目前用户的所有数据
             <b class="text-red">仅保存在本地</b>。如果您需要在不同的设备、浏览器或者其他非官方部署上使用 {{ APP_NAME }}，
             您需要手动进行数据同步和保存。
           </div>
@@ -609,7 +601,7 @@ function importOldData() {
 
           <div class="line my-3"></div>
 
-          <div>请注意，导入数据后将<b class="text-red"> 完全覆盖 </b>当前所有数据(自定义设置、自定义词典、自定义文章、学习进度等)，请谨慎操作。
+          <div>请注意，导入数据后将<b class="text-red"> 完全覆盖 </b>当前所有数据，请谨慎操作。
           </div>
           <div class="flex gap-space mt-3">
             <div class="import hvr-grow">
@@ -625,14 +617,24 @@ function importOldData() {
             </PopConfirm>
           </div>
         </div>
+
         <div v-if="tabIndex === 5">
-          <div>
-            给我发Email：<a href="mailto:zyronon@163.com">zyronon@163.com</a>
+          <div class="item p-2">
+            <div class="mb-2">
+              <div>
+                <span>2025/9/14：</span>
+                <span>完善文章编辑、导入、导出等功能</span>
+              </div>
+              <div class="text-base mt-1">
+                <div>1、文章的音频管理功能，目前已可添加音频、设置句子与音频的对应位置</div>
+                <div>2、文章可导入、导出</div>
+                <div>3、单词可导入、导出</div>
+              </div>
+            </div>
+            <div class="line"></div>
           </div>
-          <span>在<a :href="GITHUB" target="_blank"> Github </a>上给作者提一个
-            <a :href="`${GITHUB}/issues`" target="_blank"> Issue </a>
-            </span>
         </div>
+
         <div v-if="tabIndex === 6" class="center flex-col">
           <h1>Type Words</h1>
           <p class="w-100 text-xl">
@@ -645,26 +647,14 @@ function importOldData() {
             反馈：<a
               href="https://github.com/zyronon/TypeWords/issues" target="_blank">https://github.com/zyronon/TypeWords/issues</a>
           </p>
-          <div class="text-md color-gray">
+          <p>
+            作者邮箱：<a href="mailto:zyronon@163.com">zyronon@163.com</a>
+          </p>
+          <div class="text-md color-gray mt-10">
             Build {{ gitLastCommitHash }}
           </div>
         </div>
 
-        <div v-if="tabIndex === 7">
-          <div class="item p-2" v-for="i in 10">
-            <div class="mb-2">
-              <div>
-                <span>2025/9/14：</span>
-                <span>完善文章编辑功能（翻译不可用）</span>
-              </div>
-              <div class="text-base">
-                <p>除了翻译不可用（前端直接调百度接口会跨域，有能力可以把浏览器的跨域检测关掉就可以用了）</p>
-                <p>1、完善音频管理功能，目前已可添加音频、设置句子与音频的对应位置</p>
-              </div>
-            </div>
-            <div class="line"></div>
-          </div>
-        </div>
       </div>
     </div>
   </BasePage>
@@ -692,12 +682,16 @@ function importOldData() {
       //color: #0C8CE9;
 
       .tab {
-        cursor: pointer;
+        @apply cursor-pointer flex items-center relative;
         padding: .6rem .9rem;
         border-radius: .5rem;
-        display: flex;
-        align-items: center;
         gap: .6rem;
+        transition: all .5s;
+
+        &:hover {
+          background: var(--color-select-bg);
+          color: var(--color-select-text);
+        }
 
         &.active {
           background: var(--color-select-bg);

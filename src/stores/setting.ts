@@ -1,25 +1,24 @@
 import {defineStore} from "pinia"
 import {checkAndUpgradeSaveSetting, cloneDeep} from "@/utils";
 import {DefaultShortcutKeyMap} from "@/types/types.ts";
-import {SAVE_SETTING_KEY} from "@/utils/const.ts";
+import {APP_VERSION, SAVE_SETTING_KEY} from "@/utils/const.ts";
 import {get} from "idb-keyval";
 
 export interface SettingState {
-  allSound: boolean,
+  soundType: string,
+
   wordSound: boolean,
   wordSoundVolume: number,
   wordSoundSpeed: number,
-  soundType: string,
 
   articleSound: boolean,
   articleSoundVolume: number,
   articleSoundSpeed: number,
-  // articleSound: boolean,
-  
 
   keyboardSound: boolean,
   keyboardSoundVolume: number,
   keyboardSoundFile: string,
+
   effectSound: boolean,
   effectSoundVolume: number,
 
@@ -51,15 +50,10 @@ export interface SettingState {
   disableShowPracticeSettingDialog: boolean // 不默认显示练习设置弹框
   autoNextWord: boolean //自动切换下一个单词
   inputWrongClear: boolean //单词输入错误，清空已输入内容
-
 }
 
 export const getDefaultSettingState = (): SettingState => ({
-  showToolbar: true,
-  showPanel: true,
-  sideExpand: false,
-
-  allSound: true,
+  soundType: 'us',
 
   wordSound: true,
   wordSoundVolume: 100,
@@ -69,27 +63,30 @@ export const getDefaultSettingState = (): SettingState => ({
   articleSoundVolume: 100,
   articleSoundSpeed: 1,
 
-  soundType: 'us',
   keyboardSound: true,
   keyboardSoundVolume: 100,
   keyboardSoundFile: '机械键盘2',
+
   effectSound: true,
   effectSoundVolume: 100,
+
   repeatCount: 1,
   repeatCustomCount: null,
   dictation: false,
   translate: true,
-
   showNearWord: true,
   ignoreCase: true,
   allowWordTip: true,
+  waitTimeForChangeWord: 300,
   fontSize: {
     articleForeignFontSize: 48,
     articleTranslateFontSize: 20,
     wordForeignFontSize: 48,
     wordTranslateFontSize: 20,
   },
-  waitTimeForChangeWord: 300,
+  showToolbar: true,
+  showPanel: true,
+  sideExpand: false,
   theme: 'auto',
   shortcutKeyMap: cloneDeep(DefaultShortcutKeyMap),
   first: true,
@@ -100,7 +97,7 @@ export const getDefaultSettingState = (): SettingState => ({
   wordPracticeMode: 0,
   disableShowPracticeSettingDialog: false,
   autoNextWord: true,
-  inputWrongClear: false
+  inputWrongClear: false,
 })
 
 export const useSettingStore = defineStore('setting', {

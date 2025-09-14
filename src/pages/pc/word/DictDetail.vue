@@ -2,9 +2,9 @@
 import {DictId} from "@/types/types.ts";
 
 import BasePage from "@/pages/pc/components/BasePage.vue";
-import {computed, onMounted, reactive, shallowReactive, watch} from "vue";
+import {computed, onMounted, reactive, shallowReactive} from "vue";
 import {useRuntimeStore} from "@/stores/runtime.ts";
-import {_getDictDataByUrl, _nextTick, cloneDeep, convertToWord, useNav} from "@/utils";
+import {_getDictDataByUrl, _nextTick, cloneDeep, convertToWord, loadJsLib, useNav} from "@/utils";
 import {nanoid} from "nanoid";
 import BaseIcon from "@/components/BaseIcon.vue";
 import BaseTable from "@/pages/pc/components/BaseTable.vue";
@@ -25,6 +25,9 @@ import DeleteIcon from "@/components/icon/DeleteIcon.vue";
 import {getCurrentStudyWord} from "@/hooks/dict.ts";
 import PracticeSettingDialog from "@/pages/pc/word/components/PracticeSettingDialog.vue";
 import {useSettingStore} from "@/stores/setting.ts";
+import * as XLSX from "xlsx";
+import {MessageBox} from "@/utils/MessageBox.tsx";
+import {Origin} from "@/config/ENV.ts";
 
 const runtimeStore = useRuntimeStore()
 const base = useBaseStore()
@@ -135,19 +138,26 @@ function batchDel(ids: string[]) {
   syncDictInMyStudyList()
 }
 
+//把word对象的字段全转成字符串
+function word2Str(word) {
+  let res = getDefaultFormWord()
+  res.id = word.id
+  res.word = word.word
+  res.phonetic1 = word.phonetic1
+  res.phonetic0 = word.phonetic0
+  res.trans = word.trans.map(v => (v.pos + v.cn).replaceAll('"', '')).join('\n')
+  res.sentences = word.sentences.map(v => (v.c + "\n" + v.cn).replaceAll('"', '')).join('\n\n')
+  res.phrases = word.phrases.map(v => (v.c + "\n" + v.cn).replaceAll('"', '')).join('\n\n')
+  res.synos = word.synos.map(v => (v.pos + v.cn + "\n" + v.ws.join('/')).replaceAll('"', '')).join('\n\n')
+  res.relWords = '词根:' + word.relWords.root + '\n\n' +
+      word.relWords.rels.map(v => (v.pos + "\n" + v.words.map(v => (v.c + ':' + v.cn)).join('\n')).replaceAll('"', '')).join('\n\n')
+  res.etymology = word.etymology.map(v => (v.t + '\n' + v.d).replaceAll('"', '')).join('\n\n')
+  return res
+}
+
 function editWord(word) {
   isOperate = true
-  wordForm.id = word.id
-  wordForm.word = word.word
-  wordForm.phonetic1 = word.phonetic1
-  wordForm.phonetic0 = word.phonetic0
-  wordForm.trans = word.trans.map(v => (v.pos + v.cn).replaceAll('"', '')).join('\n')
-  wordForm.sentences = word.sentences.map(v => (v.c + "\n" + v.cn).replaceAll('"', '')).join('\n\n')
-  wordForm.phrases = word.phrases.map(v => (v.c + "\n" + v.cn).replaceAll('"', '')).join('\n\n')
-  wordForm.synos = word.synos.map(v => (v.pos + v.cn + "\n" + v.ws.join('/')).replaceAll('"', '')).join('\n\n')
-  wordForm.relWords = '词根:' + word.relWords.root + '\n\n' +
-      word.relWords.rels.map(v => (v.pos + "\n" + v.words.map(v => (v.c + ':' + v.cn)).join('\n')).replaceAll('"', '')).join('\n\n')
-  wordForm.etymology = word.etymology.map(v => (v.t + '\n' + v.d).replaceAll('"', '')).join('\n\n')
+  wordForm = word2Str(word)
 }
 
 function addWord() {
@@ -197,7 +207,6 @@ function formClose() {
 
 let showPracticeSettingDialog = $ref(false)
 
-
 const store = useBaseStore()
 const settingStore = useSettingStore()
 const {nav} = useNav()
@@ -235,6 +244,116 @@ async function addMyStudyList() {
   startPractice()
 }
 
+
+let exportLoading = $ref(false)
+let importLoading = $ref(false)
+
+function importData(e) {
+  let file = e.target.files[0];
+  if (!file) return;
+
+  let reader = new FileReader();
+  reader.onload = async function (s) {
+    let data = s.target.result;
+    importLoading = true
+    const XLSX = await loadJsLib('XLSX', `${Origin}/libs/xlsx.full.min.js`);
+    let workbook = XLSX.read(data, {type: 'binary'});
+    let res: any[] = XLSX.utils.sheet_to_json(workbook.Sheets['Sheet1']);
+    if (res.length) {
+      let words = res.map(v => {
+        if (v['单词']) {
+          let data = null
+          try {
+            data = convertToWord({
+              word: v['单词'],
+              phonetic0: v['音标①'] ?? '',
+              phonetic1: v['音标②'] ?? '',
+              trans: v['释义'] ?? '',
+              sentences: v['例句'] ?? '',
+              phrases: v['短语'] ?? '',
+              synos: v['近义词'] ?? '',
+              relWords: v['同根词'] ?? '',
+              etymology: v['词源'] ?? '',
+            });
+          } catch (e) {
+            console.error('导入单词报错' + v['单词'], e.message)
+          }
+          return data
+        }
+      }).filter(v => v);
+
+      let repeat = []
+      let noRepeat = []
+      words.map((v: any) => {
+        let rIndex = runtimeStore.editDict.words.findIndex(s => s.word === v.word)
+        if (rIndex > -1) {
+          v.index = rIndex
+          repeat.push(v)
+        } else {
+          noRepeat.push(v)
+        }
+      })
+
+      runtimeStore.editDict.words = runtimeStore.editDict.words.concat(noRepeat)
+
+      if (repeat.length) {
+        MessageBox.confirm(
+            '单词"' + repeat.map(v => v.word).join(', ') + '" 已存在，是否覆盖原单词？',
+            '检测到重复单词',
+            () => {
+              repeat.map(v => {
+                runtimeStore.editDict.words[v.index] = v
+                delete runtimeStore.editDict.words[v.index]["index"]
+              })
+            },
+            null,
+            () => {
+              e.target.value = ''
+              importLoading = false
+              syncDictInMyStudyList()
+              Toast.success('导入成功！')
+            }
+        )
+      } else {
+        syncDictInMyStudyList()
+        Toast.success('导入成功！')
+      }
+    } else {
+      Toast.warning('导入失败！原因：没有数据');
+    }
+    e.target.value = ''
+    importLoading = false
+  };
+  reader.readAsBinaryString(file);
+}
+
+async function exportData() {
+  exportLoading = true
+  const XLSX = await loadJsLib('XLSX', `${Origin}/libs/xlsx.full.min.js`);
+  let list = runtimeStore.editDict.words
+  let filename = runtimeStore.editDict.name
+  let wb = XLSX.utils.book_new()
+  let sheetData = list.map(v => {
+    let t = word2Str(v)
+    return {
+      单词: t.word,
+      '音标①': t.phonetic0,
+      '音标②': t.phonetic1,
+      '释义': t.trans,
+      '例句': t.sentences,
+      '短语': t.phrases,
+      '近义词': t.synos,
+      '同根词': t.relWords,
+      '词源': t.etymology,
+    }
+  })
+  wb.Sheets['Sheet1'] = XLSX.utils.json_to_sheet(sheetData)
+  wb.SheetNames = ['Sheet1']
+  XLSX.writeFile(wb, `${filename}.xlsx`);
+  Toast.success(filename + ' 导出成功！')
+  exportLoading = false
+}
+
 defineRender(() => {
   return (
       <BasePage>
@@ -262,6 +381,10 @@ defineRender(() => {
                         del={delWord}
                         batchDel={batchDel}
                         add={addWord}
+                        onImportData={importData}
+                        onExportData={exportData}
+                        exportLoading={exportLoading}
+                        importLoading={importLoading}
                     >
                       {
                         (val) =>

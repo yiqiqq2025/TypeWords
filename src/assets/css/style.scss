@@ -441,3 +441,7 @@ a {
 .page-title {
   @apply text-2xl;
 }
+
+.red-point {
+  @apply bg-red w-3 h-3 rounded-full absolute right-5;
+}

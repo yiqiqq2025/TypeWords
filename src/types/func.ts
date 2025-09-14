@@ -6,7 +6,6 @@ import {nanoid} from "nanoid";
 export function getDefaultWord(val: Partial<Word> = {}): Word {
   return {
     custom: false,
-    id: nanoid(6),
     "word": "",
     "phonetic0": "",
     "phonetic1": "",
@@ -19,7 +18,8 @@ export function getDefaultWord(val: Partial<Word> = {}): Word {
       "rels": []
     },
     "etymology": [],
-    ...val
+    ...val,
+    id: val?.id ? val.id : nanoid(6),
   }
 }
 

@@ -1,11 +1,14 @@
 <template>
-  <div class="inline-flex w-full relative">
+  <div class="inline-flex w-full relative"
+       :class="[disabled && 'disabled']"
+  >
     <textarea
         ref="textareaRef"
         v-model="innerValue"
         :placeholder="placeholder"
         :maxlength="maxlength"
         :rows="rows"
+        :disabled="disabled"
         :style="textareaStyle"
         class="w-full px-3 py-2 border border-gray-300 rounded-md outline-none resize-none transition-colors duration-200 box-border"
         @input="handleInput"
@@ -31,6 +34,7 @@ const props = defineProps<{
   rows?: number,
   autosize: boolean | { minRows?: number; maxRows?: number }
   showWordLimit?: boolean
+  disabled?: boolean
 }>()
 
 const emit = defineEmits(["update:modelValue"])
@@ -84,6 +88,14 @@ watch(innerValue, () => {
 
 </script>
 <style>
+.disabled {
+  opacity: 0.5;
+
+  textarea {
+    cursor: not-allowed !important;
+  }
+}
+
 textarea {
   font-family: var(--font-family);
   color: var(--color-input-color);

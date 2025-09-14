@@ -6,7 +6,7 @@ import {watch} from "vue";
 import {useSettingStore} from "@/stores/setting.ts";
 
 import {isMobile} from "@/utils";
-import {ProjectName} from "@/config/ENV.ts";
+import {ProjectName, Host} from "@/config/ENV.ts";
 
 let settingStore = useSettingStore()
 let showNotice = $ref(false)
@@ -32,9 +32,9 @@ function close() {
 
 watch(() => settingStore.load, (n) => {
   if (n && settingStore.first) {
-   setTimeout(()=>{
-     show = true
-   },1000)
+    setTimeout(() => {
+      show = true
+    }, 1000)
   }
 }, {immediate: true})
 
@@ -55,7 +55,7 @@ watch(() => settingStore.load, (n) => {
           <div class="collect" v-if="showNotice">
             <div class="href-wrapper">
               <div class="round">
-                <div class="href">2study.top</div>
+                <div class="href">{{ Host }}</div>
                 <IconFluentStar12Regular width="22"/>
               </div>
               <div class="right">

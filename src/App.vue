@@ -4,7 +4,7 @@ import {BaseState, useBaseStore} from "@/stores/base.ts";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 import {useSettingStore} from "@/stores/setting.ts";
 import useTheme from "@/hooks/theme.ts";
-import {LOCAL_FILE_KEY, SAVE_DICT_KEY, SAVE_SETTING_KEY} from "@/utils/const.ts";
+import {APP_VERSION, LOCAL_FILE_KEY, SAVE_DICT_KEY, SAVE_SETTING_KEY} from "@/utils/const.ts";
 import {shakeCommonDict} from "@/utils";
 import {routes} from "@/router.ts";
 import {get, set} from 'idb-keyval'
@@ -36,12 +36,14 @@ watch(store.$state, (n: BaseState) => {
     let result = []
     //删除未使用到的文件
     get(LOCAL_FILE_KEY).then((fileList: Array<{ id: string, file: Blob }>) => {
-      audioFileIdList.forEach(a => {
-        let item = fileList.find(b => b.id === a)
-        item && result.push(item)
-      })
-      set(LOCAL_FILE_KEY, result)
-      lastAudioFileIdList = audioFileIdList
+      if (fileList && fileList.length > 0) {
+        audioFileIdList.forEach(a => {
+          let item = fileList.find(b => b.id === a)
+          item && result.push(item)
+        })
+        set(LOCAL_FILE_KEY, result)
+        lastAudioFileIdList = audioFileIdList
+      }
     })
   }
 })
@@ -55,6 +57,10 @@ async function init() {
   await settingStore.init()
   store.load = true
   setTheme(settingStore.theme)
+
+  get(APP_VERSION.key).then(r => {
+    runtimeStore.isNew = r ? (APP_VERSION.version > Number(r)) : true
+  })
 }
 
 onMounted(init)
@@ -83,13 +89,13 @@ watch(() => route.path, (to, from) => {
 </script>
 
 <template>
-<!--  <router-view v-slot="{ Component }">-->
-<!--    <transition :name="transitionName">-->
-<!--      <keep-alive :exclude="runtimeStore.excludeRoutes">-->
-<!--        <component :is="Component"/>-->
-<!--      </keep-alive>-->
-<!--    </transition>-->
-<!--  </router-view>-->
+  <!--  <router-view v-slot="{ Component }">-->
+  <!--    <transition :name="transitionName">-->
+  <!--      <keep-alive :exclude="runtimeStore.excludeRoutes">-->
+  <!--        <component :is="Component"/>-->
+  <!--      </keep-alive>-->
+  <!--    </transition>-->
+  <!--  </router-view>-->
   <router-view></router-view>
 </template>
 

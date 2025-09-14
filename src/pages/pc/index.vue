@@ -6,9 +6,11 @@ import {useSettingStore} from "@/stores/setting.ts";
 import {useRouter} from "vue-router";
 import useTheme from "@/hooks/theme.ts";
 import BaseIcon from "@/components/BaseIcon.vue";
+import {useRuntimeStore} from "@/stores/runtime.ts";
 
 
 const settingStore = useSettingStore()
+const runtimeStore = useRuntimeStore()
 const router = useRouter()
 const {toggleTheme} = useTheme()
 
@@ -38,6 +40,7 @@ const {toggleTheme} = useTheme()
         <div class="row" @click="router.push('/setting')">
           <IconFluentSettings20Regular/>
           <span v-if="settingStore.sideExpand">设置</span>
+          <div class="red-point" v-if="runtimeStore.isNew"></div>
         </div>
       </div>
       <div class="bottom flex justify-evenly ">
@@ -83,9 +86,8 @@ const {toggleTheme} = useTheme()
   z-index: 2;
 
   .row {
-    @apply cursor-pointer rounded-md  text p-2 my-2 flex items-center gap-2;
+    @apply cursor-pointer rounded-md  text p-2 my-2 flex items-center gap-2 relative shrink-0;
     transition: all .5s;
-    flex-shrink: 0;
 
     &:hover {
       background: var(--color-select-bg);

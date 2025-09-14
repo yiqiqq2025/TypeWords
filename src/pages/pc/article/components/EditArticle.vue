@@ -21,6 +21,7 @@ import {update} from "idb-keyval";
 import {LOCAL_FILE_KEY} from "@/utils/const.ts";
 import ArticleAudio from "@/pages/pc/article/components/ArticleAudio.vue";
 import BaseInput from "@/pages/pc/components/base/BaseInput.vue";
+import Textarea from "@/pages/pc/components/base/Textarea.vue";
 
 const Dialog = defineAsyncComponent(() => import('@/pages/pc/components/dialog/Dialog.vue'))
 
@@ -79,21 +80,11 @@ function apply(isHandle: boolean = true) {
 //分句原文
 function splitText() {
   editArticle.text = splitEnArticle2(editArticle.text.trim())
-  return
-  let text = editArticle.text.trim();
-  if (text) {
-    editArticle.text = splitEnArticle2(text)
-  }
 }
 
 //分句翻译
 function splitTranslateText() {
   editArticle.textTranslate = splitCNArticle2(editArticle.textTranslate.trim())
-  return
-  let text = editArticle.textTranslate.trim();
-  if (text) {
-    editArticle.textTranslate = splitCNArticle2(text)
-  }
 }
 
 //TODO
@@ -104,6 +95,8 @@ async function startNetworkTranslate() {
   if (!editArticle.text.trim()) {
     return Toast.error('请填写正文！')
   }
+  editArticle.titleTranslate = ''
+  editArticle.textTranslate = ''
   apply()
   //注意！！！
   //这里需要用异步，因为watch了article.networkTranslate，改变networkTranslate了之后，会重新设置article.sections
@@ -327,19 +320,17 @@ function setStartTime(val: Sentence, i: number, j: number) {
         <div class="shrink-0">标题：</div>
         <BaseInput
             v-model="editArticle.title"
+            :disabled="![100,0].includes(progress)"
             type="text"
             placeholder="请填写原文标题"
         />
       </div>
       <div class="">正文：<span class="text-sm color-gray">一行一句，段落间空一行</span></div>
-      <textarea
-          v-model="editArticle.text"
-          :readonly="![100,0].includes(progress)"
-          type="textarea"
-          class="base-textarea"
-          placeholder="请复制原文"
-      >
-            </textarea>
+      <Textarea v-model="editArticle.text"
+                class="h-full"
+                :disabled="![100,0].includes(progress)"
+                placeholder="请复制原文"
+                :autosize="false"/>
       <div class="justify-end items-center flex">
         <Tooltip>
           <IconFluentQuestionCircle20Regular class="mr-3" width="20"/>
@@ -368,22 +359,19 @@ function setStartTime(val: Sentence, i: number, j: number) {
         <div class="shrink-0">标题：</div>
         <BaseInput
             v-model="editArticle.titleTranslate"
+            :disabled="![100,0].includes(progress)"
             type="text"
             placeholder="请填写翻译标题"
         />
       </div>
       <div class="">正文：<span class="text-sm color-gray">一行一句，段落间空一行</span></div>
-      <textarea
-          v-model="editArticle.textTranslate"
-          :readonly="![100,0].includes(progress)"
-          type="textarea"
-          class="base-textarea"
-          placeholder="请填写翻译"
-          ref="textareaRef"
-      >
-            </textarea>
+      <Textarea v-model="editArticle.textTranslate"
+                class="h-full"
+                :disabled="![100,0].includes(progress)"
+                placeholder="请填写翻译"
+                :autosize="false"/>
       <div class="justify-between items-center flex">
-        <div class="flex gap-space items-center w-50 ">
+        <div class="flex gap-space items-center w-50">
           <BaseButton @click="startNetworkTranslate"
                       :loading="progress!==0 && progress !== 100">翻译
           </BaseButton>
@@ -448,12 +436,14 @@ function setStartTime(val: Sentence, i: number, j: number) {
               <div class="sentence" v-for="(sentence,indexJ) in item">
                 <div class="flex-[7]">
                   <EditAbleText
+                      :disabled="![100,0].includes(progress)"
                       :value="sentence.text"
                       @save="(e:string) => saveSentenceText(sentence,e)"
                   />
                   <EditAbleText
                       class="text-lg!"
                       v-if="sentence.translate"
+                      :disabled="![100,0].includes(progress)"
                       :value="sentence.translate"
                       @save="(e:string) => saveSentenceTranslate(sentence,e)"
                   />

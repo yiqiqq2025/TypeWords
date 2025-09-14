@@ -4,13 +4,16 @@ import BaseButton from "@/components/BaseButton.vue";
 
 import {watchEffect} from "vue";
 import Textarea from "@/pages/pc/components/base/Textarea.vue";
+import Toast from "@/pages/pc/components/base/toast/Toast.ts";
 
 interface IProps {
   value: string,
+  disabled: boolean,
 }
 
 const props = withDefaults(defineProps<IProps>(), {
   value: '',
+  disabled: false,
 })
 
 const emit = defineEmits([
@@ -30,6 +33,7 @@ function save() {
 }
 
 function toggle() {
+  if (props.disabled) return Toast.info('请等候翻译完成')
   edit = !edit
   editVal = props.value
 }

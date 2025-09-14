@@ -79,6 +79,8 @@ function delItem(item: T) {
   let rIndex = props.list.findIndex(v => v.id === item.id)
   if (rIndex > -1) {
     localList.splice(rIndex, 1)
+    //触发set
+    localList = localList
   }
 }
 
@@ -93,7 +95,6 @@ function scrollBottom() {
 }
 
 defineExpose({scrollBottom})
-
 </script>
 
 <template>
@@ -124,7 +125,7 @@ defineExpose({scrollBottom})
         </div>
         <div class="right">
           <BaseIcon
-              @click="delItem(item)"
+              @click.stop="delItem(item)"
               title="删除">
             <DeleteIcon/>
           </BaseIcon>

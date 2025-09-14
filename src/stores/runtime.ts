@@ -9,6 +9,7 @@ export interface RuntimeState {
   showDictModal: boolean
   excludeRoutes: any[]
   routeData: any,
+  isNew: boolean,
 }
 
 export const useRuntimeStore = defineStore('runtime', {
@@ -20,6 +21,7 @@ export const useRuntimeStore = defineStore('runtime', {
       editDict: getDefaultDict(),
       showDictModal: false,
       excludeRoutes: [],
+      isNew: false,
     }
   },
   actions: {

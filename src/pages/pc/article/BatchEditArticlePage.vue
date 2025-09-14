@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import {onMounted, onUnmounted} from "vue";
 import {Article, DictId} from "@/types/types.ts";
 import BaseButton from "@/components/BaseButton.vue";
-import {_nextTick, cloneDeep} from "@/utils";
+import {_nextTick, cloneDeep, loadJsLib} from "@/utils";
 import {useBaseStore} from "@/stores/base.ts";
 
 import List from "@/pages/pc/components/list/List.vue";
-import {emitter, EventKey} from "@/utils/eventBus.ts";
 import {useWindowClick} from "@/hooks/event.ts";
 import {MessageBox} from "@/utils/MessageBox.tsx";
 import {useRuntimeStore} from "@/stores/runtime.ts";
@@ -16,11 +14,10 @@ import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import {getDefaultArticle} from "@/types/func.ts";
 import BackIcon from "@/pages/pc/components/BackIcon.vue";
 import MiniDialog from "@/pages/pc/components/dialog/MiniDialog.vue";
+import * as XLSX from "xlsx";
+import {onMounted} from "vue";
+import {Origin} from "@/config/ENV.ts";
 
-defineEmits<{
-  importData: [val: Event]
-  exportData: [val: string]
-}>()
 const base = useBaseStore()
 const runtimeStore = useRuntimeStore()
 
@@ -138,10 +135,122 @@ function saveAndNext(val: Article) {
 let showExport = $ref(false)
 useWindowClick(() => showExport = false)
 
-function importData() {
+onMounted(() => {
+  article = runtimeStore.editDict.articles[0]
+})
 
+let exportLoading = $ref(false)
+let importLoading = $ref(false)
+
+function importData(e: any) {
+  let file = e.target.files[0]
+  if (!file) return
+  // no()
+  let reader = new FileReader();
+  reader.onload = async function (s) {
+    importLoading = true
+    const XLSX = await loadJsLib('XLSX', `${Origin}/libs/xlsx.full.min.js`);
+    let data = s.target.result;
+    let workbook = XLSX.read(data, {type: 'binary'});
+    let res: any[] = XLSX.utils.sheet_to_json(workbook.Sheets['Sheet1']);
+    if (res.length) {
+      let articles = res.map(v => {
+        if (v['原文标题'] && v['原文正文']) {
+          return getDefaultArticle({
+            id: nanoid(6),
+            title: String(v['原文标题']),
+            titleTranslate: String(v['译文标题']),
+            text: String(v['原文正文']),
+            textTranslate: String(v['译文正文']),
+            audioSrc: String(v['音频地址']),
+          })
+        }
+      }).filter(v => v)
+
+      let repeat = []
+      let noRepeat = []
+      articles.map((v: any) => {
+        let rIndex = runtimeStore.editDict.articles.findIndex(s => s.title === v.title)
+        if (rIndex > -1) {
+          v.index = rIndex
+          repeat.push(v)
+        } else {
+          noRepeat.push(v)
+        }
+      })
+
+      runtimeStore.editDict.articles = runtimeStore.editDict.articles.concat(noRepeat)
+
+      if (repeat.length) {
+        MessageBox.confirm(
+            '文章"' + repeat.map(v => v.title).join(', ') + '" 已存在，是否覆盖原有文章？',
+            '检测到重复文章',
+            () => {
+              repeat.map(v => {
+                runtimeStore.editDict.articles[v.index] = v
+                delete runtimeStore.editDict.articles[v.index]["index"]
+              })
+              setTimeout(listEl?.scrollToBottom, 100)
+            },
+            null,
+            () => {
+              e.target.value = ''
+              importLoading = false
+              syncBookInMyStudyList()
+              Toast.success('导入成功！')
+            }
+        )
+      } else {
+        syncBookInMyStudyList()
+        Toast.success('导入成功！')
+      }
+    } else {
+      Toast.success('导入失败！原因：没有数据')
+    }
+    e.target.value = ''
+    importLoading = false
+  };
+  reader.readAsBinaryString(file);
 }
 
+async function exportData(val: { type: string, data?: Article }) {
+  exportLoading = true
+  const XLSX = await loadJsLib('XLSX', `${Origin}/libs/xlsx.full.min.js`);
+  const {type, data} = val
+  let list = []
+  let filename = ''
+  if (type === 'item') {
+    if (!data.id) {
+      return Toast.error('请选择文章')
+    }
+    list = [data]
+    filename = runtimeStore.editDict.name + `-${data.title}`
+  } else {
+    list = runtimeStore.editDict.articles
+    filename = runtimeStore.editDict.name
+  }
+  let wb = XLSX.utils.book_new()
+  let sheetData = list.map(v => {
+    return {
+      原文标题: v.title,
+      原文正文: v.text,
+      译文标题: v.titleTranslate,
+      译文正文: v.textTranslate,
+      音频地址: v.audioSrc,
+    }
+  })
+  wb.Sheets['Sheet1'] = XLSX.utils.json_to_sheet(sheetData)
+  wb.SheetNames = ['Sheet1']
+  XLSX.writeFile(wb, `${filename}.xlsx`);
+  Toast.success(filename + ' 导出成功！')
+  showExport = false
+  exportLoading = false
+}
+
+function updateList(e) {
+  runtimeStore.editDict.articles = e
+  syncBookInMyStudyList()
+}
 </script>
 
 <template>
@@ -153,7 +262,8 @@ function importData() {
       </header>
       <List
           ref="listEl"
-          v-model:list="runtimeStore.editDict.articles"
+          :list="runtimeStore.editDict.articles"
+          @update:list="updateList"
           :select-item="article"
           @del-select-item="article = getDefaultArticle()"
           @select-item="selectArticle"
@@ -168,7 +278,7 @@ function importData() {
       </div>
       <div class="footer">
         <div class="import">
-          <BaseButton>导入</BaseButton>
+          <BaseButton :loading="importLoading">导入</BaseButton>
           <input type="file"
                  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
                  @change="importData">
@@ -184,11 +294,11 @@ function importData() {
             <div class="mini-row-title">
               导出选项
             </div>
-            <div class="mini-row">
-              <BaseButton @click="emit('exportData',{type:'all',data:[]})">全部文章</BaseButton>
-            </div>
-            <div class="mini-row">
-              <BaseButton @click="emit('exportData',{type:'chapter',data:article})">当前章节</BaseButton>
+            <div class="flex">
+              <BaseButton :loading="exportLoading" @click="exportData({type:'all'})">全部</BaseButton>
+              <BaseButton :loading="exportLoading" :disabled="!article.id"
+                          @click="exportData({type:'item',data:article})">当前
+              </BaseButton>
             </div>
           </MiniDialog>
         </div>
