@@ -63,6 +63,7 @@ declare module 'vue' {
     IconFluentStar16Regular: typeof import('~icons/fluent/star16-regular')['default']
     IconFluentStar20Filled: typeof import('~icons/fluent/star20-filled')['default']
     IconFluentStarAdd16Regular: typeof import('~icons/fluent/star-add16-regular')['default']
+    IconFluentTextBulletListSquare20Regular: typeof import('~icons/fluent/text-bullet-list-square20-regular')['default']
     IconFluentTextEditStyle20Regular: typeof import('~icons/fluent/text-edit-style20-regular')['default']
     IconFluentTextListAbcUppercaseLtr20Regular: typeof import('~icons/fluent/text-list-abc-uppercase-ltr20-regular')['default']
     IconFluentTextUnderlineDouble20Regular: typeof import('~icons/fluent/text-underline-double20-regular')['default']

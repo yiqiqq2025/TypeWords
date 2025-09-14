@@ -263,7 +263,7 @@ async function importData(e) {
             if (!entry) continue;
             const blob = await entry.async("blob");
             const id = filename.replace(/^mp3\//, "").replace(/\.mp3$/, "");
-            records.push({ id, file: blob });
+            records.push({id, file: blob});
           }
         }
         await set(LOCAL_FILE_KEY, records);
@@ -331,6 +331,10 @@ function importOldData() {
           <div class="tab" :class="tabIndex === 4 && 'active'" @click="tabIndex = 4">
             <IconFluentDatabasePerson20Regular width="20"/>
             <span>数据管理</span>
+          </div>
+          <div class="tab" :class="tabIndex === 7 && 'active'" @click="tabIndex = 7">
+            <IconFluentTextBulletListSquare20Regular width="20"/>
+            <span>更新日志</span>
           </div>
           <div class="tab" :class="tabIndex === 5 && 'active'" @click="tabIndex = 5">
             <IconFluentMailEdit20Regular width="20"/>
@@ -563,8 +567,6 @@ function importOldData() {
             <Slider v-model="settingStore.articleSoundSpeed" :step="0.1" :min="0.5" :max="3"/>
             <span class="w-10 pl-5">{{ settingStore.articleSoundSpeed }}</span>
           </SettingItem>
-
-
         </div>
 
 
@@ -647,6 +649,22 @@ function importOldData() {
             Build {{ gitLastCommitHash }}
           </div>
         </div>
+
+        <div v-if="tabIndex === 7">
+          <div class="item p-2" v-for="i in 10">
+            <div class="mb-2">
+              <div>
+                <span>2025/9/14：</span>
+                <span>完善文章编辑功能（翻译不可用）</span>
+              </div>
+              <div class="text-base">
+                <p>除了翻译不可用（前端直接调百度接口会跨域，有能力可以把浏览器的跨域检测关掉就可以用了）</p>
+                <p>1、完善音频管理功能，目前已可添加音频、设置句子与音频的对应位置</p>
+              </div>
+            </div>
+            <div class="line"></div>
+          </div>
+        </div>
       </div>
     </div>
   </BasePage>
@@ -693,7 +711,7 @@ function importOldData() {
     flex: 1;
     height: 100%;
     overflow: auto;
-    padding: 0 2.6rem;
+    padding: 0 1.6rem;
 
     .row {
       min-height: 2.6rem;

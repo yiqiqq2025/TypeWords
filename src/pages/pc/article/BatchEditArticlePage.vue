@@ -15,6 +15,7 @@ import EditArticle from "@/pages/pc/article/components/EditArticle.vue";
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import {getDefaultArticle} from "@/types/func.ts";
 import BackIcon from "@/pages/pc/components/BackIcon.vue";
+import MiniDialog from "@/pages/pc/components/dialog/MiniDialog.vue";
 
 defineEmits<{
   importData: [val: Event]
@@ -24,23 +25,8 @@ const base = useBaseStore()
 const runtimeStore = useRuntimeStore()
 
 let article = $ref<Article>(getDefaultArticle())
-let show = $ref(false)
 let editArticleRef: any = $ref()
 let listEl: any = $ref()
-
-onMounted(() => {
-  emitter.on(EventKey.openArticleListModal, (val: Article) => {
-    console.log('val', val)
-    show = true
-    if (val) {
-      article = cloneDeep(val)
-    }
-  })
-})
-
-onUnmounted(() => {
-  emitter.off(EventKey.openArticleListModal)
-})
 
 async function selectArticle(item: Article) {
   let r = await checkDataChange()
@@ -99,7 +85,6 @@ async function add() {
   }
 }
 
-
 function saveArticle(val: Article): boolean {
   if (val.id) {
     let rIndex = runtimeStore.editDict.articles.findIndex(v => v.id === val.id)
@@ -153,6 +138,10 @@ function saveAndNext(val: Article) {
 let showExport = $ref(false)
 useWindowClick(() => showExport = false)
 
+function importData() {
+
+}
+
 </script>
 
 <template>
@@ -178,31 +167,31 @@ useWindowClick(() => showExport = false)
         正在添加新文章...
       </div>
       <div class="footer">
-        <!--        <div class="import">-->
-        <!--          <BaseButton>导入</BaseButton>-->
-        <!--          <input type="file"-->
-        <!--                 accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"-->
-        <!--                 @change="e => emit('importData',e)">-->
-        <!--        </div>-->
-        <!--        <div class="export"-->
-        <!--             style="position: relative"-->
-        <!--             @click.stop="null">-->
-        <!--          <BaseButton @click="showExport = true">导出</BaseButton>-->
-        <!--          <MiniDialog-->
-        <!--              v-model="showExport"-->
-        <!--              style="width: 80rem;bottom: calc(100% + 10rem);top:unset;"-->
-        <!--          >-->
-        <!--            <div class="mini-row-title">-->
-        <!--              导出选项-->
-        <!--            </div>-->
-        <!--            <div class="mini-row">-->
-        <!--              <BaseButton @click="emit('exportData',{type:'all',data:[]})">全部文章</BaseButton>-->
-        <!--            </div>-->
-        <!--            <div class="mini-row">-->
-        <!--              <BaseButton @click="emit('exportData',{type:'chapter',data:article})">当前章节</BaseButton>-->
-        <!--            </div>-->
-        <!--          </MiniDialog>-->
-        <!--        </div>-->
+        <div class="import">
+          <BaseButton>导入</BaseButton>
+          <input type="file"
+                 accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                 @change="importData">
+        </div>
+        <div class="export"
+             style="position: relative"
+             @click.stop="null">
+          <BaseButton @click="showExport = true">导出</BaseButton>
+          <MiniDialog
+              v-model="showExport"
+              style="width: 8rem;bottom: calc(100% + 1rem);top:unset;"
+          >
+            <div class="mini-row-title">
+              导出选项
+            </div>
+            <div class="mini-row">
+              <BaseButton @click="emit('exportData',{type:'all',data:[]})">全部文章</BaseButton>
+            </div>
+            <div class="mini-row">
+              <BaseButton @click="emit('exportData',{type:'chapter',data:article})">当前章节</BaseButton>
+            </div>
+          </MiniDialog>
+        </div>
         <BaseButton @click="add">新增</BaseButton>
       </div>
     </div>
