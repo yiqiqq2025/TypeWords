@@ -119,7 +119,6 @@ export const useSettingStore = defineStore('setting', {
         }
         let data = checkAndUpgradeSaveSetting(configStr)
         this.setState({...data, load: true})
-        // this.load = true
         resolve(true)
       })
     }

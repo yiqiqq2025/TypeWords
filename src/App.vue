@@ -58,9 +58,11 @@ async function init() {
   store.load = true
   setTheme(settingStore.theme)
 
-  get(APP_VERSION.key).then(r => {
-    runtimeStore.isNew = r ? (APP_VERSION.version > Number(r)) : true
-  })
+  if (!settingStore.first) {
+    get(APP_VERSION.key).then(r => {
+      runtimeStore.isNew = r ? (APP_VERSION.version > Number(r)) : true
+    })
+  }
 }
 
 onMounted(init)

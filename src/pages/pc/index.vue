@@ -40,7 +40,7 @@ const {toggleTheme} = useTheme()
         <div class="row" @click="router.push('/setting')">
           <IconFluentSettings20Regular/>
           <span v-if="settingStore.sideExpand">设置</span>
-          <div class="red-point" v-if="runtimeStore.isNew"></div>
+          <div class="red-point" :class="!settingStore.sideExpand && 'top-1 right-0'" v-if="runtimeStore.isNew"></div>
         </div>
       </div>
       <div class="bottom flex justify-evenly ">
@@ -100,7 +100,7 @@ const {toggleTheme} = useTheme()
 
     svg {
       flex-shrink: 0;
-      font-size: 1.5rem !important;
+      font-size: 1.3rem !important;
     }
   }
 
