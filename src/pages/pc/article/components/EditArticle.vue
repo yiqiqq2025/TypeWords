@@ -146,8 +146,9 @@ function save(option: 'save' | 'saveAndNext') {
     let d = cloneDeep(editArticle)
     if (!d.id) d.id = nanoid(6)
     delete d.sections
-    // copy(console.json(d, 2))
-    copy(JSON.stringify(d, null, 2))
+    //这个console.json方法特意将array压缩了，而不压缩其他，方便可视化复制到文章的json里面去
+    copy(console.json(d, 2))
+    // copy(JSON.stringify(d, null, 2))
     const saveTemp = () => {
       emit(option as any, editArticle)
       return resolve(true)
