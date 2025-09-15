@@ -390,7 +390,9 @@ function play2(e) {
             <ArticleAudio ref="audioRef" :article="articleData.article"></ArticleAudio>
             <div class="flex flex-col items-center justify-center gap-1">
               <div class="flex gap-2 center">
-                <Switch v-model="settingStore.articleSound"/>
+                <Tooltip title="自动发音">
+                  <Switch v-model="settingStore.articleSound"/>
+                </Tooltip>
                 <BaseIcon
                     :title="`下一句(${settingStore.shortcutKeyMap[ShortcutKey.Next]})`"
                     @click="skip">
