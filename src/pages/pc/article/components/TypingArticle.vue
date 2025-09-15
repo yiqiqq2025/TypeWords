@@ -437,33 +437,7 @@ function onContextMenu(e: MouseEvent, sentence: Sentence, i, j, w) {
     y: e.y,
     items: [
       {
-        label: "从这开始",
-        onClick: () => {
-          sectionIndex = i
-          sentenceIndex = j
-          //todo 这里有可能是符号，要处理下
-          wordIndex = w + 1
-          stringIndex = 0
-          input = wrong = ''
-          isEnd = isSpace = false
-          let currentSection = props.article.sections[sectionIndex]
-          currentSection.slice(sentenceIndex).map(w => {
-            w.words.map(v => {
-              v.input = ''
-            })
-          })
-          props.article.sections.slice(sectionIndex + 1).map((v, i) => {
-            v.map((w) => {
-              w.words.map(v => {
-                v.input = ''
-              })
-            })
-          })
-          emit('play', {sentence: sentence, handle: false})
-        }
-      },
-      {
-        label: "添加到收藏",
+        label: "收藏单词",
         onClick: () => {
           let word = props.article.sections[i][j].words[w]
           let doc = nlp(word.word)
@@ -497,6 +471,32 @@ function onContextMenu(e: MouseEvent, sentence: Sentence, i, j, w) {
           navigator.clipboard.writeText(word.word).then(r => {
             Toast.success('已复制')
           })
+        }
+      },
+      {
+        label: "从这开始",
+        onClick: () => {
+          sectionIndex = i
+          sentenceIndex = j
+          //todo 这里有可能是符号，要处理下
+          wordIndex = w + 1
+          stringIndex = 0
+          input = wrong = ''
+          isEnd = isSpace = false
+          let currentSection = props.article.sections[sectionIndex]
+          currentSection.slice(sentenceIndex).map(w => {
+            w.words.map(v => {
+              v.input = ''
+            })
+          })
+          props.article.sections.slice(sectionIndex + 1).map((v, i) => {
+            v.map((w) => {
+              w.words.map(v => {
+                v.input = ''
+              })
+            })
+          })
+          emit('play', {sentence: sentence, handle: false})
         }
       },
       {
