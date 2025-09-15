@@ -73,7 +73,7 @@ let studyLoading = $ref(false)
 function syncDictInMyStudyList(study = false) {
   _nextTick(() => {
     let rIndex = base.word.bookList.findIndex(v => v.id === runtimeStore.editDict.id)
-    let temp = cloneDeep(runtimeStore.editDict);
+    let temp = runtimeStore.editDict;
     if (!temp.custom && ![DictId.wordKnown, DictId.wordWrong, DictId.wordCollect].includes(temp.id)) {
       temp.custom = true
       temp.id += '_custom'
@@ -265,6 +265,7 @@ function importData(e) {
           let data = null
           try {
             data = convertToWord({
+              id : nanoid(6),
               word: v['单词'],
               phonetic0: v['音标①'] ?? '',
               phonetic1: v['音标②'] ?? '',
