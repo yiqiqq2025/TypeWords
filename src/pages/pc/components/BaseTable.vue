@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 
-import {nextTick, useSlots, withDirectives} from "vue";
+import {nextTick, useSlots} from "vue";
 import {Sort} from "@/types/types.ts";
 import MiniDialog from "@/pages/pc/components/dialog/MiniDialog.vue";
 import BaseIcon from "@/components/BaseIcon.vue";
@@ -13,7 +13,7 @@ import Pagination from '@/pages/pc/components/base/Pagination.vue'
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import Checkbox from "@/pages/pc/components/base/checkbox/Checkbox.vue";
 import DeleteIcon from "@/components/icon/DeleteIcon.vue";
-import loadingDirective from "@/directives/loading.tsx";
+import Dialog from "@/pages/pc/components/dialog/Dialog.vue";
 
 let list = defineModel('list')
 
@@ -64,7 +64,6 @@ function scrollToItem(index: number) {
   })
 }
 
-defineExpose({scrollToBottom, scrollToItem})
 
 let pageNo = $ref(1)
 let pageSize = $ref(50)
@@ -100,6 +99,9 @@ function toggleSelectAll() {
 let searchKey = $ref('')
 let showSortDialog = $ref(false)
 let showSearchInput = $ref(false)
+let showImportDialog = $ref(false)
+
+const closeImportDialog = () => showImportDialog = false
 
 function sort(type: Sort) {
   if (type === Sort.reverse) {
@@ -125,6 +127,11 @@ function handlePageNo(e) {
 
 const s = useSlots()
 
+defineExpose({
+  scrollToBottom,
+  scrollToItem,
+  closeImportDialog
+})
 defineRender(
     () => {
       const d = (item) => <Checkbox
@@ -138,19 +145,16 @@ defineRender(
                 props.showToolbar && <div>
                   {
                     showSearchInput ? (
-                        <div
-                            class="flex gap-4"
-                        >
+                        <div class="flex gap-4">
                           <Input
                               prefixIcon
                               modelValue={searchKey}
-                              onUpdate:modelValue=
-                                  {debounce(e => searchKey = e)}
+                              onUpdate:modelValue={debounce(e => searchKey = e)}
                               class="flex-1"/>
                           <BaseButton onClick={() => (showSearchInput = false, searchKey = '')}>取消</BaseButton>
                         </div>
                     ) : (
-                        <div class="flex justify-between " v-else>
+                        <div class="flex justify-between">
                           <div class="flex gap-2 items-center">
                             <Checkbox
                                 disabled={!currentList.length}
@@ -174,39 +178,24 @@ defineRender(
                                   </PopConfirm>
                                   : null
                             }
-                            <div>
-                              <BaseIcon
-                                  onClick={() => {
-                                    let d: HTMLDivElement = document.querySelector('#update-dict')
-                                    d.click()
-                                  }}
-                                  icon="fluent:add-20-filled"
-                                  title="导入">
-                                {props.importLoading ? <IconEosIconsLoading/> : <IconSystemUiconsImport/>}
-                              </BaseIcon>
-                              <input
-                                  id="update-dict"
-                                  type="file"
-                                  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-                                  onChange={e => emit('importData', e)}
-                                  class="w-0 h-0 opacity-0"/>
-                            </div>
+                            <BaseIcon
+                                onClick={() => showImportDialog = true}
+                                title="导入">
+                              <IconSystemUiconsImport/>
+                            </BaseIcon>
                             <BaseIcon
                                 onClick={() => emit('exportData')}
-                                icon="fluent:add-20-filled"
                                 title="导出">
                               {props.exportLoading ? <IconEosIconsLoading/> : <IconPhExportLight/>}
                             </BaseIcon>
                             <BaseIcon
                                 onClick={props.add}
-                                icon="fluent:add-20-filled"
                                 title="添加单词">
                               <IconFluentAdd20Regular/>
                             </BaseIcon>
                             <BaseIcon
                                 disabled={!currentList.length}
                                 title="改变顺序"
-                                icon="icon-park-outline:sort-two"
                                 onClick={() => showSortDialog = !showSortDialog}
                             >
                               <IconFluentArrowSort20Regular/>
@@ -269,6 +258,37 @@ defineRender(
                       </>
                   ) : <Empty/>
             }
+
+            <Dialog modelValue={showImportDialog}
+                    onUpdate:modelValue={closeImportDialog}
+                    title="导入教程"
+            >
+              <div className="w-100 p-4 pt-0">
+                <div>请按照模板的格式来填写数据</div>
+                <div class="color-red">单词项为必填，其他项可不填</div>
+                <div>翻译：一行一个翻译，前面词性，后面内容（如n.取消）；多个翻译请换行</div>
+                <div>例句：一行原文，一行译文；多个请换<span class="color-red">两</span>行</div>
+                <div>短语：一行原文，一行译文；多个请换<span class="color-red">两</span>行</div>
+                <div>同义词、同根词、词源：请前往官方字典，然后编辑其中某个单词，参考其格式</div>
+                <div class="mt-6">
+                  模板下载地址：<a href="https://2study.top/libs/单词导入模板.xlsx">单词导入模板</a>
+                </div>
+                <div class="mt-4">
+                  <BaseButton
+                      onClick={() => {
+                        let d: HTMLDivElement = document.querySelector('#upload-trigger')
+                        d.click()
+                      }}
+                      loading={props.importLoading}>导入</BaseButton>
+                  <input
+                      id="upload-trigger"
+                      type="file"
+                      accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                      onChange={e => emit('importData', e)}
+                      class="w-0 h-0 opacity-0"/>
+                </div>
+              </div>
+            </Dialog>
           </div>
       )
     }

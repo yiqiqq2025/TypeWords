@@ -2,9 +2,9 @@
 import {DictId} from "@/types/types.ts";
 
 import BasePage from "@/pages/pc/components/BasePage.vue";
-import {computed, onMounted, reactive, shallowReactive} from "vue";
+import {computed, onMounted, reactive, ref, shallowReactive} from "vue";
 import {useRuntimeStore} from "@/stores/runtime.ts";
-import {_getDictDataByUrl, _nextTick, cloneDeep, convertToWord, loadJsLib, useNav} from "@/utils";
+import {_getDictDataByUrl, _nextTick, convertToWord, loadJsLib, useNav} from "@/utils";
 import {nanoid} from "nanoid";
 import BaseIcon from "@/components/BaseIcon.vue";
 import BaseTable from "@/pages/pc/components/BaseTable.vue";
@@ -25,7 +25,6 @@ import DeleteIcon from "@/components/icon/DeleteIcon.vue";
 import {getCurrentStudyWord} from "@/hooks/dict.ts";
 import PracticeSettingDialog from "@/pages/pc/word/components/PracticeSettingDialog.vue";
 import {useSettingStore} from "@/stores/setting.ts";
-import * as XLSX from "xlsx";
 import {MessageBox} from "@/utils/MessageBox.tsx";
 import {Origin} from "@/config/ENV.ts";
 
@@ -149,8 +148,8 @@ function word2Str(word) {
   res.sentences = word.sentences.map(v => (v.c + "\n" + v.cn).replaceAll('"', '')).join('\n\n')
   res.phrases = word.phrases.map(v => (v.c + "\n" + v.cn).replaceAll('"', '')).join('\n\n')
   res.synos = word.synos.map(v => (v.pos + v.cn + "\n" + v.ws.join('/')).replaceAll('"', '')).join('\n\n')
-  res.relWords = '词根:' + word.relWords.root + '\n\n' +
-      word.relWords.rels.map(v => (v.pos + "\n" + v.words.map(v => (v.c + ':' + v.cn)).join('\n')).replaceAll('"', '')).join('\n\n')
+  res.relWords = word.relWords.root ? ('词根:' + word.relWords.root + '\n\n' +
+      word.relWords.rels.map(v => (v.pos + "\n" + v.words.map(v => (v.c + ':' + v.cn)).join('\n')).replaceAll('"', '')).join('\n\n')) : ''
   res.etymology = word.etymology.map(v => (v.t + '\n' + v.d).replaceAll('"', '')).join('\n\n')
   return res
 }
@@ -247,6 +246,7 @@ async function addMyStudyList() {
 
 let exportLoading = $ref(false)
 let importLoading = $ref(false)
+let tableRef = ref()
 
 function importData(e) {
   let file = e.target.files[0];
@@ -265,11 +265,11 @@ function importData(e) {
           let data = null
           try {
             data = convertToWord({
-              id : nanoid(6),
+              id: nanoid(6),
               word: v['单词'],
               phonetic0: v['音标①'] ?? '',
               phonetic1: v['音标②'] ?? '',
-              trans: v['释义'] ?? '',
+              trans: v['翻译'] ?? '',
               sentences: v['例句'] ?? '',
               phrases: v['短语'] ?? '',
               synos: v['近义词'] ?? '',
@@ -282,42 +282,47 @@ function importData(e) {
           return data
         }
       }).filter(v => v);
+      if (words.length) {
+        let repeat = []
+        let noRepeat = []
+        words.map((v: any) => {
+          let rIndex = runtimeStore.editDict.words.findIndex(s => s.word === v.word)
+          if (rIndex > -1) {
+            v.index = rIndex
+            repeat.push(v)
+          } else {
+            noRepeat.push(v)
+          }
+        })
 
-      let repeat = []
-      let noRepeat = []
-      words.map((v: any) => {
-        let rIndex = runtimeStore.editDict.words.findIndex(s => s.word === v.word)
-        if (rIndex > -1) {
-          v.index = rIndex
-          repeat.push(v)
+        runtimeStore.editDict.words = runtimeStore.editDict.words.concat(noRepeat)
+
+        if (repeat.length) {
+          MessageBox.confirm(
+              '单词"' + repeat.map(v => v.word).join(', ') + '" 已存在，是否覆盖原单词？',
+              '检测到重复单词',
+              () => {
+                repeat.map(v => {
+                  runtimeStore.editDict.words[v.index] = v
+                  delete runtimeStore.editDict.words[v.index]["index"]
+                })
+              },
+              null,
+              () => {
+                tableRef.value.closeImportDialog()
+                e.target.value = ''
+                importLoading = false
+                syncDictInMyStudyList()
+                Toast.success('导入成功！')
+              }
+          )
         } else {
-          noRepeat.push(v)
+          tableRef.value.closeImportDialog()
+          syncDictInMyStudyList()
+          Toast.success('导入成功！')
         }
-      })
-
-      runtimeStore.editDict.words = runtimeStore.editDict.words.concat(noRepeat)
-
-      if (repeat.length) {
-        MessageBox.confirm(
-            '单词"' + repeat.map(v => v.word).join(', ') + '" 已存在，是否覆盖原单词？',
-            '检测到重复单词',
-            () => {
-              repeat.map(v => {
-                runtimeStore.editDict.words[v.index] = v
-                delete runtimeStore.editDict.words[v.index]["index"]
-              })
-            },
-            null,
-            () => {
-              e.target.value = ''
-              importLoading = false
-              syncDictInMyStudyList()
-              Toast.success('导入成功！')
-            }
-        )
       } else {
-        syncDictInMyStudyList()
-        Toast.success('导入成功！')
+        Toast.warning('导入失败！原因：没有数据/未认别到数据');
       }
     } else {
       Toast.warning('导入失败！原因：没有数据');
@@ -340,7 +345,7 @@ async function exportData() {
       单词: t.word,
       '音标①': t.phonetic0,
       '音标②': t.phonetic1,
-      '释义': t.trans,
+      '翻译': t.trans,
       '例句': t.sentences,
       '短语': t.phrases,
       '近义词': t.synos,
@@ -375,6 +380,7 @@ defineRender(() => {
                 <div class="flex flex-1 overflow-hidden">
                   <div class="w-4/10">
                     <BaseTable
+                        ref={tableRef}
                         class="h-full"
                         list={list}
                         loading={loading}
