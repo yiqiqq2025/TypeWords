@@ -262,7 +262,7 @@ function recordStart() {
     sentenceAudioRef.play()
   }
   editSentence.audioPosition[0] = Number(sentenceAudioRef.currentTime.toFixed(2))
-  if (editSentence.audioPosition[0] > editSentence.audioPosition[1]) {
+  if (editSentence.audioPosition[0] > editSentence.audioPosition[1] && editSentence.audioPosition[1] !== 0) {
     editSentence.audioPosition[1] = editSentence.audioPosition[0]
   }
 }
@@ -306,7 +306,7 @@ function setStartTime(val: Sentence, i: number, j: number) {
   } else {
     val.audioPosition[0] = Number(Number(audioRef.currentTime).toFixed(2))
   }
-  if (val.audioPosition[0] > val.audioPosition[1]) {
+  if (val.audioPosition[0] > val.audioPosition[1] && val.audioPosition[1] !== 0) {
     val.audioPosition[1] = val.audioPosition[0]
   }
 }
