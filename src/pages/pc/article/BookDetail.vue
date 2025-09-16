@@ -5,18 +5,20 @@ import BackIcon from "@/pages/pc/components/BackIcon.vue";
 import Empty from "@/components/Empty.vue";
 import ArticleList from "@/pages/pc/components/list/ArticleList.vue";
 import {useBaseStore} from "@/stores/base.ts";
-import {Article, DictId, DictType} from "@/types/types.ts";
+import {Article, Dict, DictId, DictType} from "@/types/types.ts";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 import BaseButton from "@/components/BaseButton.vue";
 import {useRoute, useRouter} from "vue-router";
 import EditBook from "@/pages/pc/article/components/EditBook.vue";
 import {computed, onMounted} from "vue";
-import {_getDictDataByUrl, useNav} from "@/utils";
+import {_getDictDataByUrl, cloneDeep, useNav} from "@/utils";
 import BaseIcon from "@/components/BaseIcon.vue";
 import {useArticleOptions} from "@/hooks/dict.ts";
 import {getDefaultArticle, getDefaultDict} from "@/types/func.ts";
 import Toast from "@/pages/pc/components/base/toast/Toast.ts";
 import ArticleAudio from "@/pages/pc/article/components/ArticleAudio.vue";
+import {MessageBox} from "@/utils/MessageBox.tsx";
+import book_list from "@/assets/book-list.json";
 
 const runtimeStore = useRuntimeStore()
 const base = useBaseStore()
@@ -95,6 +97,33 @@ const {
   toggleArticleCollect
 } = useArticleOptions()
 
+function reset() {
+  MessageBox.confirm(
+      '继续此操作会重置所有文章，并从官方书籍获取最新文章列表，学习记录不会被重置。确认恢复默认吗？',
+      '恢复默认',
+      async () => {
+        debugger
+        let dict = book_list.flat().find(v => v.url === runtimeStore.editDict.url) as Dict
+        if (dict && dict.id) {
+          dict = await _getDictDataByUrl(dict, DictType.article)
+          let rIndex = base.article.bookList.findIndex(v => v.id === runtimeStore.editDict.id)
+          if (rIndex > -1) {
+            let item = base.article.bookList[rIndex]
+            item.custom = false
+            item.id = dict.id
+            item.articles = dict.articles
+            if (item.lastLearnIndex >= item.articles.length) {
+              item.lastLearnIndex = item.articles.length - 1
+            }
+            runtimeStore.editDict = item
+            Toast.success('恢复成功')
+            return
+          }
+        }
+        Toast.error('恢复失败')
+      }
+  )
+}
 </script>
 
 <template>
@@ -104,6 +133,9 @@ const {
         <BackIcon class="z-2"/>
         <div class="absolute text-2xl text-align-center w-full">{{ runtimeStore.editDict.name }}</div>
         <div class="flex">
+          <BaseButton v-if="runtimeStore.editDict.custom && runtimeStore.editDict.url" type="info" @click="reset">
+            恢复默认
+          </BaseButton>
           <BaseButton :loading="studyLoading||loading" type="info" @click="isEdit = true">编辑</BaseButton>
           <BaseButton type="info" @click="router.push('batch-edit-article')">文章管理</BaseButton>
           <BaseButton :loading="studyLoading||loading" @click="addMyStudyList">学习</BaseButton>

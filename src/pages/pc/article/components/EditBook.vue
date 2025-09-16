@@ -47,12 +47,6 @@ async function onSubmit() {
     if (valid) {
       let data: Dict = getDefaultDict(dictForm)
       let source = [store.article, store.word][props.isBook ? 0 : 1]
-      //任意修改，都将其变为自定义词典
-      if (!data.custom && ![DictId.wordKnown, DictId.wordWrong, DictId.wordCollect, DictId.articleCollect].includes(data.id)) {
-        data.custom = true
-        data.id += '_custom'
-      }
-
       //todo 可以检查的更准确些，比如json对比
       if (props.isAdd) {
         data.id = 'custom-dict-' + Date.now()
@@ -67,6 +61,11 @@ async function onSubmit() {
         }
       } else {
         let rIndex = source.bookList.findIndex(v => v.id === data.id)
+        //任意修改，都将其变为自定义词典
+        if (!data.custom && ![DictId.wordKnown, DictId.wordWrong, DictId.wordCollect, DictId.articleCollect].includes(data.id)) {
+          data.custom = true
+          data.id += '_custom'
+        }
         runtimeStore.editDict = data
         if (rIndex > -1) {
           source.bookList[rIndex] = cloneDeep(data)
