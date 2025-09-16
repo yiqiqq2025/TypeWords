@@ -15,9 +15,11 @@ let instance = $ref<{ audioRef: HTMLAudioElement }>({audioRef: null})
 watch(() => props.article.audioFileId, async () => {
   if (!props.article.audioSrc && props.article.audioFileId) {
     let list = await get(LOCAL_FILE_KEY)
-    let rItem = list.find((file) => file.id === props.article.audioFileId)
-    if (rItem) {
-      file = URL.createObjectURL(rItem.file)
+    if (list) {
+      let rItem = list.find((file) => file.id === props.article.audioFileId)
+      if (rItem) {
+        file = URL.createObjectURL(rItem.file)
+      }
     }
   }else {
     file = null

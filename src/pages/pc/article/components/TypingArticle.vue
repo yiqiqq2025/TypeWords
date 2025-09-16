@@ -165,7 +165,7 @@ function checkTranslateLocation() {
 let lockNextSentence = false
 
 function nextSentence() {
-  if (lockNextSentence) return
+  if (lockNextSentence || isEnd) return
   checkTranslateLocation()
   lockNextSentence = true
   // wordData.words = [
