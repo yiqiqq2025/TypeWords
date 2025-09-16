@@ -14,7 +14,6 @@ import Toast from '@/pages/pc/components/base/toast/Toast.ts'
 import {getDefaultArticle} from "@/types/func.ts";
 import BackIcon from "@/pages/pc/components/BackIcon.vue";
 import MiniDialog from "@/pages/pc/components/dialog/MiniDialog.vue";
-import * as XLSX from "xlsx";
 import {onMounted} from "vue";
 import {Origin} from "@/config/ENV.ts";
 
@@ -136,7 +135,9 @@ let showExport = $ref(false)
 useWindowClick(() => showExport = false)
 
 onMounted(() => {
-  article = runtimeStore.editDict.articles[0]
+  if (runtimeStore.editDict.articles.length) {
+    article = runtimeStore.editDict.articles[0]
+  }
 })
 
 let exportLoading = $ref(false)
