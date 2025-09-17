@@ -23,6 +23,7 @@ function checkRiskKey(origin: object, target: object) {
   for (const [key, value] of Object.entries(origin)) {
     if (target[key] !== undefined) origin[key] = target[key]
   }
+  return origin
 }
 
 export function checkAndUpgradeSaveDict(val: any) {
@@ -46,6 +47,12 @@ export function checkAndUpgradeSaveDict(val: any) {
       // console.log('state', state)
       if (version === SAVE_DICT_KEY.version) {
         checkRiskKey(defaultState, state)
+        defaultState.article.bookList = defaultState.article.bookList.map(v=>{
+              return getDefaultDict(checkRiskKey(getDefaultDict(),v))
+          })
+          defaultState.word.bookList = defaultState.word.bookList.map(v=>{
+              return getDefaultDict(checkRiskKey(getDefaultDict(),v))
+          })
         return defaultState
       } else {
         if (version === 3) {
