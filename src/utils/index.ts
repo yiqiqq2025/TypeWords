@@ -13,6 +13,9 @@ import {getDefaultArticle, getDefaultDict, getDefaultWord} from "@/types/func.ts
 import {set} from "idb-keyval";
 import book_list from "@/assets/book-list.json";
 import dict_list from "@/assets/dict-list.json";
+import duration from "dayjs/plugin/duration";
+
+dayjs.extend(duration);
 
 export function no() {
   Toast.warning('未现实')
@@ -47,12 +50,12 @@ export function checkAndUpgradeSaveDict(val: any) {
       // console.log('state', state)
       if (version === SAVE_DICT_KEY.version) {
         checkRiskKey(defaultState, state)
-        defaultState.article.bookList = defaultState.article.bookList.map(v=>{
-              return getDefaultDict(checkRiskKey(getDefaultDict(),v))
-          })
-          defaultState.word.bookList = defaultState.word.bookList.map(v=>{
-              return getDefaultDict(checkRiskKey(getDefaultDict(),v))
-          })
+        defaultState.article.bookList = defaultState.article.bookList.map(v => {
+          return getDefaultDict(checkRiskKey(getDefaultDict(), v))
+        })
+        defaultState.word.bookList = defaultState.word.bookList.map(v => {
+          return getDefaultDict(checkRiskKey(getDefaultDict(), v))
+        })
         return defaultState
       } else {
         if (version === 3) {
@@ -293,6 +296,18 @@ export function _dateFormat(val: any, format?: string): string {
   const d = new Date(Number(val))
   return dayjs(d).format(format)
 }
+
+export function msToHourMinute(ms) {
+  const d = dayjs.duration(ms);
+  const hours = d.hours();
+  const minutes = d.minutes();
+  return `${hours}小时${minutes}分钟`;
+}
+
+export function msToMinute(ms) {
+  return `${Math.floor(dayjs.duration(ms).asMinutes())}分钟`;
+}
+
 
 export function _fetch(url: string) {
   return new Promise<any[]>(async (resolve, reject) => {
@@ -636,4 +651,11 @@ export async function loadJsLib(key: string, url: string) {
     script.onerror = reject;
     document.head.appendChild(script);
   });
+}
+
+export function total(arr, key) {
+  return arr.reduce((a, b) => {
+    a += b[key];
+    return a
+  }, 0);
 }

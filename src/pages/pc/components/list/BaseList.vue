@@ -146,8 +146,8 @@ defineExpose({scrollToBottom, scrollToItem})
       style="overflow: auto;"
       ref="listRef">
     <div class="list-item-wrapper"
-         v-for="(item,index) in list"
-         :key="item.id"
+         v-for="(item,index) in props.list"
+         :key="item.title"
     >
       <div class="common-list-item"
            :class="{

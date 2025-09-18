@@ -343,17 +343,33 @@ function onTyping(e: KeyboardEvent) {
       }
 
       // 检查是否是句子的最后一个单词
-      const isLastWordInSentence = wordIndex + 1 >= currentSentence.words.length;
+      // const isLastWordInSentence = wordIndex + 1 >= currentSentence.words.length;
+      // if (isLastWordInSentence) {
+      //   // 如果是句子的最后一个单词，自动跳转到下一句，不用再输入空格
+      //   nextSentence();
+      // } else if (currentWord.nextSpace) {
+      //   // 如果不是最后一个单词，且需要空格，设置等待空格输入
+      //   isSpace = true;
+      // } else {
+      //   // 如果不需要空格，直接移动到下一个单词
+      //   nextWord();
+      // }
 
-      if (isLastWordInSentence) {
-        // 如果是句子的最后一个单词，自动跳转到下一句，不用再输入空格
-        nextSentence();
-      } else if (currentWord.nextSpace) {
-        // 如果不是最后一个单词，且需要空格，设置等待空格输入
-        isSpace = true;
+      //换句不打空格不符合习惯
+      if (currentWord.nextSpace) {
+        if (
+            sectionIndex === props.article.sections.length - 1 &&
+            sentenceIndex === currentSection.length - 1 &&
+            wordIndex === currentSentence.words.length - 1
+        ) {
+          console.log('打完了')
+          isEnd = true
+          emit('complete')
+        } else {
+          isSpace = true
+        }
       } else {
-        // 如果不需要空格，直接移动到下一个单词
-        nextWord();
+        nextWord()
       }
     }
 

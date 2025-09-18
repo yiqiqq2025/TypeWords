@@ -431,7 +431,7 @@ useEvents([
         <div class="panel-page-item pl-4">
           <WordList
               v-if="data.words.length"
-              :is-active="true"
+              :is-active="settingStore.showPanel"
               :static="false"
               :show-word="!settingStore.dictation"
               :show-translate="settingStore.translate"

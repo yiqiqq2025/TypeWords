@@ -11,7 +11,7 @@ import BaseButton from "@/components/BaseButton.vue";
 import {useRoute, useRouter} from "vue-router";
 import EditBook from "@/pages/pc/article/components/EditBook.vue";
 import {computed, onMounted} from "vue";
-import {_getDictDataByUrl, cloneDeep, useNav} from "@/utils";
+import {_dateFormat, _getDictDataByUrl, cloneDeep, msToHourMinute, total, useNav} from "@/utils";
 import BaseIcon from "@/components/BaseIcon.vue";
 import {useArticleOptions} from "@/hooks/dict.ts";
 import {getDefaultArticle, getDefaultDict} from "@/types/func.ts";
@@ -102,7 +102,6 @@ function reset() {
       '继续此操作会重置所有文章，并从官方书籍获取最新文章列表，学习记录不会被重置。确认恢复默认吗？',
       '恢复默认',
       async () => {
-        debugger
         let dict = book_list.flat().find(v => v.url === runtimeStore.editDict.url) as Dict
         if (dict && dict.id) {
           dict = await _getDictDataByUrl(dict, DictType.article)
@@ -124,6 +123,21 @@ function reset() {
       }
   )
 }
+
+const currentPractice = $computed(() => {
+  if (runtimeStore.editDict.statistics?.length) {
+    return runtimeStore.editDict.statistics.filter(v => v.title === selectArticle.title)
+  }
+  return []
+})
+
+const totalSpend = $computed(() => {
+  if (runtimeStore.editDict.statistics?.length) {
+    return msToHourMinute(total(runtimeStore.editDict.statistics,'spend'))
+  }
+  return 0
+})
+
 </script>
 
 <template>
@@ -142,6 +156,8 @@ function reset() {
         </div>
       </div>
       <div class="text-lg  ">介绍：{{ runtimeStore.editDict.description }}</div>
+      <div class="text-base  " v-if="totalSpend">总学习时长：{{ totalSpend }}</div>
+
       <div class="line my-3"></div>
 
       <div class="flex flex-1 overflow-hidden">
@@ -166,6 +182,12 @@ function reset() {
         </div>
         <div class="right flex-[4] shrink-0 pl-4 overflow-auto">
           <div v-if="selectArticle.id">
+            <div class="font-family text-base mb-4" v-if="currentPractice.length">
+              <div>学习记录：{{ msToHourMinute(total(currentPractice, 'spend'))}}</div>
+              <div class="item" v-for="i in currentPractice">
+                {{_dateFormat(i.startDate,'YYYY-MM-DD HH-mm')}}: {{ msToHourMinute(i.spend) }}
+              </div>
+            </div>
             <div class="en-article-family title text-xl">
               <div class="text-center text-2xl my-2">
                 <ArticleAudio :article="selectArticle"></ArticleAudio>

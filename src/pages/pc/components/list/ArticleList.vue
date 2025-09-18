@@ -3,6 +3,8 @@
 import Input from "@/pages/pc/components/Input.vue";
 import {Article} from "@/types/types.ts";
 import BaseList from "@/pages/pc/components/list/BaseList.vue";
+import * as sea from "node:sea";
+import {watch, watchEffect} from "vue";
 
 const props = withDefaults(defineProps<{
   list: Article[],
@@ -20,11 +22,30 @@ const emit = defineEmits<{
 let searchKey = $ref('')
 let localList = $computed(() => {
   if (searchKey) {
-    return props.list.filter((item: Article) => {
-      //把搜索内容，分词之后，判断是否有这个词，比单纯遍历包含体验更好
-      return searchKey.toLowerCase().split(' ').filter(v => v).some(value => {
+    //把搜索内容，分词之后，判断是否有这个词，比单纯遍历包含体验更好
+    let t = searchKey.toLowerCase()
+    let strings = t.split(' ').filter(v => v);
+    let res = props.list.filter((item: Article) => {
+      return strings.some(value => {
         return item.title.toLowerCase().includes(value) || item.titleTranslate.toLowerCase().includes(value)
       })
+    })
+    try {
+      let d = Number(t)
+      //如果是纯数字，把那一条加进去
+      if (!isNaN(d)) {
+        res.push(props.list[d])
+      }
+    } catch (err) {
+    }
+    return res.sort((a: Article, b: Article) => {
+      //使完整包含的条目更靠前
+      const aMatch = a.title.toLowerCase().includes(t);
+      const bMatch = b.title.toLowerCase().includes(t);
+
+      if (aMatch && !bMatch) return -1; // a 靠前
+      if (!aMatch && bMatch) return 1;  // b 靠前
+      return 0; // 都匹配或都不匹配，保持原顺序
     })
   } else {
     return props.list

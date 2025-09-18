@@ -8,7 +8,7 @@ import {Article, ArticleItem, ArticleWord, Dict, DictType, ShortcutKey, Statisti
 import {useDisableEventListener, useOnKeyboardEventListener, useStartKeyboardEventListener} from "@/hooks/event.ts";
 import useTheme from "@/hooks/theme.ts";
 import Toast from '@/pages/pc/components/base/toast/Toast.ts'
-import {_getDictDataByUrl, cloneDeep} from "@/utils";
+import {_getDictDataByUrl, cloneDeep, msToHourMinute, msToMinute, total} from "@/utils";
 import {usePracticeStore} from "@/stores/practice.ts";
 import {useArticleOptions} from "@/hooks/dict.ts";
 import {genArticleSectionData, usePlaySentenceAudio} from "@/hooks/article.ts";
@@ -176,6 +176,10 @@ function complete() {
   window.umami?.track('studyWordArticle', reportData)
   store.sbook.statistics.push(data as any)
   console.log(data, reportData)
+
+  //重置
+  statStore.wrong = 0
+  statStore.startDate = Date.now()
 }
 
 function getCurrentPractice() {
@@ -308,6 +312,12 @@ function play2(e) {
   }
 }
 
+const currentPractice = $computed(() => {
+  if (store.sbook.statistics?.length) {
+    return store.sbook.statistics.filter(v => v.title === articleData.article.title)
+  }
+  return []
+})
 </script>
 <template>
   <PracticeLayout
@@ -334,7 +344,7 @@ function play2(e) {
         </template>
         <div class="panel-page-item pl-4">
           <ArticleList
-              :isActive="true"
+              :isActive="settingStore.showPanel"
               :static="false"
               :show-translate="settingStore.translate"
               @click="changeArticle"
@@ -365,6 +375,11 @@ function play2(e) {
         <div class="bottom">
           <div class="flex justify-between items-center gap-2">
             <div class="stat">
+              <div class="row">
+                <div class="num">{{ currentPractice.length }}次/{{ msToMinute(total(currentPractice, 'spend'))}}</div>
+                <div class="line"></div>
+                <div class="name">记录</div>
+              </div>
               <div class="row">
                 <div class="num">{{ speedMinute }}分钟</div>
                 <div class="line"></div>
@@ -473,7 +488,7 @@ function play2(e) {
         flex-direction: column;
         align-items: center;
         gap: .3rem;
-        width: 5rem;
+        width: 6rem;
         color: gray;
 
         .line {

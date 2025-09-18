@@ -18,7 +18,7 @@
   --color-sub-gray: #c0bfbf;
 
   --article-width: 50vw;
-  --article-toolbar-width: 50rem;
+  --article-toolbar-width: 50vw;
   --article-panel-width: 20rem;
   --article-panel-margin-left: calc(50% + var(--article-width) / 2 + 1rem);
 
@@ -129,7 +129,7 @@ html.dark {
     --panel-width: 20vw;
     --space: 0.5rem;
 
-    --article-toolbar-width: 45rem;
+    --article-toolbar-width: 50rem;
     --article-panel-width: 18rem;
   }
 }
