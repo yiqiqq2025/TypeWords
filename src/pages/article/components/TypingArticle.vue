@@ -94,6 +94,16 @@ watch(() => settingStore.translate, () => {
   checkTranslateLocation().then(() => checkCursorPosition())
 })
 
+watch(() => isEnd, n => {
+  if (n) {
+    _nextTick(() => {
+      typeArticleRef?.scrollTo({top: typeArticleRef.scrollHeight, behavior: "smooth"})
+    })
+  } else {
+    typeArticleRef?.scrollTo({top: 0, behavior: "smooth"})
+  }
+})
+
 function init() {
   isSpace = isEnd = false
   wrong = input = ''
@@ -125,6 +135,10 @@ function checkCursorPosition(a = sectionIndex, b = sentenceIndex, c = wordIndex)
         // 获取 articleWrapper 的位置
         const articleRect = articleWrapperRef.getBoundingClientRect();
         const endRect = end.getBoundingClientRect();
+        //如果当前输入位置大于屏幕的0.7高度，就滚动屏幕的1/3
+        if (endRect.y > window.innerHeight * 0.7) {
+          typeArticleRef?.scrollTo({top: typeArticleRef.scrollTop + window.innerHeight * 0.3, behavior: "smooth"})
+        }
         // 计算相对位置
         cursor = {
           top: endRect.top - articleRect.top,
@@ -354,22 +368,22 @@ function onTyping(e: KeyboardEvent) {
       //   // 如果不需要空格，直接移动到下一个单词
       //   nextWord();
       // }
-
       //换句不打空格不符合习惯
+
       if (currentWord.nextSpace) {
-        if (
-            sectionIndex === props.article.sections.length - 1 &&
-            sentenceIndex === currentSection.length - 1 &&
-            wordIndex === currentSentence.words.length - 1
-        ) {
-          console.log('打完了')
-          isEnd = true
-          emit('complete')
-        } else {
-          isSpace = true
-        }
+        isSpace = true
       } else {
-        nextWord()
+        if (wordIndex === currentSentence.words.length - 1) {
+          if (sectionIndex === props.article.sections.length - 1 && sentenceIndex === currentSection.length - 1) {
+            console.log('打完了')
+            isEnd = true
+            emit('complete')
+          } else {
+            nextSentence()
+          }
+        } else {
+          nextWord()
+        }
       }
     }
 
@@ -655,7 +669,7 @@ let showQuestions = $ref(false)
       <div class="cursor" v-if="!isEnd" :style="{top:cursor.top+'px',left:cursor.left+'px'}"></div>
     </div>
 
-    <div class="options flex justify-center" v-if="isEnd">
+    <div class="options flex justify-center mb-50" v-if="isEnd">
       <BaseButton
           @click="init">重新练习
       </BaseButton>
