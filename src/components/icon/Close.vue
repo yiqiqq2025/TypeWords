@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Tooltip from "@/pages/pc/components/base/Tooltip.vue";
+import Tooltip from "@/components/base/Tooltip.vue";
 
 defineEmits(['click'])
 defineProps<{

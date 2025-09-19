@@ -8,7 +8,7 @@ import dayjs from 'dayjs'
 import axios from "axios";
 import {env} from "@/config/ENV.ts";
 import {nextTick} from "vue";
-import Toast from '@/pages/pc/components/base/toast/Toast.ts'
+import Toast from '@/components/base/toast/Toast.ts'
 import {getDefaultArticle, getDefaultDict, getDefaultWord} from "@/types/func.ts";
 import {set} from "idb-keyval";
 import book_list from "@/assets/book-list.json";

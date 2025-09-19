@@ -7,7 +7,7 @@ export function getSentenceAllTranslateText(article: Article) {
 }
 
 export function getSentenceAllText(article: Article) {
-  return article.sections.map(v => v.map(s => s.text.trim()).filter(v => v).join(' \n')).filter(v => v).join(' \n\n');
+  return article.sections.map(v => v.map(s => s.text).filter(v => v).join('\n')).filter(v => v).join('\n\n');
 }
 
 /***

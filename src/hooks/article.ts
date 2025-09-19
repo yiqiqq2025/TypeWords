@@ -3,8 +3,9 @@ import {cloneDeep} from "@/utils";
 import nlp from "compromise/one";
 import {usePlayWordAudio} from "@/hooks/sound.ts";
 import {getSentenceAllText, getSentenceAllTranslateText} from "@/hooks/translate.ts";
-import {getDefaultArticleWord} from "@/types/func.ts";
+import {getDefaultArticleWord, getDefaultWord} from "@/types/func.ts";
 import {useSettingStore} from "@/stores/setting.ts";
+import Toast from "@/components/base/toast/Toast.ts";
 
 interface KeyboardMap {
   Period: string,
@@ -15,14 +16,6 @@ interface KeyboardMap {
   QuoteRight: string,
 }
 
-export const CnKeyboardMap: KeyboardMap = {
-  Period: '。',
-  Comma: '，',
-  Slash: '？',
-  Exclamation: '！',
-  QuoteLeft: '“',
-  QuoteRight: '”',
-}
 export const EnKeyboardMap: KeyboardMap = {
   Period: '.',
   Comma: ',',
@@ -33,198 +26,108 @@ export const EnKeyboardMap: KeyboardMap = {
 }
 
 
+function parseSentence(sentence: string) {
+  // 先统一一些常见的“智能引号” -> 直引号，避免匹配问题
+  sentence = sentence
+    .replace(/[\u2018\u2019\u201A\u201B]/g, "'") // 各种单引号 → '
+    .replace(/[\u201C\u201D\u201E\u201F]/g, '"'); // 各种双引号 → "
+
+  const len = sentence.length;
+  const tokens = [];
+  let i = 0;
+
+  while (i < len) {
+    const ch = sentence[i];
+
+    // 跳过空白（但不把空白作为 token）
+    if (/\s/.test(ch)) {
+      i++;
+      continue;
+    }
+
+    const rest = sentence.slice(i);
+
+    // 1) 货币 + 数字（$1,000.50 或 ¥200 或 €100.5）
+    let m = rest.match(/^[\$¥€£]\d{1,3}(?:,\d{3})*(?:\.\d+)?%?/);
+    if (m) {
+      tokens.push({word: m[0], start: i, end: i + m[0].length, isSymbol: false});
+      i += m[0].length;
+      continue;
+    }
+
+    // 2) 数字/小数/百分比（100% 3.14 1,000.00）
+    m = rest.match(/^\d{1,3}(?:,\d{3})*(?:\.\d+)?%?/);
+    if (m) {
+      tokens.push({word: m[0], start: i, end: i + m[0].length, isSymbol: false});
+      i += m[0].length;
+      continue;
+    }
+
+    // 3) 带点缩写或多段缩写（U.S. U.S.A. e.g. i.e. Ph.D.）
+    m = rest.match(/^[A-Za-z]+(?:\.[A-Za-z]+)+\.?/);
+    if (m) {
+      tokens.push({word: m[0], start: i, end: i + m[0].length, isSymbol: false});
+      i += m[0].length;
+      continue;
+    }
+
+    // 4) 单词（包含撇号/连字符，如 it's, o'clock, we'll, mother-in-law）
+    m = rest.match(/^[A-Za-z0-9]+(?:[\'\-][A-Za-z0-9]+)*/);
+    if (m) {
+      tokens.push({word: m[0], start: i, end: i + m[0].length, isSymbol: false});
+      i += m[0].length;
+      continue;
+    }
+
+    // 5) 其它可视符号（标点）——单字符处理（连续标点会被循环拆为单字符）
+    //    包括：.,!?;:"'()-[]{}<>/\\@#%^&*~`等非单词非空白字符
+    if (/[^\w\s]/.test(ch)) {
+      tokens.push({word: ch, start: i, end: i + 1, isSymbol: true});
+      i += 1;
+      continue;
+    }
+
+    // 6) 回退方案：把当前字符当作一个 token（防止意外丢失）
+    tokens.push({word: ch, start: i, end: i + 1, isSymbol: /[^\w\s]/.test(ch)});
+    i += 1;
+  }
+
+  // 计算 nextSpace：查看当前 token 的 end 到下一个 token 的 start 之间是否含空白
+  const result = tokens.map((t, idx) => {
+    const next = tokens[idx + 1];
+    const between = next ? sentence.slice(t.end, next.start) : sentence.slice(t.end);
+    const nextSpace = /\s/.test(between);
+    return getDefaultArticleWord({word: t.word, nextSpace, isSymbol: !!t.isSymbol});
+  });
+
+  return result;
+}
+
 //生成文章段落数据
 export function genArticleSectionData(article: Article): number {
   let text = article.text.trim()
-
-  // console.log('genArticleSectionData',text)
-
-  let keyboardMap = EnKeyboardMap
   let sections: Sentence[][] = []
-  let sectionTextList = text.split('\n\n')
-  // console.log(sectionTextList);
-  sectionTextList.filter(v => v).map((sectionText, i) => {
+  text.split('\n\n').filter(Boolean).map((sectionText, i) => {
     let section: Sentence[] = []
     sections.push(section)
-    sectionText = sectionText.trim()
-    let sentenceNlpList = []
-    sectionText.split('\n').map((rowSection, i) => {
-      let doc = nlp(rowSection)
-      let temp = {text: '', terms: []}
-      doc.json().map(item => {
-        temp.text += item.text
-        temp.terms = temp.terms.concat(item.terms)
-      })
-      sentenceNlpList.push(temp)
-    })
-
-    sentenceNlpList.map(item => {
+    sectionText.trim().split('\n').filter(Boolean).map((item, i, arr) => {
+      item = item.trim()
+      //如果没有空格，导致修改一行一行的数据时，汇总时全没有空格了，库无法正常断句
+      //所以要保证最后一个是空格，但防止用户打N个空格，就去掉再加上一个空格，只需要一个即可
+      if (i < arr.length - 1) item += ' '
       let sentence: Sentence = cloneDeep({
-        //他没有空格，导致修改一行一行的数据时，汇总时全没有空格了，库无法正常断句
-        text: item.text + ' ',
-        // text: '',
+        text: item,
         translate: '',
-        words: [],
+        words: parseSentence(item),
         audioPosition: [0, 0],
       })
       section.push(sentence)
-
-      const checkQuote = (pre: string, index?: number) => {
-        let nearSymbolPosition = null
-        if (index === 0) {
-          nearSymbolPosition = 'end'
-        } else {
-          //TODO 可以优化成for+break
-          section.slice().reverse().map((sentenceItem, b) => {
-            sentenceItem.words.slice().reverse().map((wordItem, c) => {
-              if (wordItem.symbolPosition !== '' && nearSymbolPosition === null) {
-                nearSymbolPosition = wordItem.symbolPosition
-              }
-            })
-          })
-        }
-
-        let word3: ArticleWord = getDefaultArticleWord({
-          word: pre,
-          nextSpace: false,
-          isSymbol: true,
-          symbolPosition: ''
-        });
-        // console.log('rrr', item)
-        // console.log('nearSymbolPosition', nearSymbolPosition)
-        if (nearSymbolPosition === 'end' || nearSymbolPosition === null) {
-          word3.symbolPosition = 'start'
-          sentence.words.push(word3)
-        } else {
-          sentence.words[sentence.words.length - 1].nextSpace = false
-          word3.symbolPosition = 'end'
-          word3.nextSpace = true
-
-          let addCurrent = false
-          sentence.words.slice().reverse().map((wordItem, c) => {
-            if (wordItem.symbolPosition === 'start' && !addCurrent) {
-              addCurrent = true
-            }
-          })
-          if (addCurrent) {
-            sentence.words.push(word3)
-          } else {
-            // 'Do you always get up so late? It'LICENSE one o'clock!' 会被断成两句
-            let lastSentence = section[section.length - 2]
-            lastSentence.words = lastSentence.words.concat(sentence.words)
-            lastSentence.words.push(word3)
-            sentence.words = []
-            //这里还不能直接删除sentence，因为后面还有一个  sentence.words = sentence.words.filter(v => v.word !== 'placeholder') 的判断
-            // section.pop()
-          }
-        }
-      }
-
-      const checkSymbol = (post: string, nextSpace: boolean = true) => {
-        switch (post) {
-          case keyboardMap.Period:
-          case keyboardMap.Comma:
-          case keyboardMap.Slash:
-          case keyboardMap.Exclamation:
-            sentence.words[sentence.words.length - 1].nextSpace = false
-            let word2 = getDefaultArticleWord({
-              word: post,
-              isSymbol: true,
-              nextSpace
-            });
-            sentence.words.push(word2)
-            break
-          case keyboardMap.QuoteLeft:
-          case ')':
-            checkQuote(post)
-            break
-          case `.'`:
-          case `!'`:
-          case `?'`:
-          case `,'`:
-          case `*'`:
-            post.split('').map(v => {
-              checkSymbol(v, false)
-            })
-            break
-          //类似于这种的“' -- ”的。需要保留空格，用了一个占位符才处理，因为每个符号都会把前面的那个字符的nextSpace改为false
-          case ' ':
-            // console.log('sentence', sentence)
-            //遇到“The clock has stopped!' I looked at my watch.”
-            //检测到stopped!' 的'时，如果前引号不在当前句，会把当前句的word合并到前一句。那么当前句的word就为空了，会报错
-            //所以需要检测一下
-            if (sentence.words.length) {
-              sentence.words[sentence.words.length - 1].nextSpace = true
-              let word3 = getDefaultArticleWord({
-                word: 'placeholder',
-                isSymbol: true,
-                nextSpace: false,
-              });
-              sentence.words.push(word3)
-            }
-            break
-          default:
-            // console.log('post', post)
-            //这里多半是一些奇怪的连接符之类的
-            if (post.length > 1) {
-              post.split('').map(v => {
-                checkSymbol(v, false)
-              })
-            } else {
-              sentence.words[sentence.words.length - 1].nextSpace = false
-              let word3 = getDefaultArticleWord({
-                word: post,
-                isSymbol: true,
-                nextSpace: false,
-              });
-              sentence.words.push(word3)
-            }
-            break
-        }
-      }
-
-      item.terms.map((v, index: number) => {
-        // console.log('v', v)
-        if (v.text) {
-          let pre: string = v.pre.trim()
-          if (pre) {
-            checkQuote(pre, index)
-          }
-
-          let word = getDefaultArticleWord({word: v.text, nextSpace: true});
-          sentence.words.push(word)
-
-          let post: string = v.post
-          //判断是不是等于空，因为正常的词后面都会有个空格。这种不需要处理。
-          if (post && post !== ' ') {
-            checkSymbol(post.trim())
-          }
-        }
-      })
-
-      //去除空格占位符
-      sentence.words = sentence.words.filter(v => v.word !== 'placeholder')
-      //如果是空的，直接去掉
-      if (!sentence.words.length) {
-        section.pop()
-      }
-    })
-
-    // console.log('section', section)
-  })
-
-  sections = sections.filter(sectionItem => sectionItem.length)
-  sections.map((sectionItem, a) => {
-    sectionItem.map((sentenceItem, b) => {
-      sentenceItem.text = sentenceItem.words.reduce((previousValue: string, currentValue) => {
-        previousValue += currentValue.word + (currentValue.nextSpace ? ' ' : '')
-        return previousValue
-      }, '')
     })
   })
 
-  // console.log(sections)
+  sections = sections.filter(v => v.length)
   article.sections = sections
+  console.log(sections)
 
   let failCount = 0
   let translateList = article.textTranslate?.split('\n\n') || []
@@ -469,7 +372,6 @@ Its none of your business, the young man said rudely. This is a private conversa
         section.pop()
       }
     })
-
     // console.log(sentenceNlpList)
   })
 
