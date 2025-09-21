@@ -242,8 +242,11 @@ function updateCurrentWordInfo(currentWord: ArticleWord) {
   };
 }
 
+let isTyping = false
 function onTyping(e: KeyboardEvent) {
+  if (isTyping) return;
   if (!props.article.sections.length) return
+  isTyping = true;
   // console.log('keyDown', e.key, e.code, e.keyCode)
   wrong = ''
   let currentSection = props.article.sections[sectionIndex]
@@ -392,6 +395,7 @@ function onTyping(e: KeyboardEvent) {
 
     playKeyboardAudio()
   }
+  isTyping = false
   e.preventDefault()
 }
 
@@ -487,21 +491,26 @@ function onContextMenu(e: MouseEvent, sentence: Sentence, i, j, w) {
         }
       },
       {
-        label: "复制句子",
-        onClick: () => {
-          navigator.clipboard.writeText(sentence.text).then(r => {
-            Toast.success('已复制')
-          })
-        }
-      },
-      {
-        label: "复制单词",
-        onClick: () => {
-          let word = props.article.sections[i][j].words[w]
-          navigator.clipboard.writeText(word.word).then(r => {
-            Toast.success('已复制')
-          })
-        }
+        label: "复制",
+        children:[
+          {
+            label: "复制单词",
+            onClick: () => {
+              let word = props.article.sections[i][j].words[w]
+              navigator.clipboard.writeText(word.word).then(r => {
+                Toast.success('已复制')
+              })
+            }
+          },
+          {
+            label: "复制句子",
+            onClick: () => {
+              navigator.clipboard.writeText(sentence.text).then(r => {
+                Toast.success('已复制')
+              })
+            }
+          },
+        ]
       },
       {
         label: "从这开始",
@@ -547,10 +556,22 @@ function onContextMenu(e: MouseEvent, sentence: Sentence, i, j, w) {
         }
       },
       {
-        label: "有道词典",
-        onClick: () => {
-          window.open(`https://www.youdao.com/result?word=${sentence.text}&lang=en`, '_blank')
-        }
+        label: "有道词典翻译",
+        children:[
+          {
+            label: "翻译单词",
+            onClick: () => {
+              let word = props.article.sections[i][j].words[w]
+              window.open(`https://www.youdao.com/result?word=${word.word}&lang=en`, '_blank')
+            }
+          },
+          {
+            label: "翻译句子",
+            onClick: () => {
+              window.open(`https://www.youdao.com/result?word=${sentence.text}&lang=en`, '_blank')
+            }
+          },
+        ]
       },
     ]
   });
