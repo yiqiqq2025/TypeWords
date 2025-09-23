@@ -1570,7 +1570,7 @@
       "tags": [
         "KET"
       ],
-      "url": "./dicts/ket2021.json",
+      "url": "ket2021.json",
       "length": 1147,
       "language": "en",
       "translateLanguage": "zh-CN"
