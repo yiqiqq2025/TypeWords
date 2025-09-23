@@ -66,17 +66,14 @@ watch(model, (newVal) => {
       complete: store.sdict.complete,
       str: `name:${store.sdict.name},per:${store.sdict.perDayStudyNumber},spend:${Number(statStore.spend / 1000 / 60).toFixed(1)},index:${store.sdict.lastLearnIndex}`
     })
-    //这里不知为啥会卡，打开有延迟
-    requestIdleCallback(() => {
-      store.sdict.lastLearnIndex = store.sdict.lastLearnIndex + statStore.newWordNumber
-      if (store.sdict.lastLearnIndex >= store.sdict.length) {
-        dictIsEnd = true;
-        store.sdict.complete = true
-        store.sdict.lastLearnIndex = 0
-      }
-      store.sdict.statistics.push(data as any)
-      calcWeekList(); // 新增：计算本周学习记录
-    })
+    store.sdict.lastLearnIndex = store.sdict.lastLearnIndex + statStore.newWordNumber
+    if (store.sdict.lastLearnIndex >= store.sdict.length) {
+      dictIsEnd = true;
+      store.sdict.complete = true
+      store.sdict.lastLearnIndex = 0
+    }
+    store.sdict.statistics.push(data as any)
+    calcWeekList(); // 新增：计算本周学习记录
   }
 })
 

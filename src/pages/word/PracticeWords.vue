@@ -240,16 +240,13 @@ function onTypeWrong() {
     allWrongWords.add(word.word.toLowerCase())
     statStore.wrong++
   }
-  //测试时这里会卡一下，加上requestIdleCallback就好了
-  requestIdleCallback(() => {
-    if (!store.wrong.words.find((v: Word) => v.word.toLowerCase() === temp)) {
-      store.wrong.words.push(word)
-      store.wrong.length = store.wrong.words.length
-    }
-    if (!data.wrongWords.find((v: Word) => v.word.toLowerCase() === temp)) {
-      data.wrongWords.push(word)
-    }
-  })
+  if (!store.wrong.words.find((v: Word) => v.word.toLowerCase() === temp)) {
+    store.wrong.words.push(word)
+    store.wrong.length = store.wrong.words.length
+  }
+  if (!data.wrongWords.find((v: Word) => v.word.toLowerCase() === temp)) {
+    data.wrongWords.push(word)
+  }
 }
 
 function onKeyUp(e: KeyboardEvent) {
