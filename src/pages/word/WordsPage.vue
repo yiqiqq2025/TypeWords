@@ -1,25 +1,26 @@
 <script setup lang="ts">
-import {useBaseStore} from "@/stores/base.ts";
-import {useRouter} from "vue-router";
+import { useBaseStore } from "@/stores/base.ts";
+import { useRouter } from "vue-router";
 import BaseIcon from "@/components/BaseIcon.vue";
-import {_getAccomplishDate, _getDictDataByUrl, useNav} from "@/utils";
+import { _getAccomplishDate, _getDictDataByUrl, useNav } from "@/utils";
 import BasePage from "@/components/BasePage.vue";
-import {DictResource} from "@/types/types.ts";
-import {watch} from "vue";
-import {getCurrentStudyWord} from "@/hooks/dict.ts";
-import {useRuntimeStore} from "@/stores/runtime.ts";
+import { DictResource } from "@/types/types.ts";
+import { watch } from "vue";
+import { getCurrentStudyWord } from "@/hooks/dict.ts";
+import { useRuntimeStore } from "@/stores/runtime.ts";
 import Book from "@/components/Book.vue";
 import PopConfirm from "@/components/PopConfirm.vue";
 import Progress from '@/components/base/Progress.vue';
 import Toast from '@/components/base/toast/Toast.ts';
 import BaseButton from "@/components/BaseButton.vue";
-import {getDefaultDict} from "@/types/func.ts";
+import { getDefaultDict } from "@/types/func.ts";
 import DeleteIcon from "@/components/icon/DeleteIcon.vue";
 import PracticeSettingDialog from "@/pages/word/components/PracticeSettingDialog.vue";
 import ChangeLastPracticeIndexDialog from "@/pages/word/components/ChangeLastPracticeIndexDialog.vue";
-import {useSettingStore} from "@/stores/setting.ts";
+import { useSettingStore } from "@/stores/setting.ts";
 import recommendDictList from "@/assets/recommend-dict-list.json";
 import CollectNotice from "@/components/CollectNotice.vue";
+import { PracticeSaveKey } from "@/utils/const.ts";
 
 
 const store = useBaseStore()
@@ -28,6 +29,7 @@ const router = useRouter()
 const {nav} = useNav()
 const runtimeStore = useRuntimeStore()
 let loading = $ref(true)
+let isSaveData = $ref(false)
 let currentStudy = $ref({
   new: [],
   review: [],
@@ -46,7 +48,19 @@ async function init() {
   }
   // console.log(store.sdict)
   if (!currentStudy.new.length && store.sdict.words.length) {
-    currentStudy = getCurrentStudyWord()
+    let d = localStorage.getItem(PracticeSaveKey.Word)
+    if (d) {
+      try {
+        let data = JSON.parse(d)
+        currentStudy = data.studyData
+        isSaveData = true
+      } catch (e) {
+        localStorage.removeItem(PracticeSaveKey.Word)
+        currentStudy = getCurrentStudyWord()
+      }
+    } else {
+      currentStudy = getCurrentStudyWord()
+    }
   }
   loading = false
 }
@@ -70,7 +84,6 @@ function startPractice() {
     Toast.warning('请先选择一本词典')
   }
 }
-
 
 let showPracticeSettingDialog = $ref(false)
 let showChangeLastPracticeIndexDialog = $ref(false)
@@ -162,7 +175,7 @@ function check(cb: Function) {
       </div>
 
       <div class="w-3/10 flex flex-col justify-evenly">
-        <div class="center text-xl">今日任务</div>
+        <div class="center text-xl">{{ isSaveData ? '上次学习任务' : '今日任务' }}</div>
         <div class="flex">
           <div class="flex-1 flex flex-col items-center">
             <div class="text-4xl font-bold">{{ currentStudy.new.length }}</div>
@@ -196,7 +209,7 @@ function check(cb: Function) {
                     :loading="loading"
                     @click="startPractice">
           <div class="flex items-center gap-2">
-            <span class="line-height-[2]">开始学习</span>
+            <span class="line-height-[2]">{{ isSaveData ? '继续上次学习' : '开始学习' }}</span>
             <IconFluentArrowCircleRight16Regular class="text-xl"/>
           </div>
         </BaseButton>
@@ -246,7 +259,15 @@ function check(cb: Function) {
 
   <PracticeSettingDialog
       :show-left-option="false"
-      v-model="showPracticeSettingDialog" @ok="currentStudy = getCurrentStudyWord()"/>
+      v-model="showPracticeSettingDialog"
+      @ok="()=>{
+        if(isSaveData) {
+          Toast.success('修改成功，完成当前任务后生效')
+         }else {
+          Toast.success('修改成功')
+          currentStudy = getCurrentStudyWord()
+         }
+      }"/>
 
   <ChangeLastPracticeIndexDialog
       v-model="showChangeLastPracticeIndexDialog"

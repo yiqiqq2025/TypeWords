@@ -1,11 +1,12 @@
-import {Article, ArticleWord, Sentence} from "@/types/types.ts";
-import {cloneDeep} from "@/utils";
+import { Article, ArticleWord, DictId, Sentence } from "@/types/types.ts";
+import { _nextTick, cloneDeep } from "@/utils";
 import nlp from "compromise/one";
-import {usePlayWordAudio} from "@/hooks/sound.ts";
-import {getSentenceAllText, getSentenceAllTranslateText} from "@/hooks/translate.ts";
-import {getDefaultArticleWord, getDefaultWord} from "@/types/func.ts";
-import {useSettingStore} from "@/stores/setting.ts";
-import Toast from "@/components/base/toast/Toast.ts";
+import { usePlayWordAudio } from "@/hooks/sound.ts";
+import { getSentenceAllText, getSentenceAllTranslateText } from "@/hooks/translate.ts";
+import { getDefaultArticleWord } from "@/types/func.ts";
+import { useSettingStore } from "@/stores/setting.ts";
+import { useBaseStore } from "@/stores/base.ts";
+import { useRuntimeStore } from "@/stores/runtime.ts";
 
 interface KeyboardMap {
   Period: string,
@@ -24,7 +25,6 @@ export const EnKeyboardMap: KeyboardMap = {
   QuoteLeft: `'`,
   QuoteRight: `'`,
 }
-
 
 function parseSentence(sentence: string) {
   // 先统一一些常见的“智能引号” -> 直引号，避免匹配问题
@@ -467,4 +467,25 @@ export function usePlaySentenceAudio() {
   return {
     playSentenceAudio
   }
+}
+
+//todo 考虑与syncDictInMyStudyList、changeDict方法合并
+export function syncBookInMyStudyList(study = false) {
+  _nextTick(() => {
+    const base = useBaseStore()
+    const runtimeStore = useRuntimeStore()
+    let rIndex = base.article.bookList.findIndex(v => v.id === runtimeStore.editDict.id)
+    let temp = cloneDeep(runtimeStore.editDict);
+    if (!temp.custom && temp.id !== DictId.articleCollect) {
+      temp.custom = true
+    }
+    temp.length = temp.articles.length
+    if (rIndex > -1) {
+      base.article.bookList[rIndex] = temp
+      if (study) base.article.studyIndex = rIndex
+    } else {
+      base.article.bookList.push(temp)
+      if (study) base.article.studyIndex = base.article.bookList.length - 1
+    }
+  }, 100)
 }

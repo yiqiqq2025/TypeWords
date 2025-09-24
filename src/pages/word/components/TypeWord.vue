@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import {ShortcutKey, Word} from "@/types/types.ts";
+import { ShortcutKey, Word } from "@/types/types.ts";
 import VolumeIcon from "@/components/icon/VolumeIcon.vue";
-import {useSettingStore} from "@/stores/setting.ts";
-import {usePlayBeep, usePlayCorrect, usePlayKeyboardAudio, usePlayWordAudio, useTTsPlayAudio} from "@/hooks/sound.ts";
-import {emitter, EventKey} from "@/utils/eventBus.ts";
-import {nextTick, onMounted, onUnmounted, watch} from "vue";
+import { useSettingStore } from "@/stores/setting.ts";
+import { usePlayBeep, usePlayCorrect, usePlayKeyboardAudio, usePlayWordAudio, useTTsPlayAudio } from "@/hooks/sound.ts";
+import { emitter, EventKey } from "@/utils/eventBus.ts";
+import { nextTick, onMounted, onUnmounted, watch } from "vue";
 import Tooltip from "@/components/base/Tooltip.vue";
 import SentenceHightLightWord from "@/pages/word/components/SentenceHightLightWord.vue";
-import {usePracticeStore} from "@/stores/practice.ts";
-import {getDefaultWord} from "@/types/func.ts";
-import {sleep} from "@/utils";
+import { usePracticeStore } from "@/stores/practice.ts";
+import { getDefaultWord } from "@/types/func.ts";
+import { _nextTick, sleep } from "@/utils";
 
 interface IProps {
   word: Word,
@@ -30,7 +30,12 @@ let showFullWord = $ref(false)
 //输入锁定，因为跳转到下一个单词有延时，如果重复在延时期间内重复输入，导致会跳转N次
 let inputLock = false
 let wordRepeatCount = 0
+let cursor = $ref({
+  top: 0,
+  left: 0,
+})
 const settingStore = useSettingStore()
+const statStore = usePracticeStore()
 
 const playBeep = usePlayBeep()
 const playCorrect = usePlayCorrect()
@@ -38,6 +43,7 @@ const playKeyboardAudio = usePlayKeyboardAudio()
 const playWordAudio = usePlayWordAudio()
 // const ttsPlayAudio = useTTsPlayAudio()
 const volumeIconRef: any = $ref()
+const typingWordRef = $ref<HTMLDivElement>()
 // const volumeTranslateIconRef: any = $ref()
 
 let displayWord = $computed(() => {
@@ -63,6 +69,7 @@ watch(() => props.word, () => {
   }
   // 更新当前单词信息
   updateCurrentWordInfo();
+  checkCursorPosition()
 }, {deep: true})
 
 // 监听输入变化，更新当前单词信息
@@ -73,7 +80,7 @@ watch(() => input, () => {
 onMounted(() => {
   // 初始化当前单词信息
   updateCurrentWordInfo();
-  
+
   emitter.on(EventKey.resetWord, () => {
     wrong = input = ''
     updateCurrentWordInfo();
@@ -110,22 +117,22 @@ async function onTyping(e: KeyboardEvent) {
   }
   let letter = e.key
   inputLock = true
-  
+
   // 检查当前单词是否包含空格
   const wordContainsSpace = props.word.word.includes(' ')
-  
+
   // 如果是空格键，需要判断是作为输入还是切换单词
   if (letter === ' ' || e.code === 'Space') {
     // 如果当前单词包含空格
     if (wordContainsSpace && props.word.word[input.length] === ' ') {
       letter = ' '
-    } 
+    }
     // 如果当前单词不包含空格，且已经输入完成，则视为切换单词的信号
     else if (!wordContainsSpace && input.toLowerCase() === props.word.word.toLowerCase()) {
       return emit('complete')
     }
   }
-  
+
   let isTypingRight = false
   if (settingStore.ignoreCase) {
     isTypingRight = letter.toLowerCase() === props.word.word[input.length].toLowerCase()
@@ -171,6 +178,7 @@ async function onTyping(e: KeyboardEvent) {
   } else {
     inputLock = false
   }
+  checkCursorPosition()
 }
 
 function del() {
@@ -182,12 +190,11 @@ function del() {
   } else {
     input = input.slice(0, -1)
   }
-  
+
   // 更新当前单词信息
   updateCurrentWordInfo();
 }
 
-const statStore = usePracticeStore()
 
 function showWord() {
   if (settingStore.allowWordTip) {
@@ -226,7 +233,7 @@ function hideWordInTranslation(text: string, word: string): string {
   if (!text || !word) {
     return text
   }
-  
+
   // 创建正则表达式，匹配单词本身及其常见变形（如复数、过去式等）
   const wordBase = word.toLowerCase()
   const patterns = [
@@ -236,13 +243,13 @@ function hideWordInTranslation(text: string, word: string): string {
     `\\b${escapeRegExp(wordBase)}ed\\b`, // 过去式
     `\\b${escapeRegExp(wordBase)}ing\\b`, // 进行时
   ]
-  
+
   let result = text
   patterns.forEach(pattern => {
     const regex = new RegExp(pattern, 'gi')
     result = result.replace(regex, match => `<span class="word-shadow">${match}</span>`)
   })
-  
+
   return result
 }
 
@@ -251,10 +258,37 @@ function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
+watch(() => input, checkCursorPosition)
+
+//检测光标位置
+function checkCursorPosition() {
+  _nextTick(() => {
+    // 选中目标元素
+    const cursorEl = document.querySelector(`.cursor`);
+    const input = document.querySelector(`.input`);
+    const typingWordRect = typingWordRef.getBoundingClientRect();
+
+    if (input) {
+      let inputRect = input.getBoundingClientRect();
+      cursor = {
+        top: inputRect.top + inputRect.height - cursorEl.clientHeight - typingWordRect.top,
+        left: inputRect.right - typingWordRect.left - 3,
+      };
+    } else {
+      const letter = document.querySelector(`.letter`);
+      let letterRect = letter.getBoundingClientRect();
+      cursor = {
+        top: letterRect.top + letterRect.height - cursorEl.clientHeight - typingWordRect.top,
+        left: letterRect.left - typingWordRect.left - 3,
+      };
+    }
+  },)
+}
+
 </script>
 
 <template>
-  <div class="typing-word">
+  <div class="typing-word" ref="typingWordRef">
     <div class="flex flex-col items-center">
       <div class="flex gap-1 mt-26">
         <div class="phonetic" v-if="settingStore.soundType === 'us' && word.phonetic0">[{{
@@ -265,12 +299,9 @@ function escapeRegExp(string: string): string {
             (settingStore.dictation && !showFullWord) ? '_'.repeat(word.phonetic1.length) : word.phonetic1
           }}]
         </div>
-
-        <Tooltip
+        <VolumeIcon
             :title="`发音(${settingStore.shortcutKeyMap[ShortcutKey.PlayWordPronunciation]})`"
-        >
-          <VolumeIcon ref="volumeIconRef" :simple="true" :cb="() => playWordAudio(word.word)"/>
-        </Tooltip>
+            ref="volumeIconRef" :simple="true" :cb="() => playWordAudio(word.word)"/>
       </div>
 
       <div class="word my-1"
@@ -318,7 +349,7 @@ function escapeRegExp(string: string): string {
         <div class="tabs">
           <div @click="tab = 0" class="tab" :class="tab === 0 && 'active'">短语</div>
           <div @click="tab = 1" class="tab" :class="tab === 1 && 'active'">同近义词</div>
-<!--          <div @click="tab = 2" class="tab" :class="tab === 2 && 'active'">同根词</div>-->
+          <!--          <div @click="tab = 2" class="tab" :class="tab === 2 && 'active'">同根词</div>-->
           <div @click="tab = 3" class="tab" :class="tab === 3 && 'active'">词源</div>
         </div>
       </template>
@@ -361,6 +392,8 @@ function escapeRegExp(string: string): string {
         </div>
       </template>
     </div>
+    <div class="cursor"
+         :style="{top:cursor.top+'px',left:cursor.left+'px',height: settingStore.fontSize.wordForeignFontSize +'px'}"></div>
   </div>
 </template>
 

@@ -1,23 +1,23 @@
 <script setup lang="ts">
-import {onMounted, onUnmounted, watch} from "vue"
-import {Article, ArticleWord, Sentence, Word} from "@/types/types.ts";
-import {useBaseStore} from "@/stores/base.ts";
-import {useSettingStore} from "@/stores/setting.ts";
-import {usePlayBeep, usePlayCorrect, usePlayKeyboardAudio, usePlayWordAudio} from "@/hooks/sound.ts";
-import {emitter, EventKey} from "@/utils/eventBus.ts";
-import {_nextTick} from "@/utils";
+import { onMounted, onUnmounted, watch } from "vue"
+import { Article, ArticleWord, Sentence, Word } from "@/types/types.ts";
+import { useBaseStore } from "@/stores/base.ts";
+import { useSettingStore } from "@/stores/setting.ts";
+import { usePlayBeep, usePlayCorrect, usePlayKeyboardAudio } from "@/hooks/sound.ts";
+import { emitter, EventKey } from "@/utils/eventBus.ts";
+import { _nextTick } from "@/utils";
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import ContextMenu from '@imengyu/vue3-context-menu'
-import {getTranslateText} from "@/hooks/article.ts";
+import { getTranslateText } from "@/hooks/article.ts";
 import BaseButton from "@/components/BaseButton.vue";
 import QuestionForm from "@/pages/article/components/QuestionForm.vue";
-import {getDefaultArticle, getDefaultWord} from "@/types/func.ts";
+import { getDefaultArticle, getDefaultWord } from "@/types/func.ts";
 import Toast from '@/components/base/toast/Toast.ts'
 import TypingWord from "@/pages/article/components/TypingWord.vue";
 import Space from "@/pages/article/components/Space.vue";
-import {useWordOptions} from "@/hooks/dict.ts";
+import { useWordOptions } from "@/hooks/dict.ts";
 import nlp from "compromise/three";
-import {nanoid} from "nanoid";
+import { nanoid } from "nanoid";
 
 interface IProps {
   article: Article,
@@ -76,7 +76,6 @@ const currentIndex = $computed(() => {
 const playBeep = usePlayBeep()
 const playCorrect = usePlayCorrect()
 const playKeyboardAudio = usePlayKeyboardAudio()
-const playWordAudio = usePlayWordAudio()
 const {
   toggleWordCollect,
 } = useWordOptions()
@@ -855,22 +854,4 @@ $article-lh: 2.4;
     }
   }
 }
-
-.cursor {
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 1.8rem;
-  animation: underline 1s infinite steps(1, start);
-}
-
-@keyframes underline {
-  0%, 100% {
-    border-left: .1rem solid var(--color-article);
-  }
-  50% {
-    border-left: .1rem solid transparent;
-  }
-}
-
 </style>

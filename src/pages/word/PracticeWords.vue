@@ -1,17 +1,17 @@
 <script setup lang="ts">
 
-import {onMounted, provide, watch} from "vue";
+import { onMounted, provide, watch } from "vue";
 
 import Statistics from "@/pages/word/Statistics.vue";
-import {emitter, EventKey, useEvents} from "@/utils/eventBus.ts";
-import {useSettingStore} from "@/stores/setting.ts";
-import {useRuntimeStore} from "@/stores/runtime.ts";
-import {Dict, ShortcutKey, StudyData, Word} from "@/types/types.ts";
-import {useDisableEventListener, useOnKeyboardEventListener, useStartKeyboardEventListener} from "@/hooks/event.ts";
+import { emitter, EventKey, useEvents } from "@/utils/eventBus.ts";
+import { useSettingStore } from "@/stores/setting.ts";
+import { useRuntimeStore } from "@/stores/runtime.ts";
+import { Dict, ShortcutKey, StudyData, Word } from "@/types/types.ts";
+import { useDisableEventListener, useOnKeyboardEventListener, useStartKeyboardEventListener } from "@/hooks/event.ts";
 import useTheme from "@/hooks/theme.ts";
-import {getCurrentStudyWord, useWordOptions} from "@/hooks/dict.ts";
-import {_getDictDataByUrl, cloneDeep, shuffle} from "@/utils";
-import {useRoute, useRouter} from "vue-router";
+import { getCurrentStudyWord, useWordOptions } from "@/hooks/dict.ts";
+import { _getDictDataByUrl, cloneDeep, shuffle } from "@/utils";
+import { useRoute, useRouter } from "vue-router";
 import Footer from "@/pages/word/components/Footer.vue";
 import Panel from "@/components/Panel.vue";
 import BaseIcon from "@/components/BaseIcon.vue";
@@ -19,13 +19,14 @@ import Tooltip from "@/components/base/Tooltip.vue";
 import WordList from "@/components/list/WordList.vue";
 import TypeWord from "@/pages/word/components/TypeWord.vue";
 import Empty from "@/components/Empty.vue";
-import {useBaseStore} from "@/stores/base.ts";
-import {usePracticeStore} from "@/stores/practice.ts";
+import { useBaseStore } from "@/stores/base.ts";
+import { usePracticeStore } from "@/stores/practice.ts";
 import Toast from '@/components/base/toast/Toast.ts'
-import {getDefaultDict, getDefaultWord} from "@/types/func.ts";
+import { getDefaultDict, getDefaultWord } from "@/types/func.ts";
 import ConflictNotice from "@/components/ConflictNotice.vue";
 import dict_list from "@/assets/dict-list.json";
 import PracticeLayout from "@/components/PracticeLayout.vue";
+import { PracticeSaveKey } from "@/utils/const.ts";
 
 interface IProps {
   new: Word[],
@@ -92,9 +93,28 @@ watch(() => store.load, (n) => {
   if (n && loading) init()
 }, {immediate: true})
 
+function checkSaveData() {
+  let d = localStorage.getItem(PracticeSaveKey.Word)
+  if (d) {
+    try {
+      let obj = JSON.parse(d)
+      console.log('obj', obj)
+      studyData = obj.studyData
+      data = obj.practiceData
+      return true
+    } catch (e) {
+      localStorage.removeItem(PracticeSaveKey.Word)
+    }
+  }
+  return false
+}
+
 onMounted(() => {
+  //如果是从单词学习主页过来的，就直接使用；否则等待加载
   if (runtimeStore.routeData) {
-    studyData = runtimeStore.routeData
+    if (!checkSaveData()) {
+      studyData = runtimeStore.routeData
+    }
   } else {
     loading = true
   }
@@ -168,6 +188,8 @@ function next(isTyping: boolean = true) {
         statStore.spend = Date.now() - statStore.startDate
         console.log('全完学完了')
         showStatDialog = true
+        localStorage.removeItem(PracticeSaveKey.Word)
+        return;
         // emit('complete', {})
       }
 
@@ -180,8 +202,8 @@ function next(isTyping: boolean = true) {
           data.words = shuffle(studyData.write)
           data.index = 0
         } else {
-          console.log('开始默认所有单词-无单词路过')
-          next()
+          console.log('开始默认所有单词-无单词略过')
+          return next()
         }
       }
 
@@ -194,8 +216,8 @@ function next(isTyping: boolean = true) {
           data.words = shuffle(studyData.review)
           data.index = 0
         } else {
-          console.log('开始默写昨日-无单词路过')
-          next()
+          console.log('开始默写昨日-无单词略过')
+          return next()
         }
       }
 
@@ -208,8 +230,8 @@ function next(isTyping: boolean = true) {
           data.words = shuffle(studyData.review)
           data.index = 0
         } else {
-          console.log('开始复习昨日-无单词路过')
-          next()
+          console.log('开始复习昨日-无单词略过')
+          return next()
         }
       }
 
@@ -230,8 +252,15 @@ function next(isTyping: boolean = true) {
   } else {
     data.index++
     isTyping && statStore.inputWordNumber++
-    console.log('这个词完了')
+    // console.log('这个词完了')
   }
+
+  localStorage.setItem(PracticeSaveKey.Word, JSON.stringify({
+    studyData,
+    practiceData: data,
+    statStoreData: statStore.$state,
+  }))
+  console.log('wordPracticeData',)
 }
 
 function onTypeWrong() {

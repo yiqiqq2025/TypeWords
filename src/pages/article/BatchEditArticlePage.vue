@@ -16,6 +16,7 @@ import BackIcon from "@/components/BackIcon.vue";
 import MiniDialog from "@/components/dialog/MiniDialog.vue";
 import {onMounted} from "vue";
 import {Origin} from "@/config/ENV.ts";
+import {syncBookInMyStudyList} from "@/hooks/article.ts";
 
 const base = useBaseStore()
 const runtimeStore = useRuntimeStore()
@@ -104,25 +105,6 @@ function saveArticle(val: Article): boolean {
   Toast.success('保存成功！')
   syncBookInMyStudyList()
   return true
-}
-
-//todo 考虑与syncDictInMyStudyList、changeDict方法合并
-function syncBookInMyStudyList(study = false) {
-  _nextTick(() => {
-    let rIndex = base.article.bookList.findIndex(v => v.id === runtimeStore.editDict.id)
-    let temp = cloneDeep(runtimeStore.editDict);
-    if (!temp.custom && temp.id !== DictId.articleCollect) {
-      temp.custom = true
-    }
-    temp.length = temp.articles.length
-    if (rIndex > -1) {
-      base.article.bookList[rIndex] = temp
-      if (study) base.article.studyIndex = rIndex
-    } else {
-      base.article.bookList.push(temp)
-      if (study) base.article.studyIndex = base.article.bookList.length - 1
-    }
-  }, 100)
 }
 
 function saveAndNext(val: Article) {

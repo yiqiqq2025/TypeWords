@@ -222,6 +222,8 @@ export function checkAndUpgradeSaveSetting(val: any) {
       state.load = false
       let version = Number(data.version)
       if (version === SAVE_SETTING_KEY.version) {
+        checkRiskKey(defaultState.shortcutKeyMap, state.shortcutKeyMap)
+        delete state.shortcutKeyMap
         checkRiskKey(defaultState, state)
         return defaultState
       } else {

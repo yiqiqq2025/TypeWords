@@ -27,3 +27,8 @@ export const EXPORT_DATA_KEY = {
 
 export const LOCAL_FILE_KEY = 'typing-word-files'
 
+export enum PracticeSaveKey {
+  Word = 'PracticeSaveWordKey',
+  Article = 'PracticeSaveArticleKey',
+}
+

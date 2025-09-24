@@ -139,7 +139,6 @@ function getShortcutKeyName(key: string): string {
     'ShowWord': '显示单词',
     'EditArticle': '编辑文章',
     'Next': '下一个',
-    'Replay': '重播',
     'Previous': '上一个',
     'ToggleSimple': '切换已掌握状态',
     'ToggleCollect': '切换收藏状态',
@@ -350,14 +349,14 @@ function importOldData() {
           </SettingItem>
 
           <SettingItem title="允许默写模式下显示提示"
-                       :desc="`开启后，可以通过鼠标 hover 单词或者按快捷键 ${settingStore.shortcutKeyMap[ShortcutKey.ShowWord]} 显示正确答案`"
+                       :desc="`开启后，可以通过将鼠标移动到单词上或者按快捷键 ${settingStore.shortcutKeyMap[ShortcutKey.ShowWord]} 显示正确答案`"
           >
             <Switch v-model="settingStore.allowWordTip"/>
           </SettingItem>
 
           <div class="line"></div>
           <SettingItem title="简单词过滤"
-                       desc="开启后，练习单词中不会包含简单词；文章统计的总词数中不会包含简单词"
+                       desc="开启后，练习的单词中不会包含简单词；文章统计的总词数中不会包含简单词"
           >
             <Switch v-model="settingStore.ignoreSimpleWord"/>
           </SettingItem>

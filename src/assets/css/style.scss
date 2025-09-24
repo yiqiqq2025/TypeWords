@@ -445,3 +445,20 @@ a {
 .red-point {
   @apply bg-red w-3 h-3 rounded-full absolute right-3;
 }
+
+.cursor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 1.8rem;
+  animation: underline 1s infinite steps(1, start);
+}
+
+@keyframes underline {
+  0%, 100% {
+    border-left: .1rem solid var(--color-article);
+  }
+  50% {
+    border-left: .1rem solid transparent;
+  }
+}

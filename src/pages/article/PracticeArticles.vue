@@ -11,7 +11,7 @@ import Toast from '@/components/base/toast/Toast.ts'
 import {_getDictDataByUrl, cloneDeep, msToHourMinute, msToMinute, total} from "@/utils";
 import {usePracticeStore} from "@/stores/practice.ts";
 import {useArticleOptions} from "@/hooks/dict.ts";
-import {genArticleSectionData, usePlaySentenceAudio} from "@/hooks/article.ts";
+import {genArticleSectionData, syncBookInMyStudyList, usePlaySentenceAudio} from "@/hooks/article.ts";
 import {getDefaultArticle, getDefaultDict, getDefaultWord} from "@/types/func.ts";
 import TypingArticle from "@/pages/article/components/TypingArticle.vue";
 import BaseIcon from "@/components/BaseIcon.vue";
@@ -204,6 +204,7 @@ function saveArticle(val: Article) {
     store.sbook.articles[rIndex] = cloneDeep(val)
   }
   setArticle(val)
+  store.sbook.custom = true
 }
 
 function edit(val: Article = articleData.article) {
@@ -376,7 +377,7 @@ const currentPractice = $computed(() => {
           <div class="flex justify-between items-center gap-2">
             <div class="stat">
               <div class="row">
-                <div class="num">{{ currentPractice.length }}次/{{ msToMinute(total(currentPractice, 'spend'))}}</div>
+                <div class="num">{{ currentPractice.length }}次/{{ msToMinute(total(currentPractice, 'spend')) }}</div>
                 <div class="line"></div>
                 <div class="name">记录</div>
               </div>

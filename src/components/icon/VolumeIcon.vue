@@ -4,6 +4,7 @@ import BaseIcon from "@/components/BaseIcon.vue";
 const props = withDefaults(defineProps<{
   time?: number,
   simple?: boolean
+  title?: string
   cb?: Function
 }>(), {
   time: 300,
@@ -49,7 +50,9 @@ defineExpose({play})
 
 <template>
   <template v-if="props.simple">
-    <BaseIcon @click.stop="click"
+    <BaseIcon
+        :title="title"
+        @click.stop="click"
               no-bg
     >
       <IconBxVolume v-if="step === 0"/>
@@ -58,7 +61,9 @@ defineExpose({play})
     </BaseIcon>
   </template>
   <template v-else>
-    <BaseIcon @click.stop="click"
+    <BaseIcon
+        :title="title"
+        @click.stop="click"
     >
       <IconBxVolume v-if="step === 0"/>
       <IconBxVolumeLow v-if="step === 1"/>
