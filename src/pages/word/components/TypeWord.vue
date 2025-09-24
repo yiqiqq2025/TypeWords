@@ -318,7 +318,7 @@ function escapeRegExp(string: string): string {
         <div class="tabs">
           <div @click="tab = 0" class="tab" :class="tab === 0 && 'active'">短语</div>
           <div @click="tab = 1" class="tab" :class="tab === 1 && 'active'">同近义词</div>
-          <div @click="tab = 2" class="tab" :class="tab === 2 && 'active'">同根词</div>
+<!--          <div @click="tab = 2" class="tab" :class="tab === 2 && 'active'">同根词</div>-->
           <div @click="tab = 3" class="tab" :class="tab === 3 && 'active'">词源</div>
         </div>
       </template>
