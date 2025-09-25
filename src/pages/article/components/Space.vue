@@ -16,21 +16,11 @@ const isMoveBottom = $computed(() => {
 </script>
 
 <template>
-   <span class="word-space"
-         v-if="isWrong"
-         :class="[
-           isWrong && 'wrong',
-           isWait && 'wait',
-           isShake ? isMoveBottom ? 'shakeBottom' : 'shake' : '',
-           isMoveBottom && 'to-bottom'
-       ]"
-         v-bind="$attrs"
-   ></span>
+  <span class="word-space wrong" v-if="isWrong"></span>
   <span v-bind="$attrs" v-else>
-    <span class="word-space mx-0.5!"
+    <span class="word-space wait"
           :class="[
-           isWrong && 'wrong',
-           isWait && 'wait',
+           isWait ? 'opacity-100':' opacity-0',
            isShake ? isMoveBottom ? 'shakeBottom' : 'shake' : '',
            isMoveBottom && 'to-bottom'
        ]"
@@ -46,6 +36,7 @@ const isMoveBottom = $computed(() => {
   height: 1.5rem;
   box-sizing: border-box;
   margin: 0 1px;
+  border-bottom: 2px solid transparent;
 
   &.wrong {
     border-bottom: 2px solid red;
@@ -57,6 +48,8 @@ const isMoveBottom = $computed(() => {
 
   &.wait {
     border-bottom: 2px solid var(--color-article);
+    margin-left: 0.125rem;
+    margin-right: 0.125rem;
 
     &::after {
       content: ' ';
