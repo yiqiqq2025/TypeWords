@@ -1,28 +1,29 @@
 <script setup lang="ts">
-import {nextTick, ref, watch} from "vue";
-import {useSettingStore} from "@/stores/setting.ts";
-import {getAudioFileUrl, usePlayAudio} from "@/hooks/sound.ts";
-import {getShortcutKey, useEventListener} from "@/hooks/event.ts";
-import {checkAndUpgradeSaveDict, checkAndUpgradeSaveSetting, cloneDeep, loadJsLib, shakeCommonDict} from "@/utils";
-import {DefaultShortcutKeyMap, ShortcutKey} from "@/types/types.ts";
+import { nextTick, ref, watch } from "vue";
+import { useSettingStore } from "@/stores/setting.ts";
+import { getAudioFileUrl, usePlayAudio } from "@/hooks/sound.ts";
+import { getShortcutKey, useEventListener } from "@/hooks/event.ts";
+import { checkAndUpgradeSaveDict, checkAndUpgradeSaveSetting, cloneDeep, loadJsLib, shakeCommonDict } from "@/utils";
+import { DefaultShortcutKeyMap, ShortcutKey } from "@/types/types.ts";
 import BaseButton from "@/components/BaseButton.vue";
 import {
   APP_NAME,
   APP_VERSION,
   EXPORT_DATA_KEY,
   LOCAL_FILE_KEY,
+  PracticeSaveWordKey,
   SAVE_DICT_KEY,
   SAVE_SETTING_KEY,
   SoundFileOptions
 } from "@/utils/const.ts";
 import VolumeIcon from "@/components/icon/VolumeIcon.vue";
-import {useBaseStore} from "@/stores/base.ts";
-import {saveAs} from "file-saver";
-import {Origin} from "@/config/ENV.ts";
+import { useBaseStore } from "@/stores/base.ts";
+import { saveAs } from "file-saver";
+import { Origin } from "@/config/ENV.ts";
 import dayjs from "dayjs";
 import BasePage from "@/components/BasePage.vue";
 import Toast from '@/components/base/toast/Toast.ts'
-import {Option, Select} from "@/components/base/select";
+import { Option, Select } from "@/components/base/select";
 import Switch from "@/components/base/Switch.vue";
 import Slider from "@/components/base/Slider.vue";
 import RadioGroup from "@/components/base/radio/RadioGroup.vue";
@@ -31,8 +32,8 @@ import InputNumber from "@/components/base/InputNumber.vue";
 import PopConfirm from "@/components/PopConfirm.vue";
 import Textarea from "@/components/base/Textarea.vue";
 import SettingItem from "@/pages/setting/SettingItem.vue";
-import {get, set} from "idb-keyval";
-import {useRuntimeStore} from "@/stores/runtime.ts";
+import { get, set } from "idb-keyval";
+import { useRuntimeStore } from "@/stores/runtime.ts";
 
 const emit = defineEmits<{
   toggleDisabledDialogEscKey: [val: boolean]
@@ -179,9 +180,21 @@ async function exportData(notice = '导出成功！') {
       dict: {
         version: SAVE_DICT_KEY.version,
         val: shakeCommonDict(store.$state)
+      },
+      [PracticeSaveWordKey.key]: {
+        version: PracticeSaveWordKey.version,
+        val: {}
       }
     }
   }
+  let d = localStorage.getItem(PracticeSaveWordKey.key)
+  if (d) {
+    try {
+      data.val[PracticeSaveWordKey.key] = JSON.parse(d)
+    } catch (e) {
+    }
+  }
+
   const zip = new JSZip();
   zip.file("data.json", JSON.stringify(data));
 
@@ -203,6 +216,7 @@ function importJson(str: string, notice: boolean = true) {
     val: {
       setting: {},
       dict: {},
+      [PracticeSaveWordKey.key]: {}
     }
   }
   try {
@@ -214,6 +228,16 @@ function importJson(str: string, notice: boolean = true) {
     let baseState = checkAndUpgradeSaveDict(data.dict)
     baseState.load = true
     store.setState(baseState)
+    if (obj.version >= 3) {
+      try {
+        let save: any = obj.val[PracticeSaveWordKey.key] || {}
+        if (save.val && Object.keys(save.val).length > 0) {
+          localStorage.setItem(PracticeSaveWordKey.key, JSON.stringify(obj.val[PracticeSaveWordKey.key]))
+        }
+      } catch (e) {
+        //todo 上报
+      }
+    }
     notice && Toast.success('导入成功！')
   } catch (err) {
     return Toast.error('导入失败！')

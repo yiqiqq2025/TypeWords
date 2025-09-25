@@ -20,7 +20,7 @@ import ChangeLastPracticeIndexDialog from "@/pages/word/components/ChangeLastPra
 import { useSettingStore } from "@/stores/setting.ts";
 import recommendDictList from "@/assets/recommend-dict-list.json";
 import CollectNotice from "@/components/CollectNotice.vue";
-import { PracticeSaveKey } from "@/utils/const.ts";
+import { PracticeSaveWordKey } from "@/utils/const.ts";
 
 
 const store = useBaseStore()
@@ -46,16 +46,16 @@ async function init() {
       store.word.bookList[store.word.studyIndex] = await _getDictDataByUrl(store.sdict)
     }
   }
-  // console.log(store.sdict)
   if (!currentStudy.new.length && store.sdict.words.length) {
-    let d = localStorage.getItem(PracticeSaveKey.Word)
+    debugger
+    let d = localStorage.getItem(PracticeSaveWordKey.key)
     if (d) {
       try {
-        let data = JSON.parse(d)
-        currentStudy = data.studyData
+        let obj = JSON.parse(d)
+        currentStudy = obj.val.taskWords
         isSaveData = true
       } catch (e) {
-        localStorage.removeItem(PracticeSaveKey.Word)
+        localStorage.removeItem(PracticeSaveWordKey.key)
         currentStudy = getCurrentStudyWord()
       }
     } else {
@@ -139,6 +139,13 @@ function check(cb: Function) {
     cb()
   }
 }
+
+function savePracticeSetting() {
+  Toast.success('修改成功')
+  isSaveData = false
+  localStorage.removeItem(PracticeSaveWordKey.key)
+  currentStudy = getCurrentStudyWord()
+}
 </script>
 
 <template>
@@ -202,8 +209,13 @@ function check(cb: Function) {
                class="bg-third px-2 h-10 flex center text-2xl rounded cursor-pointer">
             {{ store.sdict.id ? store.sdict.perDayStudyNumber : 0 }}
           </div>
-          个单词 <span class="color-blue cursor-pointer"
-                       @click="check(()=>showPracticeSettingDialog = true)">更改</span>
+          个单词
+          <PopConfirm
+              :disabled="!isSaveData"
+              title="当前存在未完成的学习任务，修改会重新生成学习任务，是否继续？"
+              @confirm="check(()=>showPracticeSettingDialog = true)">
+            <span class="color-blue cursor-pointer">更改</span>
+          </PopConfirm>
         </div>
         <BaseButton size="large" :disabled="!store.sdict.name"
                     :loading="loading"
@@ -260,14 +272,7 @@ function check(cb: Function) {
   <PracticeSettingDialog
       :show-left-option="false"
       v-model="showPracticeSettingDialog"
-      @ok="()=>{
-        if(isSaveData) {
-          Toast.success('修改成功，完成当前任务后生效')
-         }else {
-          Toast.success('修改成功')
-          currentStudy = getCurrentStudyWord()
-         }
-      }"/>
+      @ok="savePracticeSetting"/>
 
   <ChangeLastPracticeIndexDialog
       v-model="showChangeLastPracticeIndexDialog"

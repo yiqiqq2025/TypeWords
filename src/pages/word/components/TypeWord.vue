@@ -178,7 +178,6 @@ async function onTyping(e: KeyboardEvent) {
   } else {
     inputLock = false
   }
-  checkCursorPosition()
 }
 
 function del() {
@@ -258,7 +257,7 @@ function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
-watch(() => input, checkCursorPosition)
+watch([() => input, () => showFullWord, () => settingStore.dictation], checkCursorPosition)
 
 //检测光标位置
 function checkCursorPosition() {
@@ -288,7 +287,7 @@ function checkCursorPosition() {
 </script>
 
 <template>
-  <div class="typing-word" ref="typingWordRef">
+  <div class="typing-word" ref="typingWordRef" v-if="props.word.word.length">
     <div class="flex flex-col items-center">
       <div class="flex gap-1 mt-26">
         <div class="phonetic" v-if="settingStore.soundType === 'us' && word.phonetic0">[{{
@@ -338,7 +337,7 @@ function checkCursorPosition() {
         <div class="sentences">
           <div class="sentence my-2" v-for="item in word.sentences">
             <SentenceHightLightWord class="text-lg" :text="item.c" :word="word.word"
-                                    :dictation="settingStore.dictation"/>
+                                    :dictation="(settingStore.dictation && !showFullWord)"/>
             <div class="text-md anim" v-opacity="settingStore.translate">{{ item.cn }}</div>
           </div>
         </div>
@@ -355,8 +354,8 @@ function checkCursorPosition() {
       </template>
       <template v-if="tab === 0">
         <div class="my-2" v-for="item in word.phrases">
-          <SentenceHightLightWord class="text-lg" :text="item.c" :word="word.word" :high-light="false"
-                                  :dictation="settingStore.dictation"/>
+          <SentenceHightLightWord class="text-lg" :text="item.c" :word="word.word"
+                                  :dictation="(settingStore.dictation && !showFullWord)"/>
           <div class="text-md anim" v-opacity="settingStore.translate">{{ item.cn }}</div>
         </div>
       </template>

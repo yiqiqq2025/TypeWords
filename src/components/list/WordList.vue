@@ -1,12 +1,12 @@
 <script setup lang="ts">
 
-import {Word} from "@/types/types.ts";
+import { Word } from "@/types/types.ts";
 import VolumeIcon from "@/components/icon/VolumeIcon.vue";
 import BaseList from "@/components/list/BaseList.vue";
-import {usePlayWordAudio} from "@/hooks/sound.ts";
+import { usePlayWordAudio } from "@/hooks/sound.ts";
 import Tooltip from "@/components/base/Tooltip.vue";
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
   list: Word[],
   showTranslate?: boolean
   showWord?: boolean

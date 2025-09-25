@@ -176,10 +176,16 @@ export const SlideType = {
   VERTICAL: 1,
 }
 
-export interface StudyData {
+export interface PracticeData {
   index: number,
   words: any[],
   wrongWords: any[],
+}
+
+export interface TaskWords {
+  new: Word[],
+  review: Word[],
+  write: Word[],
 }
 
 export class DictId {
@@ -187,11 +193,4 @@ export class DictId {
   static wordWrong = 'wordWrong'
   static wordKnown = 'wordKnown'
   static articleCollect = 'articleCollect'
-}
-
-export enum DictId2 {
-  wordCollect = 'wordCollect',
-  wordWrong = 'wordWrong',
-  wordKnown = 'wordKnown',
-  articleCollect = 'articleCollect'
 }

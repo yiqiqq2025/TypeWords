@@ -1,9 +1,9 @@
 <script setup lang="ts">
 
-import {inject} from "vue"
-import {usePracticeStore} from "@/stores/practice.ts";
-import {useSettingStore} from "@/stores/setting.ts";
-import {ShortcutKey, StudyData} from "@/types/types.ts";
+import { inject, watch } from "vue"
+import { usePracticeStore } from "@/stores/practice.ts";
+import { useSettingStore } from "@/stores/setting.ts";
+import { ShortcutKey, PracticeData } from "@/types/types.ts";
 import BaseIcon from "@/components/BaseIcon.vue";
 import Tooltip from "@/components/base/Tooltip.vue";
 import Progress from '@/components/base/Progress.vue'
@@ -24,11 +24,11 @@ const emit = defineEmits<{
   skip: [],
 }>()
 
+let practiceData = inject<PracticeData>('practiceData')
+
 function format(val: number, suffix: string = '', check: number = -1) {
   return val === check ? '-' : (val + suffix)
 }
-
-let studyData = inject<StudyData>('studyData')
 
 const status = $computed(() => {
   let str = '正在'
@@ -53,8 +53,8 @@ const status = $computed(() => {
 })
 
 const progress = $computed(() => {
-  if (!studyData.words.length) return 0
-  return ((studyData.index / studyData.words.length) * 100)
+  if (!practiceData.words.length) return 0
+  return ((practiceData.index / practiceData.words.length) * 100)
 })
 
 </script>
@@ -77,7 +77,7 @@ const progress = $computed(() => {
       <div class="flex justify-between items-center">
         <div class="stat">
           <div class="row">
-            <div class="num">{{ `${studyData.index}/${studyData.words.length}` }}</div>
+            <div class="num">{{ `${practiceData.index}/${practiceData.words.length}` }}</div>
             <div class="line"></div>
             <div class="name">{{ status }}</div>
           </div>

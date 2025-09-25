@@ -1,8 +1,8 @@
-import {Article, Word} from "@/types/types.ts";
-import {useBaseStore} from "@/stores/base.ts";
-import {useSettingStore} from "@/stores/setting.ts";
-import {getDefaultWord} from "@/types/func.ts";
-import {getRandomN, splitIntoN} from "@/utils";
+import { Article, TaskWords, Word } from "@/types/types.ts";
+import { useBaseStore } from "@/stores/base.ts";
+import { useSettingStore } from "@/stores/setting.ts";
+import { getDefaultWord } from "@/types/func.ts";
+import { getRandomN, splitIntoN } from "@/utils";
 
 export function useWordOptions() {
   const store = useBaseStore()
@@ -85,8 +85,7 @@ export function useArticleOptions() {
   }
 }
 
-export function getCurrentStudyWord() {
-  console.log('getCurrentStudyWord')
+export function getCurrentStudyWord(): TaskWords {
   const store = useBaseStore()
   let data = {new: [], review: [], write: []}
   let dict = store.sdict;

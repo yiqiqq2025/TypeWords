@@ -22,7 +22,7 @@ export const SAVE_SETTING_KEY = {
 }
 export const EXPORT_DATA_KEY = {
   key: 'typing-word-export',
-  version: 2
+  version: 3
 }
 
 export const LOCAL_FILE_KEY = 'typing-word-files'
@@ -32,3 +32,7 @@ export enum PracticeSaveKey {
   Article = 'PracticeSaveArticleKey',
 }
 
+export const PracticeSaveWordKey = {
+  key: 'PracticeSaveWord',
+  version: 1
+}

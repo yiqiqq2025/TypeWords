@@ -36,7 +36,7 @@ export default {
   },
   methods: {
     showPop(e) {
-      if (this.disabled) return
+      if (this.disabled) return this.$emit('confirm')
       e?.stopPropagation()
       let rect = e.target.getBoundingClientRect()
       this.show = true

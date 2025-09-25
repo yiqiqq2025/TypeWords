@@ -6,7 +6,7 @@ import Statistics from "@/pages/word/Statistics.vue";
 import { emitter, EventKey, useEvents } from "@/utils/eventBus.ts";
 import { useSettingStore } from "@/stores/setting.ts";
 import { useRuntimeStore } from "@/stores/runtime.ts";
-import { Dict, ShortcutKey, StudyData, Word } from "@/types/types.ts";
+import { Dict, PracticeData, ShortcutKey, TaskWords, Word } from "@/types/types.ts";
 import { useDisableEventListener, useOnKeyboardEventListener, useStartKeyboardEventListener } from "@/hooks/event.ts";
 import useTheme from "@/hooks/theme.ts";
 import { getCurrentStudyWord, useWordOptions } from "@/hooks/dict.ts";
@@ -26,13 +26,7 @@ import { getDefaultDict, getDefaultWord } from "@/types/func.ts";
 import ConflictNotice from "@/components/ConflictNotice.vue";
 import dict_list from "@/assets/dict-list.json";
 import PracticeLayout from "@/components/PracticeLayout.vue";
-import { PracticeSaveKey } from "@/utils/const.ts";
-
-interface IProps {
-  new: Word[],
-  review: Word[],
-  write: Word[],
-}
+import { PracticeSaveWordKey } from "@/utils/const.ts";
 
 const {
   isWordCollect,
@@ -51,20 +45,20 @@ const typingRef: any = $ref()
 let allWrongWords = new Set()
 let showStatDialog = $ref(false)
 let loading = $ref(false)
-let studyData = $ref<IProps>({
+let taskWords = $ref<TaskWords>({
   new: [],
   review: [],
   write: []
 })
 
-let data = $ref<StudyData>({
+let data = $ref<PracticeData>({
   index: 0,
   words: [],
   wrongWords: [],
 })
 
-async function init() {
-  console.log('load好了开始加载')
+async function loadDict() {
+  // console.log('load好了开始加载')
   let dict = getDefaultDict()
   let dictId = route.params.id
   if (dictId) {
@@ -79,7 +73,7 @@ async function init() {
         return Toast.warning('没有单词可学习！')
       }
       store.changeDict(dict)
-      studyData = getCurrentStudyWord()
+      initData(getCurrentStudyWord(), true)
       loading = false
     } else {
       router.push('/word')
@@ -90,31 +84,14 @@ async function init() {
 }
 
 watch(() => store.load, (n) => {
-  if (n && loading) init()
+  if (n && loading) loadDict()
 }, {immediate: true})
 
-function checkSaveData() {
-  let d = localStorage.getItem(PracticeSaveKey.Word)
-  if (d) {
-    try {
-      let obj = JSON.parse(d)
-      console.log('obj', obj)
-      studyData = obj.studyData
-      data = obj.practiceData
-      return true
-    } catch (e) {
-      localStorage.removeItem(PracticeSaveKey.Word)
-    }
-  }
-  return false
-}
 
 onMounted(() => {
   //如果是从单词学习主页过来的，就直接使用；否则等待加载
   if (runtimeStore.routeData) {
-    if (!checkSaveData()) {
-      studyData = runtimeStore.routeData
-    }
+    initData(runtimeStore.routeData, true)
   } else {
     loading = true
   }
@@ -123,42 +100,57 @@ onMounted(() => {
 useStartKeyboardEventListener()
 useDisableEventListener(() => loading)
 
-watch(() => studyData, () => {
-  if (studyData.new.length === 0) {
-    if (studyData.review.length) {
-      settingStore.dictation = false
-      statStore.step = 2
-      data.words = studyData.review
-    } else {
-      if (studyData.write.length) {
-        settingStore.dictation = true
-        data.words = studyData.write
-        statStore.step = 4
-      } else {
-        Toast.warning('没有可学习的单词！')
-        router.push('/word')
-      }
+function initData(initVal: TaskWords, init: boolean = false) {
+  let d = localStorage.getItem(PracticeSaveWordKey.key)
+  if (d && init) {
+    try {
+      let obj = JSON.parse(d)
+      let s = obj.val
+      taskWords = Object.assign(taskWords, s.taskWords)
+      //这里直接赋值的话，provide后的inject获取不到最新值
+      data = Object.assign(data, s.practiceData)
+      statStore.$patch(s.statStoreData)
+    } catch (e) {
+      localStorage.removeItem(PracticeSaveWordKey.key)
+      initData(initVal, true)
     }
   } else {
-    settingStore.dictation = false
-    data.words = studyData.new
-    statStore.step = 0
+    taskWords = initVal
+    if (taskWords.new.length === 0) {
+      if (taskWords.review.length) {
+        settingStore.dictation = false
+        statStore.step = 2
+        data.words = taskWords.review
+      } else {
+        if (taskWords.write.length) {
+          settingStore.dictation = true
+          data.words = taskWords.write
+          statStore.step = 4
+        } else {
+          Toast.warning('没有可学习的单词！')
+          router.push('/word')
+        }
+      }
+    } else {
+      settingStore.dictation = false
+      data.words = taskWords.new
+      statStore.step = 0
+    }
+    data.index = 0
+    data.wrongWords = []
+    allWrongWords.clear()
+    statStore.startDate = Date.now()
+    statStore.inputWordNumber = 0
+    statStore.wrong = 0
+    statStore.total = taskWords.review.length + taskWords.new.length + taskWords.write.length
+    statStore.newWordNumber = taskWords.new.length
+    statStore.reviewWordNumber = taskWords.review.length
+    statStore.writeWordNumber = taskWords.write.length
+    statStore.index = 0
   }
-  data.index = 0
-  data.wrongWords = []
-  allWrongWords = new Set()
+}
 
-  statStore.startDate = Date.now()
-  statStore.inputWordNumber = 0
-  statStore.wrong = 0
-  statStore.total = studyData.review.length + studyData.new.length + studyData.write.length
-  statStore.newWordNumber = studyData.new.length
-  statStore.reviewWordNumber = studyData.review.length
-  statStore.writeWordNumber = studyData.write.length
-  statStore.index = 0
-})
-
-provide('studyData', data)
+provide('practiceData', data)
 
 const word = $computed(() => {
   return data.words[data.index] ?? getDefaultWord()
@@ -188,7 +180,7 @@ function next(isTyping: boolean = true) {
         statStore.spend = Date.now() - statStore.startDate
         console.log('全完学完了')
         showStatDialog = true
-        localStorage.removeItem(PracticeSaveKey.Word)
+        localStorage.removeItem(PracticeSaveWordKey.key)
         return;
         // emit('complete', {})
       }
@@ -196,10 +188,10 @@ function next(isTyping: boolean = true) {
       //开始默认所有单词
       if (statStore.step === 3) {
         statStore.step++
-        if (studyData.write.length) {
+        if (taskWords.write.length) {
           console.log('开始默认所有单词')
           settingStore.dictation = true
-          data.words = shuffle(studyData.write)
+          data.words = shuffle(taskWords.write)
           data.index = 0
         } else {
           console.log('开始默认所有单词-无单词略过')
@@ -210,10 +202,10 @@ function next(isTyping: boolean = true) {
       //开始默写昨日
       if (statStore.step === 2) {
         statStore.step++
-        if (studyData.review.length) {
+        if (taskWords.review.length) {
           console.log('开始默写昨日')
           settingStore.dictation = true
-          data.words = shuffle(studyData.review)
+          data.words = shuffle(taskWords.review)
           data.index = 0
         } else {
           console.log('开始默写昨日-无单词略过')
@@ -224,10 +216,10 @@ function next(isTyping: boolean = true) {
       //开始复习昨日
       if (statStore.step === 1) {
         statStore.step++
-        if (studyData.review.length) {
+        if (taskWords.review.length) {
           console.log('开始复习昨日')
           settingStore.dictation = false
-          data.words = shuffle(studyData.review)
+          data.words = shuffle(taskWords.review)
           data.index = 0
         } else {
           console.log('开始复习昨日-无单词略过')
@@ -240,12 +232,13 @@ function next(isTyping: boolean = true) {
         if (settingStore.wordPracticeMode === 1) {
           console.log('自由模式，全完学完了')
           showStatDialog = true
+          localStorage.removeItem(PracticeSaveWordKey.key)
           return
         }
         statStore.step++
         console.log('开始默写新词')
         settingStore.dictation = true
-        data.words = shuffle(studyData.new)
+        data.words = shuffle(taskWords.new)
         data.index = 0
       }
     }
@@ -254,13 +247,7 @@ function next(isTyping: boolean = true) {
     isTyping && statStore.inputWordNumber++
     // console.log('这个词完了')
   }
-
-  localStorage.setItem(PracticeSaveKey.Word, JSON.stringify({
-    studyData,
-    practiceData: data,
-    statStoreData: statStore.$state,
-  }))
-  console.log('wordPracticeData',)
+  savePracticeData()
 }
 
 function onTypeWrong() {
@@ -276,7 +263,21 @@ function onTypeWrong() {
   if (!data.wrongWords.find((v: Word) => v.word.toLowerCase() === temp)) {
     data.wrongWords.push(word)
   }
+  savePracticeData()
 }
+
+function savePracticeData() {
+  localStorage.setItem(PracticeSaveWordKey.key, JSON.stringify({
+    version: PracticeSaveWordKey.version,
+    val: {
+      taskWords,
+      practiceData: data,
+      statStoreData: statStore.$state,
+    }
+  }))
+}
+
+watch(() => data.index, savePracticeData)
 
 function onKeyUp(e: KeyboardEvent) {
   // console.log('onKeyUp', e)
@@ -306,12 +307,12 @@ function repeat() {
     store.sdict.lastLearnIndex = store.sdict.lastLearnIndex - statStore.newWordNumber
   }
   emitter.emit(EventKey.resetWord)
-  let temp = cloneDeep(studyData)
+  let temp = cloneDeep(taskWords)
   //排除已掌握单词
   temp.new = temp.new.filter(v => !store.knownWords.includes(v.word))
   temp.review = temp.review.filter(v => !store.knownWords.includes(v.word))
   temp.write = temp.write.filter(v => !store.knownWords.includes(v.word))
-  studyData = temp
+  initData(temp)
 }
 
 function prev() {
@@ -376,14 +377,14 @@ function continueStudy() {
     console.log('学完了，正常下一组')
     showStatDialog = false
   }
-  studyData = getCurrentStudyWord()
+  initData(getCurrentStudyWord())
 }
 
 useEvents([
   [EventKey.repeatStudy, repeat],
   [EventKey.continueStudy, continueStudy],
   [EventKey.changeDict, () => {
-    studyData = getCurrentStudyWord()
+    initData(getCurrentStudyWord())
   }],
 
   [ShortcutKey.ShowWord, show],

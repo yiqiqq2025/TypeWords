@@ -30,7 +30,7 @@ const LoadingComponent = {
 // 自定义指令
 export default {
   mounted(el, binding) {
-    console.log('el',)
+    // console.log('el',)
     const position = getComputedStyle(el).position
     if (position === 'static' || !position) {
       el.style.position = 'relative' // 保证 loading 居中

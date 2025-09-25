@@ -90,7 +90,7 @@ const router = useRouter()
 const route = useRoute()
 
 async function init() {
-  console.log('load好了开始加载')
+  // console.log('load好了开始加载')
   let dict = getDefaultDict()
   let dictId = route.params.id
   if (dictId) {
