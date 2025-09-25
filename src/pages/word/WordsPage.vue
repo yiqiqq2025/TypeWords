@@ -146,6 +146,15 @@ function savePracticeSetting() {
   localStorage.removeItem(PracticeSaveWordKey.key)
   currentStudy = getCurrentStudyWord()
 }
+
+function saveLastPracticeIndex(e) {
+  store.sdict.lastLearnIndex = e
+  showChangeLastPracticeIndexDialog = false
+  Toast.success('修改成功')
+  isSaveData = false
+  localStorage.removeItem(PracticeSaveWordKey.key)
+  currentStudy = getCurrentStudyWord()
+}
 </script>
 
 <template>
@@ -174,7 +183,13 @@ function savePracticeSetting() {
             </div>
             <Progress class="mt-1" :percentage="store.currentStudyProgress" :show-text="false"></Progress>
           </div>
-          <div class="color-blue cursor-pointer" @click="check(()=>showChangeLastPracticeIndexDialog = true)">更改</div>
+          <PopConfirm
+              :disabled="!isSaveData"
+              title="当前存在未完成的学习任务，修改会重新生成学习任务，是否继续？"
+              @confirm="check(()=>showChangeLastPracticeIndexDialog = true)">
+            <div class="color-blue cursor-pointer">更改</div>
+          </PopConfirm>
+
         </div>
         <div class="text-sm text-align-end">
           预计完成日期：{{ _getAccomplishDate(store.sdict.words.length, store.sdict.perDayStudyNumber) }}
@@ -276,10 +291,7 @@ function savePracticeSetting() {
 
   <ChangeLastPracticeIndexDialog
       v-model="showChangeLastPracticeIndexDialog"
-      @ok="e => {
-        store.sdict.lastLearnIndex = e
-        showChangeLastPracticeIndexDialog = false
-      }"
+      @ok="saveLastPracticeIndex"
   />
 
   <CollectNotice/>
