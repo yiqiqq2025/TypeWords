@@ -522,16 +522,14 @@ function onContextMenu(e: MouseEvent, sentence: Sentence, i, j, w) {
           stringIndex = 0
           input = wrong = ''
           isEnd = isSpace = false
-          let currentSection = props.article.sections[sectionIndex]
-          currentSection.slice(sentenceIndex).map(w => {
-            w.words.map(v => {
-              v.input = ''
-            })
-          })
-          props.article.sections.slice(sectionIndex + 1).map((v, i) => {
-            v.map((w) => {
-              w.words.map(v => {
-                v.input = ''
+          props.article.sections.map((v, i) => {
+            v.map((w, j) => {
+              w.words.map((v, k) => {
+                if (i <= sectionIndex && j <= sentenceIndex && k < wordIndex) {
+                  v.input = v.word
+                } else {
+                  v.input = ''
+                }
               })
             })
           })
@@ -557,7 +555,7 @@ function onContextMenu(e: MouseEvent, sentence: Sentence, i, j, w) {
       },
       {
         label: "有道词典翻译",
-        children:[
+        children: [
           {
             label: "翻译单词",
             onClick: () => {
@@ -580,9 +578,9 @@ function onContextMenu(e: MouseEvent, sentence: Sentence, i, j, w) {
 onMounted(() => {
   // 初始化当前单词信息
   if (props.article.sections &&
-      props.article.sections[sectionIndex] &&
-      props.article.sections[sectionIndex][sentenceIndex] &&
-      props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]) {
+    props.article.sections[sectionIndex] &&
+    props.article.sections[sectionIndex][sentenceIndex] &&
+    props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]) {
     updateCurrentWordInfo(props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]);
   }
 
@@ -590,9 +588,9 @@ onMounted(() => {
     wrong = input = ''
     // 重置时更新当前单词信息
     if (props.article.sections &&
-        props.article.sections[sectionIndex] &&
-        props.article.sections[sectionIndex][sentenceIndex] &&
-        props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]) {
+      props.article.sections[sectionIndex] &&
+      props.article.sections[sectionIndex][sentenceIndex] &&
+      props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]) {
       updateCurrentWordInfo(props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]);
     }
   })
@@ -629,10 +627,10 @@ let showQuestions = $ref(false)
                 <span class="sentence"
                       v-for="(sentence,indexJ) in section">
                   <span
-                      v-for="(word,indexW) in sentence.words"
-                      @contextmenu="e=>onContextMenu(e,sentence,indexI,indexJ,indexW)"
-                      class="word"
-                      :class="[(sectionIndex>indexI
+                    v-for="(word,indexW) in sentence.words"
+                    @contextmenu="e=>onContextMenu(e,sentence,indexI,indexJ,indexW)"
+                    class="word"
+                    :class="[(sectionIndex>indexI
                         ?'wrote':
                         (sectionIndex>=indexI &&sentenceIndex>indexJ)
                         ?'wrote' :
@@ -658,11 +656,11 @@ let showQuestions = $ref(false)
                       <span class="border-bottom" v-if="settingStore.dictation"></span>
                     </span>
                    <Space
-                       v-if="word.nextSpace"
-                       class="word-end"
-                       :is-wrong="false"
-                       :is-wait="isCurrent(indexI,indexJ,indexW) && isSpace"
-                       :is-shake="isCurrent(indexI,indexJ,indexW) && isSpace && wrong !== ''"
+                     v-if="word.nextSpace"
+                     class="word-end"
+                     :is-wrong="false"
+                     :is-wait="isCurrent(indexI,indexJ,indexW) && isSpace"
+                     :is-shake="isCurrent(indexI,indexJ,indexW) && isSpace && wrong !== ''"
                    />
                   </span>
                 </span>
@@ -692,11 +690,11 @@ let showQuestions = $ref(false)
 
     <div class="options flex justify-center mb-50" v-if="isEnd">
       <BaseButton
-          @click="init">重新练习
+        @click="init">重新练习
       </BaseButton>
       <BaseButton
-          v-if="store.currentBook.lastLearnIndex < store.currentBook.articles.length - 1"
-          @click="emit('next')">下一篇
+        v-if="store.currentBook.lastLearnIndex < store.currentBook.articles.length - 1"
+        @click="emit('next')">下一篇
       </BaseButton>
     </div>
 
