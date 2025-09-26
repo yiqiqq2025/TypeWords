@@ -64,7 +64,7 @@ let wordFormRef = $ref()
 const wordRules = reactive({
   word: [
     {required: true, message: '请输入单词', trigger: 'blur'},
-    {max: 30, message: '名称不能超过30个字符', trigger: 'blur'},
+    {max: 100, message: '名称不能超过100个字符', trigger: 'blur'},
   ],
 })
 let studyLoading = $ref(false)
