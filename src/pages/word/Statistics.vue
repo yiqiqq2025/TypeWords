@@ -120,7 +120,7 @@ function options(emitType: string) {
       </div>
 
       <div class="text-xl text-center flex flex-col justify-around">
-        <div>非常棒! 坚持了 <span class="color-green font-bold text-2xl">
+        <div>非常棒! 坚持了 <span class="color-emerald-500 font-bold text-2xl">
           {{ dayjs().diff(statStore.startDate, 'm') }}</span>分钟
         </div>
       </div>
@@ -133,7 +133,7 @@ function options(emitType: string) {
             错词
           </div>
         </div>
-        <div class="flex justify-center items-center py-3 px-10 rounded-md color-green-600 flex-col"
+        <div class="flex justify-center items-center py-3 px-10 rounded-md color-emerald-500 flex-col"
              style="background: rgb(231,248,241)">
           <div class="text-3xl">{{ statStore.total - statStore.wrong }}</div>
           <div class="center gap-2">
@@ -147,8 +147,8 @@ function options(emitType: string) {
         <div class="title text-align-center mb-2">本周学习记录</div>
         <div class="flex gap-4 color-gray">
           <div
-              class="w-8 h-8 rounded-full center"
-              :class="item ? 'bg-green color-white' : 'bg-gray-200'"
+              class="w-8 h-8 rounded-md center"
+              :class="item ? 'bg-emerald-500 color-white' : 'bg-gray-200'"
               v-for="(item, i) in list"
               :key="i"
           >{{ i + 1 }}

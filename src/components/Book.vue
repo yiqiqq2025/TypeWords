@@ -1,15 +1,20 @@
 <script setup lang="ts">
-import {Dict} from "@/types/types.ts";
+import { Dict } from "@/types/types.ts";
 import Progress from '@/components/base/Progress.vue'
 import Checkbox from "@/components/base/checkbox/Checkbox.vue";
 
-const props = defineProps<{
+interface IProps {
   item?: Partial<Dict>;
   quantifier?: string
   isAdd: boolean
   showCheckbox?: boolean
   checked?: boolean
-}>()
+  showProgress?: boolean
+}
+
+const props = withDefaults(defineProps<IProps>(), {
+  showProgress: true
+})
 
 defineEmits<{
   check: []
@@ -21,6 +26,7 @@ const progress = $computed(() => {
 })
 
 const studyProgress = $computed(() => {
+  if (!props.showProgress) return
   if (props.item.complete) return props.item?.length + '/'
   return props.item?.lastLearnIndex ? props.item?.lastLearnIndex + '/' : ''
 })
@@ -37,7 +43,7 @@ const studyProgress = $computed(() => {
         <div>{{ studyProgress }}{{ item?.length }}{{ quantifier }}</div>
       </div>
       <div class="absolute bottom-2 left-3 right-3">
-        <Progress v-if="item?.lastLearnIndex || item.complete" class="mt-1"
+        <Progress v-if="(item?.lastLearnIndex || item.complete) && showProgress" class="mt-1"
                   :percentage="progress"
                   :show-text="false"></Progress>
       </div>

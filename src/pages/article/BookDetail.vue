@@ -185,7 +185,7 @@ const totalSpend = $computed(() => {
             <div class="font-family text-base mb-4" v-if="currentPractice.length">
               <div>学习记录：{{ msToHourMinute(total(currentPractice, 'spend'))}}</div>
               <div class="item" v-for="i in currentPractice">
-                {{_dateFormat(i.startDate,'YYYY/MM/DD HH-mm')}}: {{ msToHourMinute(i.spend) }}
+                {{_dateFormat(i.startDate,'YYYY/MM/DD HH:mm')}}: {{ msToHourMinute(i.spend) }}
               </div>
             </div>
             <div class="en-article-family title text-xl">
