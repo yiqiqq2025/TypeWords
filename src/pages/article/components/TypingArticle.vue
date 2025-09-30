@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, watch } from "vue"
+import {inject, onMounted, onUnmounted, provide, watch} from "vue"
 import { Article, ArticleWord, Sentence, Word } from "@/types/types.ts";
 import { useBaseStore } from "@/stores/base.ts";
 import { useSettingStore } from "@/stores/setting.ts";
 import { usePlayBeep, usePlayCorrect, usePlayKeyboardAudio } from "@/hooks/sound.ts";
 import { emitter, EventKey } from "@/utils/eventBus.ts";
-import { _nextTick } from "@/utils";
+import {_dateFormat, _nextTick, msToMinute} from "@/utils";
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { getTranslateText } from "@/hooks/article.ts";
@@ -45,7 +45,6 @@ const emit = defineEmits<{
   nextWord: [val: ArticleWord],
   complete: [],
   next: [],
-  edit: [val: Article]
 }>()
 
 let typeArticleRef = $ref<HTMLInputElement>(null)
@@ -493,15 +492,6 @@ function onContextMenu(e: MouseEvent, sentence: Sentence, i, j, w) {
         label: "复制",
         children:[
           {
-            label: "复制单词",
-            onClick: () => {
-              let word = props.article.sections[i][j].words[w]
-              navigator.clipboard.writeText(word.word).then(r => {
-                Toast.success('已复制')
-              })
-            }
-          },
-          {
             label: "复制句子",
             onClick: () => {
               navigator.clipboard.writeText(sentence.text).then(r => {
@@ -509,6 +499,15 @@ function onContextMenu(e: MouseEvent, sentence: Sentence, i, j, w) {
               })
             }
           },
+          {
+            label: "复制单词",
+            onClick: () => {
+              let word = props.article.sections[i][j].words[w]
+              navigator.clipboard.writeText(word.word).then(r => {
+                Toast.success('已复制')
+              })
+            }
+          }
         ]
       },
       {
@@ -582,7 +581,6 @@ onMounted(() => {
     props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]) {
     updateCurrentWordInfo(props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]);
   }
-
   emitter.on(EventKey.resetWord, () => {
     wrong = input = ''
     // 重置时更新当前单词信息
@@ -608,6 +606,9 @@ function isCurrent(i: number, j: number, w: number) {
 }
 
 let showQuestions = $ref(false)
+
+const currentPractice = inject('currentPractice',[])
+
 </script>
 
 <template>
@@ -687,7 +688,7 @@ let showQuestions = $ref(false)
       <div class="cursor" v-if="!isEnd" :style="{top:cursor.top+'px',left:cursor.left+'px'}"></div>
     </div>
 
-    <div class="options flex justify-center mb-50" v-if="isEnd">
+    <div class="options flex justify-center" v-if="isEnd">
       <BaseButton
         @click="init">重新练习
       </BaseButton>
@@ -695,6 +696,14 @@ let showQuestions = $ref(false)
         v-if="store.currentBook.lastLearnIndex < store.currentBook.articles.length - 1"
         @click="emit('next')">下一篇
       </BaseButton>
+    </div>
+    <div class="mb-50 mt-10" v-if="currentPractice.length && isEnd">
+      <div class="title">历史记录</div>
+      <div class="item text-lg" :class="i === currentPractice.length-1 && 'color-red'" v-for="(item,i) in currentPractice">
+        <span>{{ i + 1}}.</span>
+        <span class="ml-2 mr-4">{{ _dateFormat(item.startDate,'YYYY-MM-DD HH:mm')}}</span>
+        <span>{{ msToMinute(item.spend)}}</span>
+      </div>
     </div>
 
     <template v-if="false">
