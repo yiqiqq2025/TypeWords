@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {onMounted, onUnmounted, watch} from "vue";
+import {computed, onMounted, onUnmounted, provide, watch} from "vue";
 import {useBaseStore} from "@/stores/base.ts";
 import {emitter, EventKey, useEvents} from "@/utils/eventBus.ts";
 import {useSettingStore} from "@/stores/setting.ts";
@@ -313,27 +313,28 @@ function play2(e) {
   }
 }
 
-const currentPractice = $computed(() => {
+const currentPractice = computed(() => {
   if (store.sbook.statistics?.length) {
     return store.sbook.statistics.filter(v => v.title === articleData.article.title)
   }
   return []
 })
+
+provide('currentPractice', currentPractice)
 </script>
 <template>
   <PracticeLayout
-      v-loading="loading"
-      panelLeft="var(--article-panel-margin-left)">
+    v-loading="loading"
+    panelLeft="var(--article-panel-margin-left)">
     <template v-slot:practice>
       <TypingArticle
-          ref="typingArticleRef"
-          @edit="edit"
-          @wrong="wrong"
-          @next="next"
-          @nextWord="nextWord"
-          @play="play2"
-          @complete="complete"
-          :article="articleData.article"
+        ref="typingArticleRef"
+        @wrong="wrong"
+        @next="next"
+        @nextWord="nextWord"
+        @play="play2"
+        @complete="complete"
+        :article="articleData.article"
       />
     </template>
     <template v-slot:panel>
@@ -345,17 +346,17 @@ const currentPractice = $computed(() => {
         </template>
         <div class="panel-page-item pl-4">
           <ArticleList
-              :isActive="settingStore.showPanel"
-              :static="false"
-              :show-translate="settingStore.translate"
-              @click="changeArticle"
-              :active-id="articleData.article.id"
-              :list="articleData.list ">
+            :isActive="settingStore.showPanel"
+            :static="false"
+            :show-translate="settingStore.translate"
+            @click="changeArticle"
+            :active-id="articleData.article.id"
+            :list="articleData.list ">
             <template v-slot:suffix="{item,index}">
               <BaseIcon
-                  :class="!isArticleCollect(item) ? 'collect' : 'fill'"
-                  @click.stop="toggleArticleCollect(item)"
-                  :title="!isArticleCollect(item) ? '收藏' : '取消收藏'">
+                :class="!isArticleCollect(item) ? 'collect' : 'fill'"
+                @click.stop="toggleArticleCollect(item)"
+                :title="!isArticleCollect(item) ? '收藏' : '取消收藏'">
                 <IconFluentStar16Regular v-if="!isArticleCollect(item)"/>
                 <IconFluentStar16Filled v-else/>
               </BaseIcon>
@@ -368,10 +369,10 @@ const currentPractice = $computed(() => {
       <div class="footer">
         <Tooltip :title="settingStore.showToolbar?'收起':'展开'">
           <IconFluentChevronLeft20Filled
-              @click="settingStore.showToolbar = !settingStore.showToolbar"
-              class="arrow"
-              :class="!settingStore.showToolbar && 'down'"
-              color="#999"/>
+            @click="settingStore.showToolbar = !settingStore.showToolbar"
+            class="arrow"
+            :class="!settingStore.showToolbar && 'down'"
+            color="#999"/>
         </Tooltip>
         <div class="bottom">
           <div class="flex justify-between items-center gap-2">
@@ -410,27 +411,27 @@ const currentPractice = $computed(() => {
                   <Switch v-model="settingStore.articleSound"/>
                 </Tooltip>
                 <BaseIcon
-                    :title="`下一句(${settingStore.shortcutKeyMap[ShortcutKey.Next]})`"
-                    @click="skip">
+                  :title="`下一句(${settingStore.shortcutKeyMap[ShortcutKey.Next]})`"
+                  @click="skip">
                   <IconFluentArrowBounce20Regular class="transform-rotate-180"/>
                 </BaseIcon>
                 <BaseIcon
-                    :title="`重听(${settingStore.shortcutKeyMap[ShortcutKey.PlayWordPronunciation]})`"
-                    @click="play">
+                  :title="`重听(${settingStore.shortcutKeyMap[ShortcutKey.PlayWordPronunciation]})`"
+                  @click="play">
                   <IconFluentReplay20Regular/>
                 </BaseIcon>
 
                 <BaseIcon
-                    @click="settingStore.dictation = !settingStore.dictation"
-                    :title="`开关默写模式(${settingStore.shortcutKeyMap[ShortcutKey.ToggleDictation]})`"
+                  @click="settingStore.dictation = !settingStore.dictation"
+                  :title="`开关默写模式(${settingStore.shortcutKeyMap[ShortcutKey.ToggleDictation]})`"
                 >
                   <IconFluentEyeOff16Regular v-if="settingStore.dictation"/>
                   <IconFluentEye16Regular v-else/>
                 </BaseIcon>
 
                 <BaseIcon
-                    :title="`开关释义显示(${settingStore.shortcutKeyMap[ShortcutKey.ToggleShowTranslate]})`"
-                    @click="settingStore.translate = !settingStore.translate">
+                  :title="`开关释义显示(${settingStore.shortcutKeyMap[ShortcutKey.ToggleShowTranslate]})`"
+                  @click="settingStore.translate = !settingStore.translate">
                   <IconFluentTranslate16Regular v-if="settingStore.translate"/>
                   <IconFluentTranslateOff16Regular v-else/>
                 </BaseIcon>
@@ -441,8 +442,8 @@ const currentPractice = $computed(() => {
                 <!--                  @click="emitter.emit(ShortcutKey.EditArticle)"-->
                 <!--              />-->
                 <BaseIcon
-                    @click="settingStore.showPanel = !settingStore.showPanel"
-                    :title="`面板(${settingStore.shortcutKeyMap[ShortcutKey.TogglePanel]})`">
+                  @click="settingStore.showPanel = !settingStore.showPanel"
+                  :title="`面板(${settingStore.shortcutKeyMap[ShortcutKey.TogglePanel]})`">
                   <IconFluentTextListAbcUppercaseLtr20Regular/>
                 </BaseIcon>
               </div>
@@ -454,9 +455,9 @@ const currentPractice = $computed(() => {
   </PracticeLayout>
 
   <EditSingleArticleModal
-      v-model="showEditArticle"
-      :article="editArticle"
-      @save="saveArticle"
+    v-model="showEditArticle"
+    :article="editArticle"
+    @save="saveArticle"
   />
 
   <ConflictNotice/>
