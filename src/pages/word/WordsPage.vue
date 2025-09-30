@@ -47,7 +47,6 @@ async function init() {
     }
   }
   if (!currentStudy.new.length && store.sdict.words.length) {
-    debugger
     let d = localStorage.getItem(PracticeSaveWordKey.key)
     if (d) {
       try {

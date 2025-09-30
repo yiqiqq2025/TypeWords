@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import {inject, onMounted, onUnmounted, provide, watch} from "vue"
+import { inject, onMounted, onUnmounted, provide, watch } from "vue"
 import { Article, ArticleWord, Sentence, Word } from "@/types/types.ts";
 import { useBaseStore } from "@/stores/base.ts";
 import { useSettingStore } from "@/stores/setting.ts";
 import { usePlayBeep, usePlayCorrect, usePlayKeyboardAudio } from "@/hooks/sound.ts";
 import { emitter, EventKey } from "@/utils/eventBus.ts";
-import {_dateFormat, _nextTick, msToMinute} from "@/utils";
+import { _dateFormat, _nextTick, msToMinute } from "@/utils";
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { getTranslateText } from "@/hooks/article.ts";
@@ -18,6 +18,7 @@ import Space from "@/pages/article/components/Space.vue";
 import { useWordOptions } from "@/hooks/dict.ts";
 import nlp from "compromise/three";
 import { nanoid } from "nanoid";
+import { PracticeSaveArticleKey } from "@/utils/const.ts";
 
 interface IProps {
   article: Article,
@@ -83,6 +84,13 @@ const store = useBaseStore()
 const settingStore = useSettingStore()
 
 watch([() => sectionIndex, () => sentenceIndex, () => wordIndex, () => stringIndex], ([a, b, c,]) => {
+  localStorage.setItem(PracticeSaveArticleKey.key, JSON.stringify({
+    sectionIndex,
+    sentenceIndex,
+    wordIndex,
+    stringIndex,
+    title: props.article.title
+  }))
   checkCursorPosition(a, b, c)
 })
 
@@ -104,20 +112,26 @@ watch(() => isEnd, n => {
 
 function init() {
   isSpace = isEnd = false
-  wrong = input = ''
-  sectionIndex = 0
-  sentenceIndex = 0
-  wordIndex = 0
-  stringIndex = 0
-  //todo 这在直接修改不太合理
-  props.article.sections.map((v) => {
-    v.map((w) => {
-      w.words.map(s => {
-        s.input = ''
+  let d = localStorage.getItem(PracticeSaveArticleKey.key)
+  if (d) {
+    let obj = JSON.parse(d)
+    jump(obj.sectionIndex, obj.sentenceIndex, obj.wordIndex)
+  } else {
+    wrong = input = ''
+    sectionIndex = 0
+    sentenceIndex = 0
+    wordIndex = 0
+    stringIndex = 0
+    //todo 这在直接修改不太合理
+    props.article.sections.map((v) => {
+      v.map((w) => {
+        w.words.map(s => {
+          s.input = ''
+        })
       })
     })
-  })
-  typeArticleRef?.scrollTo({top: 0, behavior: "smooth"})
+    typeArticleRef?.scrollTo({top: 0, behavior: "smooth"})
+  }
   checkTranslateLocation().then(() => checkCursorPosition())
 }
 
@@ -241,6 +255,7 @@ function updateCurrentWordInfo(currentWord: ArticleWord) {
 }
 
 let isTyping = false
+
 function onTyping(e: KeyboardEvent) {
   if (isTyping) return;
   if (!props.article.sections.length) return
@@ -303,7 +318,6 @@ function onTyping(e: KeyboardEvent) {
     } else {
       wrong = ' '
       playBeep()
-
       setTimeout(() => {
         wrong = ''
         wrong = input = ''
@@ -311,6 +325,7 @@ function onTyping(e: KeyboardEvent) {
     }
     playKeyboardAudio()
   } else {
+    //如果是首句首词
     if (sectionIndex === 0 && sentenceIndex === 0 && wordIndex === 0 && stringIndex === 0) {
       emit('play', {sentence: currentSection[sentenceIndex], handle: false})
     }
@@ -390,7 +405,6 @@ function onTyping(e: KeyboardEvent) {
 
     // 更新当前单词信息
     updateCurrentWordInfo(currentWord);
-
     playKeyboardAudio()
   }
   isTyping = false
@@ -458,6 +472,30 @@ function hideSentence() {
   hoverIndex = {sectionIndex: -1, sentenceIndex: -1, wordIndex: -1}
 }
 
+function jump(i, j, w, sentence?) {
+  sectionIndex = i
+  sentenceIndex = j
+  //todo 这里有可能是符号，要处理下
+  wordIndex = w
+  stringIndex = 0
+  input = wrong = ''
+  isEnd = isSpace = false
+  props.article.sections.map((v, i) => {
+    v.map((w, j) => {
+      w.words.map((v, k) => {
+        if (i <= sectionIndex && j <= sentenceIndex && k < wordIndex) {
+          v.input = v.word
+        } else {
+          v.input = ''
+        }
+      })
+    })
+  })
+  if (sentence) {
+    emit('play', {sentence: sentence, handle: false})
+  }
+}
+
 function onContextMenu(e: MouseEvent, sentence: Sentence, i, j, w) {
   const selectedText = window.getSelection().toString();
   console.log(selectedText);
@@ -490,7 +528,7 @@ function onContextMenu(e: MouseEvent, sentence: Sentence, i, j, w) {
       },
       {
         label: "复制",
-        children:[
+        children: [
           {
             label: "复制句子",
             onClick: () => {
@@ -513,25 +551,7 @@ function onContextMenu(e: MouseEvent, sentence: Sentence, i, j, w) {
       {
         label: "从这开始",
         onClick: () => {
-          sectionIndex = i
-          sentenceIndex = j
-          //todo 这里有可能是符号，要处理下
-          wordIndex = w + 1
-          stringIndex = 0
-          input = wrong = ''
-          isEnd = isSpace = false
-          props.article.sections.map((v, i) => {
-            v.map((w, j) => {
-              w.words.map((v, k) => {
-                if (i <= sectionIndex && j <= sentenceIndex && k < wordIndex) {
-                  v.input = v.word
-                } else {
-                  v.input = ''
-                }
-              })
-            })
-          })
-          emit('play', {sentence: sentence, handle: false})
+          jump(i, j, w + 1, sentence)
         }
       },
       {
@@ -576,18 +596,18 @@ function onContextMenu(e: MouseEvent, sentence: Sentence, i, j, w) {
 onMounted(() => {
   // 初始化当前单词信息
   if (props.article.sections &&
-    props.article.sections[sectionIndex] &&
-    props.article.sections[sectionIndex][sentenceIndex] &&
-    props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]) {
+      props.article.sections[sectionIndex] &&
+      props.article.sections[sectionIndex][sentenceIndex] &&
+      props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]) {
     updateCurrentWordInfo(props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]);
   }
   emitter.on(EventKey.resetWord, () => {
     wrong = input = ''
     // 重置时更新当前单词信息
     if (props.article.sections &&
-      props.article.sections[sectionIndex] &&
-      props.article.sections[sectionIndex][sentenceIndex] &&
-      props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]) {
+        props.article.sections[sectionIndex] &&
+        props.article.sections[sectionIndex][sentenceIndex] &&
+        props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]) {
       updateCurrentWordInfo(props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]);
     }
   })
@@ -607,7 +627,7 @@ function isCurrent(i: number, j: number, w: number) {
 
 let showQuestions = $ref(false)
 
-const currentPractice = inject('currentPractice',[])
+const currentPractice = inject('currentPractice', [])
 
 </script>
 
@@ -627,10 +647,10 @@ const currentPractice = inject('currentPractice',[])
                 <span class="sentence"
                       v-for="(sentence,indexJ) in section">
                   <span
-                    v-for="(word,indexW) in sentence.words"
-                    @contextmenu="e=>onContextMenu(e,sentence,indexI,indexJ,indexW)"
-                    class="word"
-                    :class="[(sectionIndex>indexI
+                      v-for="(word,indexW) in sentence.words"
+                      @contextmenu="e=>onContextMenu(e,sentence,indexI,indexJ,indexW)"
+                      class="word"
+                      :class="[(sectionIndex>indexI
                         ?'wrote':
                         (sectionIndex>=indexI &&sentenceIndex>indexJ)
                         ?'wrote' :
@@ -656,11 +676,11 @@ const currentPractice = inject('currentPractice',[])
                       <span class="border-bottom" v-if="settingStore.dictation"></span>
                     </span>
                    <Space
-                     v-if="word.nextSpace"
-                     class="word-end"
-                     :is-wrong="false"
-                     :is-wait="isCurrent(indexI,indexJ,indexW) && isSpace"
-                     :is-shake="isCurrent(indexI,indexJ,indexW) && isSpace && wrong !== ''"
+                       v-if="word.nextSpace"
+                       class="word-end"
+                       :is-wrong="false"
+                       :is-wait="isCurrent(indexI,indexJ,indexW) && isSpace"
+                       :is-shake="isCurrent(indexI,indexJ,indexW) && isSpace && wrong !== ''"
                    />
                   </span>
                 </span>
@@ -690,19 +710,20 @@ const currentPractice = inject('currentPractice',[])
 
     <div class="options flex justify-center" v-if="isEnd">
       <BaseButton
-        @click="init">重新练习
+          @click="init">重新练习
       </BaseButton>
       <BaseButton
-        v-if="store.currentBook.lastLearnIndex < store.currentBook.articles.length - 1"
-        @click="emit('next')">下一篇
+          v-if="store.currentBook.lastLearnIndex < store.currentBook.articles.length - 1"
+          @click="emit('next')">下一篇
       </BaseButton>
     </div>
     <div class="mb-50 mt-10" v-if="currentPractice.length && isEnd">
       <div class="title">历史记录</div>
-      <div class="item text-lg" :class="i === currentPractice.length-1 && 'color-red'" v-for="(item,i) in currentPractice">
-        <span>{{ i + 1}}.</span>
-        <span class="ml-2 mr-4">{{ _dateFormat(item.startDate,'YYYY-MM-DD HH:mm')}}</span>
-        <span>{{ msToMinute(item.spend)}}</span>
+      <div class="item text-lg" :class="i === currentPractice.length-1 && 'color-red'"
+           v-for="(item,i) in currentPractice">
+        <span>{{ i + 1 }}.</span>
+        <span class="ml-2 mr-4">{{ _dateFormat(item.startDate, 'YYYY-MM-DD HH:mm') }}</span>
+        <span>{{ msToMinute(item.spend) }}</span>
       </div>
     </div>
 
