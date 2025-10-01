@@ -18,7 +18,8 @@ import Space from "@/pages/article/components/Space.vue";
 import { useWordOptions } from "@/hooks/dict.ts";
 import nlp from "compromise/three";
 import { nanoid } from "nanoid";
-import { PracticeSaveArticleKey } from "@/utils/const.ts";
+import { PracticeSaveArticleKey, PracticeSaveWordKey } from "@/utils/const.ts";
+import { usePracticeStore } from "@/stores/practice.ts";
 
 interface IProps {
   article: Article,
@@ -46,6 +47,7 @@ const emit = defineEmits<{
   nextWord: [val: ArticleWord],
   complete: [],
   next: [],
+  replay: [],
 }>()
 
 let typeArticleRef = $ref<HTMLInputElement>(null)
@@ -82,19 +84,26 @@ const {
 
 const store = useBaseStore()
 const settingStore = useSettingStore()
+const statStore = usePracticeStore()
 
 watch([() => sectionIndex, () => sentenceIndex, () => wordIndex, () => stringIndex], ([a, b, c,]) => {
   localStorage.setItem(PracticeSaveArticleKey.key, JSON.stringify({
-    sectionIndex,
-    sentenceIndex,
-    wordIndex,
-    stringIndex,
-    title: props.article.title
+    version: PracticeSaveArticleKey.version,
+    val: {
+      practiceData: {
+        sectionIndex,
+        sentenceIndex,
+        wordIndex,
+        stringIndex,
+        id: props.article.id
+      },
+      statStoreData: statStore.$state,
+    }
   }))
   checkCursorPosition(a, b, c)
 })
 
-watch(() => props.article, init, {immediate: true})
+// watch(() => props.article.id, init, {immediate: true})
 
 watch(() => settingStore.translate, () => {
   checkTranslateLocation().then(() => checkCursorPosition())
@@ -111,11 +120,19 @@ watch(() => isEnd, n => {
 })
 
 function init() {
+  if (!props.article.id) return
   isSpace = isEnd = false
   let d = localStorage.getItem(PracticeSaveArticleKey.key)
   if (d) {
-    let obj = JSON.parse(d)
-    jump(obj.sectionIndex, obj.sentenceIndex, obj.wordIndex)
+    try {
+      let obj = JSON.parse(d)
+      let data = obj.val
+      statStore.$patch(data.statStoreData)
+      jump(data.practiceData.sectionIndex, data.practiceData.sentenceIndex, data.practiceData.wordIndex)
+    } catch (e) {
+      localStorage.removeItem(PracticeSaveArticleKey.key)
+      init()
+    }
   } else {
     wrong = input = ''
     sectionIndex = 0
@@ -188,18 +205,14 @@ function checkTranslateLocation() {
   })
 }
 
-let lockNextSentence = false
+let isTyping = false
+//专用锁，因为这个方法父级要调用
+let lock = false
 
 function nextSentence() {
-  if (lockNextSentence || isEnd) return
+  if (lock || isEnd) return
   checkTranslateLocation()
-  lockNextSentence = true
-  // wordData.words = [
-  //   {"word": "pharmacy", "trans": ["药房；配药学，药剂学；制药业；一批备用药品"], "phonetic0": "'fɑrməsi", "phonetic1": "'fɑːməsɪ"},
-  //   // {"word": "foregone", "trans": ["过去的；先前的；预知的；预先决定的", "发生在…之前（forego的过去分词）"], "phonetic0": "'fɔrɡɔn", "phonetic1": "fɔː'gɒn"}, {"word": "president", "trans": ["总统；董事长；校长；主席"], "phonetic0": "'prɛzɪdənt", "phonetic1": "'prezɪd(ə)nt"}, {"word": "plastic", "trans": ["塑料的；（外科）造型的；可塑的", "塑料制品；整形；可塑体"], "phonetic0": "'plæstɪk", "phonetic1": "'plæstɪk"}, {"word": "provisionally", "trans": ["临时地，暂时地"], "phonetic0": "", "phonetic1": ""}, {"word": "incentive", "trans": ["动机；刺激", "激励的；刺激的"], "phonetic0": "ɪn'sɛntɪv", "phonetic1": "ɪn'sentɪv"}, {"word": "calculate", "trans": ["计算；以为；作打算"], "phonetic0": "'kælkjulet", "phonetic1": "'kælkjʊleɪt"}
-  // ]
-  // return
-
+  lock = true
   let currentSection = props.article.sections[sectionIndex]
   let currentSentence = currentSection[sentenceIndex]
   //这里把未输入的单词补全，因为删除时会用到input
@@ -207,22 +220,18 @@ function nextSentence() {
     word.input = word.input + word.word.slice(word.input?.length ?? 0)
   })
 
-  isSpace = false
-  stringIndex = 0
-  wordIndex = 0
-  input = wrong = ''
-
   //todo 计得把略过的单词加上统计里面去
   // if (!store.allIgnoreWords.includes(currentWord.word.toLowerCase()) && !currentWord.isSymbol) {
   //   statisticsStore.inputNumber++
   // }
-
-
+  isSpace = false;
+  input = wrong = ''
+  stringIndex = 0;
+  wordIndex = 0
   sentenceIndex++
   if (!currentSection[sentenceIndex]) {
     sentenceIndex = 0
     sectionIndex++
-
     if (!props.article.sections[sectionIndex]) {
       console.log('打完了')
       isEnd = true
@@ -233,88 +242,35 @@ function nextSentence() {
   } else {
     emit('play', {sentence: currentSection[sentenceIndex], handle: false})
   }
-
-  // 如果有新的单词，更新当前单词信息
-  if (!isEnd && props.article.sections[sectionIndex] &&
-      props.article.sections[sectionIndex][sentenceIndex] &&
-      props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]) {
-    updateCurrentWordInfo(props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]);
-  }
-
-  lockNextSentence = false
+  lock = false
 }
-
-// 在全局对象中存储当前单词信息，以便其他模块可以访问
-function updateCurrentWordInfo(currentWord: ArticleWord) {
-  window.__CURRENT_WORD_INFO__ = {
-    word: currentWord.word,
-    input: currentWord.input || '',
-    inputLock: isSpace,
-    containsSpace: currentWord.word.includes(' ')
-  };
-}
-
-let isTyping = false
 
 function onTyping(e: KeyboardEvent) {
-  if (isTyping) return;
   if (!props.article.sections.length) return
+  if (isTyping) return;
   isTyping = true;
   // console.log('keyDown', e.key, e.code, e.keyCode)
-  wrong = ''
   let currentSection = props.article.sections[sectionIndex]
   let currentSentence = currentSection[sentenceIndex]
   let currentWord: ArticleWord = currentSentence.words[wordIndex]
+  wrong = ''
 
-  // 更新当前单词信息
-  updateCurrentWordInfo(currentWord);
-
-  const nextWord = () => {
-    isSpace = false
-    stringIndex = 0
-    wordIndex++
-
-    emit('nextWord', currentWord)
-
-    // 只在需要时更新当前单词信息，不自动跳转到下一句话
-    if (wordIndex < currentSentence.words.length) {
-      // 更新当前单词信息
-      updateCurrentWordInfo(currentSentence.words[wordIndex]);
+  const next = () => {
+    isSpace = false;
+    input = wrong = ''
+    stringIndex = 0;
+    // 检查下一个单词是否存在
+    if (wordIndex + 1 < currentSentence.words.length) {
+      wordIndex++;
+      emit('nextWord', currentWord);
+    } else {
+      nextSentence()
     }
   }
 
   if (isSpace) {
-    // 在单词之间的空格处理
     if (e.code === 'Space') {
-      // 检查下一个单词是否存在
-      const hasNextWord = wordIndex + 1 < currentSentence.words.length;
-
-      // 当按下空格键时，移动到下一个单词，而不是下跳过句子，末尾跳转到下一个
-      if (hasNextWord) {
-        // 重置isSpace状态
-        isSpace = false;
-        stringIndex = 0;
-        wordIndex++;
-        input = '';
-
-        emit('nextWord', currentWord);
-
-        // 获取下一个单词
-        currentWord = currentSentence.words[wordIndex];
-
-        if (currentWord && currentWord.word && currentWord.word[0] === ' ') {
-          input = ' ';
-          if (!currentWord.input) currentWord.input = '';
-          currentWord.input = input;
-          stringIndex = 1;
-        }
-
-        // 更新当前单词信息
-        updateCurrentWordInfo(currentWord);
-      } else {
-        // 句子末尾跳转到下一句话
-        nextSentence();
-      }
+      next()
     } else {
       wrong = ' '
       playBeep()
@@ -323,24 +279,13 @@ function onTyping(e: KeyboardEvent) {
         wrong = input = ''
       }, 500)
     }
-    playKeyboardAudio()
   } else {
     //如果是首句首词
     if (sectionIndex === 0 && sentenceIndex === 0 && wordIndex === 0 && stringIndex === 0) {
       emit('play', {sentence: currentSection[sentenceIndex], handle: false})
     }
     let letter = e.key
-
-    // 如果是空格键，需要判断是作为输入还是切换单词
-    if (letter === ' ' || e.code === 'Space') {
-      // 如果当前单词包含空格，且当前输入位置应该是空格，则视为正常输入
-      if (currentWord.word.includes(' ') && currentWord.word[stringIndex] === ' ') {
-        letter = ' '
-      }
-    }
-
     let key = currentWord.word[stringIndex]
-
     // console.log('key', key,)
 
     let isRight = false
@@ -357,58 +302,23 @@ function onTyping(e: KeyboardEvent) {
     }
 
     input += letter
-
-    if (!currentWord.input) currentWord.input = ''
     currentWord.input = input
-    // console.log(currentWord.input)
-
-    wrong = ''
-    // console.log('匹配上了')
     stringIndex++
-    //如果当前词没有index，说明这个词完了，下一个是空格
+    //单词输入完毕
     if (!currentWord.word[stringIndex]) {
       input = ''
-      if (!currentWord.isSymbol) {
-        playCorrect()
-      }
-
-      // 检查是否是句子的最后一个单词
-      // const isLastWordInSentence = wordIndex + 1 >= currentSentence.words.length;
-      // if (isLastWordInSentence) {
-      //   // 如果是句子的最后一个单词，自动跳转到下一句，不用再输入空格
-      //   nextSentence();
-      // } else if (currentWord.nextSpace) {
-      //   // 如果不是最后一个单词，且需要空格，设置等待空格输入
-      //   isSpace = true;
-      // } else {
-      //   // 如果不需要空格，直接移动到下一个单词
-      //   nextWord();
-      // }
-      //换句不打空格不符合习惯
-
+      //如果不是符号，播放完成音效
+      if (!currentWord.isSymbol) playCorrect()
       if (currentWord.nextSpace) {
         isSpace = true
       } else {
-        if (wordIndex === currentSentence.words.length - 1) {
-          if (sectionIndex === props.article.sections.length - 1 && sentenceIndex === currentSection.length - 1) {
-            console.log('打完了')
-            isEnd = true
-            emit('complete')
-          } else {
-            nextSentence()
-          }
-        } else {
-          nextWord()
-        }
+        next()
       }
     }
-
-    // 更新当前单词信息
-    updateCurrentWordInfo(currentWord);
-    playKeyboardAudio()
   }
-  isTyping = false
+  playKeyboardAudio()
   e.preventDefault()
+  isTyping = false
 }
 
 function play() {
@@ -460,8 +370,8 @@ function del() {
       }
     }
     input = currentWord.input = currentWord.input.slice(0, stringIndex)
+    checkCursorPosition()
   }
-  checkCursorPosition()
 }
 
 function showSentence(i1: number = sectionIndex, i2: number = sentenceIndex, i3: number = wordIndex) {
@@ -594,22 +504,8 @@ function onContextMenu(e: MouseEvent, sentence: Sentence, i, j, w) {
 }
 
 onMounted(() => {
-  // 初始化当前单词信息
-  if (props.article.sections &&
-      props.article.sections[sectionIndex] &&
-      props.article.sections[sectionIndex][sentenceIndex] &&
-      props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]) {
-    updateCurrentWordInfo(props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]);
-  }
   emitter.on(EventKey.resetWord, () => {
     wrong = input = ''
-    // 重置时更新当前单词信息
-    if (props.article.sections &&
-        props.article.sections[sectionIndex] &&
-        props.article.sections[sectionIndex][sentenceIndex] &&
-        props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]) {
-      updateCurrentWordInfo(props.article.sections[sectionIndex][sentenceIndex].words[wordIndex]);
-    }
   })
   emitter.on(EventKey.onTyping, onTyping)
 })
@@ -619,7 +515,7 @@ onUnmounted(() => {
   emitter.off(EventKey.onTyping, onTyping)
 })
 
-defineExpose({showSentence, play, del, hideSentence, nextSentence})
+defineExpose({showSentence, play, del, hideSentence, nextSentence, init})
 
 function isCurrent(i: number, j: number, w: number) {
   return `${i}${j}${w}` === currentIndex
@@ -710,7 +606,7 @@ const currentPractice = inject('currentPractice', [])
 
     <div class="options flex justify-center" v-if="isEnd">
       <BaseButton
-          @click="init">重新练习
+          @click="emit('replay')">重新练习
       </BaseButton>
       <BaseButton
           v-if="store.currentBook.lastLearnIndex < store.currentBook.articles.length - 1"

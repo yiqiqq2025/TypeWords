@@ -1,18 +1,18 @@
 <script setup lang="ts">
 
-import {computed, onMounted, onUnmounted, provide, watch} from "vue";
-import {useBaseStore} from "@/stores/base.ts";
-import {emitter, EventKey, useEvents} from "@/utils/eventBus.ts";
-import {useSettingStore} from "@/stores/setting.ts";
-import {Article, ArticleItem, ArticleWord, Dict, DictType, ShortcutKey, Statistics, Word} from "@/types/types.ts";
-import {useDisableEventListener, useOnKeyboardEventListener, useStartKeyboardEventListener} from "@/hooks/event.ts";
+import { computed, onMounted, onUnmounted, provide, watch } from "vue";
+import { useBaseStore } from "@/stores/base.ts";
+import { emitter, EventKey, useEvents } from "@/utils/eventBus.ts";
+import { useSettingStore } from "@/stores/setting.ts";
+import { Article, ArticleItem, ArticleWord, Dict, DictType, ShortcutKey, Statistics, Word } from "@/types/types.ts";
+import { useDisableEventListener, useOnKeyboardEventListener, useStartKeyboardEventListener } from "@/hooks/event.ts";
 import useTheme from "@/hooks/theme.ts";
 import Toast from '@/components/base/toast/Toast.ts'
-import {_getDictDataByUrl, cloneDeep, msToHourMinute, msToMinute, total} from "@/utils";
-import {usePracticeStore} from "@/stores/practice.ts";
-import {useArticleOptions} from "@/hooks/dict.ts";
-import {genArticleSectionData, syncBookInMyStudyList, usePlaySentenceAudio} from "@/hooks/article.ts";
-import {getDefaultArticle, getDefaultDict, getDefaultWord} from "@/types/func.ts";
+import { _getDictDataByUrl, _nextTick, cloneDeep, msToHourMinute, msToMinute, total } from "@/utils";
+import { usePracticeStore } from "@/stores/practice.ts";
+import { useArticleOptions } from "@/hooks/dict.ts";
+import { genArticleSectionData, syncBookInMyStudyList, usePlaySentenceAudio } from "@/hooks/article.ts";
+import { getDefaultArticle, getDefaultDict, getDefaultWord } from "@/types/func.ts";
 import TypingArticle from "@/pages/article/components/TypingArticle.vue";
 import BaseIcon from "@/components/BaseIcon.vue";
 import Panel from "@/components/Panel.vue";
@@ -20,12 +20,14 @@ import ArticleList from "@/components/list/ArticleList.vue";
 import EditSingleArticleModal from "@/pages/article/components/EditSingleArticleModal.vue";
 import Tooltip from "@/components/base/Tooltip.vue";
 import ConflictNotice from "@/components/ConflictNotice.vue";
-import {useRoute, useRouter} from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import book_list from "@/assets/book-list.json";
 import PracticeLayout from "@/components/PracticeLayout.vue";
 import Switch from "@/components/base/Switch.vue";
 import Audio from "@/components/base/Audio.vue";
 import ArticleAudio from "@/pages/article/components/ArticleAudio.vue";
+import dayjs from "dayjs";
+import { PracticeSaveArticleKey } from "@/utils/const.ts";
 
 const store = useBaseStore()
 const settingStore = useSettingStore()
@@ -41,6 +43,9 @@ let typingArticleRef = $ref<any>()
 let loading = $ref<boolean>(false)
 let allWrongWords = new Set()
 let editArticle = $ref<Article>(getDefaultArticle())
+let speedMinute = $ref(0)
+let timer = $ref(0)
+let isFocus = true
 
 function write() {
   // console.log('write')
@@ -129,17 +134,77 @@ onMounted(() => {
   }
 })
 
+onUnmounted(() => {
+  clearInterval(timer)
+  savePracticeData(true, false)
+})
+
 useStartKeyboardEventListener()
 useDisableEventListener(() => loading)
+
+function savePracticeData(init = true, regenerate = true) {
+  let d = localStorage.getItem(PracticeSaveArticleKey.key)
+  if (d) {
+    try {
+      let obj = JSON.parse(d)
+      if (obj.val.practiceData.id !== articleData.article.id) {
+        throw new Error()
+      }
+      if (init) {
+        let data = obj.val
+        //如果全是0，说明未进行练习，直接重置
+        if (
+            data.practiceData.sectionIndex === 0 &&
+            data.practiceData.sentenceIndex === 0 &&
+            data.practiceData.wordIndex === 0
+        ) {
+          throw new Error()
+        }
+        //初始化时spend为0，把本地保存的值设置给statStore里面，再保存，保持一致。不然每次进来都是0
+        statStore.$patch(data.statStoreData)
+      }
+
+      obj.val.statStoreData = statStore.$state
+      localStorage.setItem(PracticeSaveArticleKey.key, JSON.stringify(obj))
+    } catch (e) {
+      localStorage.removeItem(PracticeSaveArticleKey.key)
+      regenerate && savePracticeData()
+    }
+  } else {
+    localStorage.setItem(PracticeSaveArticleKey.key, JSON.stringify({
+      version: PracticeSaveArticleKey.version,
+      val: {
+        practiceData: {
+          sectionIndex: 0,
+          sentenceIndex: 0,
+          wordIndex: 0,
+          stringIndex: 0,
+          id: articleData.article.id
+        },
+        statStoreData: statStore.$state,
+      }
+    }))
+  }
+}
 
 function setArticle(val: Article) {
   statStore.wrong = 0
   statStore.total = 0
   statStore.startDate = Date.now()
-
+  statStore.spend = 0
   allWrongWords = new Set()
   articleData.list[store.sbook.lastLearnIndex] = val
   articleData.article = val
+
+  savePracticeData()
+  clearInterval(timer)
+  timer = setInterval(() => {
+    if (isFocus) {
+      statStore.spend += 1000
+      savePracticeData(false)
+    }
+  }, 1000)
+
   let ignoreList = [store.allIgnoreWords, store.knownWords][settingStore.ignoreSimpleWord ? 0 : 1]
   articleData.article.sections.map((v, i) => {
     v.map((w) => {
@@ -150,11 +215,16 @@ function setArticle(val: Article) {
       })
     })
   })
+  _nextTick(typingArticleRef?.init)
 }
 
 function complete() {
+  clearInterval(timer)
+  setTimeout(() => {
+    localStorage.removeItem(PracticeSaveArticleKey.key)
+  }, 1500)
+
   //todo 有空了改成实时保存
-  statStore.spend = Date.now() - statStore.startDate
   let data: Partial<Statistics> & { title: string, id: string } = {
     id: articleData.article.id,
     title: articleData.article.title,
@@ -173,7 +243,7 @@ function complete() {
     s: ''
   }
   reportData.s = `name:${store.sbook.name},title:${store.sbook.lastLearnIndex}.${data.title},spend:${Number(statStore.spend / 1000 / 60).toFixed(1)}`
-  window.umami?.track('studyWordArticle', reportData)
+  window.umami?.track('studyArticleEnd', reportData)
   store.sbook.statistics.push(data as any)
   console.log(data, reportData)
 
@@ -292,12 +362,11 @@ useEvents([
   [ShortcutKey.EditArticle, shortcutKeyEdit],
 ])
 
-let speedMinute = $ref(0)
-let timer = $ref(0)
+
 onMounted(() => {
-  timer = setInterval(() => {
-    speedMinute = Math.floor((Date.now() - statStore.startDate) / 1000 / 60)
-  }, 1000)
+  document.addEventListener('visibilitychange', () => {
+    isFocus = !document.hidden
+  })
 })
 
 onUnmounted(() => {
@@ -315,7 +384,7 @@ function play2(e) {
 
 const currentPractice = computed(() => {
   if (store.sbook.statistics?.length) {
-    return store.sbook.statistics.filter(v => v.title === articleData.article.title)
+    return store.sbook.statistics.filter((v: any) => v.title === articleData.article.title)
   }
   return []
 })
@@ -324,17 +393,18 @@ provide('currentPractice', currentPractice)
 </script>
 <template>
   <PracticeLayout
-    v-loading="loading"
-    panelLeft="var(--article-panel-margin-left)">
+      v-loading="loading"
+      panelLeft="var(--article-panel-margin-left)">
     <template v-slot:practice>
       <TypingArticle
-        ref="typingArticleRef"
-        @wrong="wrong"
-        @next="next"
-        @nextWord="nextWord"
-        @play="play2"
-        @complete="complete"
-        :article="articleData.article"
+          ref="typingArticleRef"
+          @wrong="wrong"
+          @next="next"
+          @nextWord="nextWord"
+          @play="play2"
+          @replay="setArticle(articleData.article)"
+          @complete="complete"
+          :article="articleData.article"
       />
     </template>
     <template v-slot:panel>
@@ -346,17 +416,17 @@ provide('currentPractice', currentPractice)
         </template>
         <div class="panel-page-item pl-4">
           <ArticleList
-            :isActive="settingStore.showPanel"
-            :static="false"
-            :show-translate="settingStore.translate"
-            @click="changeArticle"
-            :active-id="articleData.article.id"
-            :list="articleData.list ">
+              :isActive="settingStore.showPanel"
+              :static="false"
+              :show-translate="settingStore.translate"
+              @click="changeArticle"
+              :active-id="articleData.article.id"
+              :list="articleData.list ">
             <template v-slot:suffix="{item,index}">
               <BaseIcon
-                :class="!isArticleCollect(item) ? 'collect' : 'fill'"
-                @click.stop="toggleArticleCollect(item)"
-                :title="!isArticleCollect(item) ? '收藏' : '取消收藏'">
+                  :class="!isArticleCollect(item) ? 'collect' : 'fill'"
+                  @click.stop="toggleArticleCollect(item)"
+                  :title="!isArticleCollect(item) ? '收藏' : '取消收藏'">
                 <IconFluentStar16Regular v-if="!isArticleCollect(item)"/>
                 <IconFluentStar16Filled v-else/>
               </BaseIcon>
@@ -369,10 +439,10 @@ provide('currentPractice', currentPractice)
       <div class="footer">
         <Tooltip :title="settingStore.showToolbar?'收起':'展开'">
           <IconFluentChevronLeft20Filled
-            @click="settingStore.showToolbar = !settingStore.showToolbar"
-            class="arrow"
-            :class="!settingStore.showToolbar && 'down'"
-            color="#999"/>
+              @click="settingStore.showToolbar = !settingStore.showToolbar"
+              class="arrow"
+              :class="!settingStore.showToolbar && 'down'"
+              color="#999"/>
         </Tooltip>
         <div class="bottom">
           <div class="flex justify-between items-center gap-2">
@@ -383,7 +453,7 @@ provide('currentPractice', currentPractice)
                 <div class="name">记录</div>
               </div>
               <div class="row">
-                <div class="num">{{ speedMinute }}分钟</div>
+                <div class="num">{{ Math.floor(statStore.spend / 1000 / 60) }}分钟</div>
                 <div class="line"></div>
                 <div class="name">时间</div>
               </div>
@@ -411,27 +481,27 @@ provide('currentPractice', currentPractice)
                   <Switch v-model="settingStore.articleSound"/>
                 </Tooltip>
                 <BaseIcon
-                  :title="`下一句(${settingStore.shortcutKeyMap[ShortcutKey.Next]})`"
-                  @click="skip">
+                    :title="`下一句(${settingStore.shortcutKeyMap[ShortcutKey.Next]})`"
+                    @click="skip">
                   <IconFluentArrowBounce20Regular class="transform-rotate-180"/>
                 </BaseIcon>
                 <BaseIcon
-                  :title="`重听(${settingStore.shortcutKeyMap[ShortcutKey.PlayWordPronunciation]})`"
-                  @click="play">
+                    :title="`重听(${settingStore.shortcutKeyMap[ShortcutKey.PlayWordPronunciation]})`"
+                    @click="play">
                   <IconFluentReplay20Regular/>
                 </BaseIcon>
 
                 <BaseIcon
-                  @click="settingStore.dictation = !settingStore.dictation"
-                  :title="`开关默写模式(${settingStore.shortcutKeyMap[ShortcutKey.ToggleDictation]})`"
+                    @click="settingStore.dictation = !settingStore.dictation"
+                    :title="`开关默写模式(${settingStore.shortcutKeyMap[ShortcutKey.ToggleDictation]})`"
                 >
                   <IconFluentEyeOff16Regular v-if="settingStore.dictation"/>
                   <IconFluentEye16Regular v-else/>
                 </BaseIcon>
 
                 <BaseIcon
-                  :title="`开关释义显示(${settingStore.shortcutKeyMap[ShortcutKey.ToggleShowTranslate]})`"
-                  @click="settingStore.translate = !settingStore.translate">
+                    :title="`开关释义显示(${settingStore.shortcutKeyMap[ShortcutKey.ToggleShowTranslate]})`"
+                    @click="settingStore.translate = !settingStore.translate">
                   <IconFluentTranslate16Regular v-if="settingStore.translate"/>
                   <IconFluentTranslateOff16Regular v-else/>
                 </BaseIcon>
@@ -442,8 +512,8 @@ provide('currentPractice', currentPractice)
                 <!--                  @click="emitter.emit(ShortcutKey.EditArticle)"-->
                 <!--              />-->
                 <BaseIcon
-                  @click="settingStore.showPanel = !settingStore.showPanel"
-                  :title="`面板(${settingStore.shortcutKeyMap[ShortcutKey.TogglePanel]})`">
+                    @click="settingStore.showPanel = !settingStore.showPanel"
+                    :title="`面板(${settingStore.shortcutKeyMap[ShortcutKey.TogglePanel]})`">
                   <IconFluentTextListAbcUppercaseLtr20Regular/>
                 </BaseIcon>
               </div>
@@ -455,9 +525,9 @@ provide('currentPractice', currentPractice)
   </PracticeLayout>
 
   <EditSingleArticleModal
-    v-model="showEditArticle"
-    :article="editArticle"
-    @save="saveArticle"
+      v-model="showEditArticle"
+      :article="editArticle"
+      @save="saveArticle"
   />
 
   <ConflictNotice/>

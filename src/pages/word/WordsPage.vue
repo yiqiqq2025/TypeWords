@@ -235,7 +235,7 @@ function saveLastPracticeIndex(e) {
                     :loading="loading"
                     @click="startPractice">
           <div class="flex items-center gap-2">
-            <span class="line-height-[2]">{{ isSaveData ? '继续上次学习' : '开始学习' }}</span>
+            <span class="line-height-[2]">{{ isSaveData ? '继续学习' : '开始学习' }}</span>
             <IconFluentArrowCircleRight16Regular class="text-xl"/>
           </div>
         </BaseButton>

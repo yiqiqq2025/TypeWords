@@ -114,6 +114,7 @@ export function genArticleSectionData(article: Article): number {
       item = item.trim()
       //如果没有空格，导致修改一行一行的数据时，汇总时全没有空格了，库无法正常断句
       //所以要保证最后一个是空格，但防止用户打N个空格，就去掉再加上一个空格，只需要一个即可
+      //2025/10/1:最后一句不需要空格
       if (i < arr.length - 1) item += ' '
       let sentence: Sentence = cloneDeep({
         text: item,
@@ -127,7 +128,6 @@ export function genArticleSectionData(article: Article): number {
 
   sections = sections.filter(v => v.length)
   article.sections = sections
-  console.log(sections)
 
   let failCount = 0
   let translateList = article.textTranslate?.split('\n\n') || []

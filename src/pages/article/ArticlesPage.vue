@@ -17,6 +17,7 @@ import DeleteIcon from "@/components/icon/DeleteIcon.vue";
 import recommendBookList from "@/assets/book-list.json";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
+import { PracticeSaveArticleKey } from "@/utils/const.ts";
 
 dayjs.extend(isBetween);
 
@@ -25,14 +26,34 @@ const base = useBaseStore()
 const store = useBaseStore()
 const router = useRouter()
 const runtimeStore = useRuntimeStore()
+let isSaveData = $ref(false)
 
-onMounted(init)
-watch(() => store.load, init)
+watch(() => store.load, n => {
+  if (n) init()
+}, {immediate: true})
 
 async function init() {
   if (store.article.studyIndex >= 1) {
     if (!store.sbook.custom && !store.sbook.articles.length) {
       store.article.bookList[store.article.studyIndex] = await _getDictDataByUrl(store.sbook, DictType.article)
+    }
+  }
+  let d = localStorage.getItem(PracticeSaveArticleKey.key)
+  if (d) {
+    try {
+      let obj = JSON.parse(d)
+      let data = obj.val
+      //如果全是0，说明未进行练习，直接重置
+      if (
+          data.practiceData.sectionIndex === 0 &&
+          data.practiceData.sentenceIndex === 0 &&
+          data.practiceData.wordIndex === 0
+      ) {
+        throw new Error()
+      }
+      isSaveData = true
+    } catch (e) {
+      localStorage.removeItem(PracticeSaveArticleKey.key)
     }
   }
 }
@@ -187,7 +208,7 @@ const weekList = $computed(() => {
                     @click="startStudy"
                     :disabled="!base.currentBook.name">
           <div class="flex items-center gap-2">
-            <span class="line-height-[2]">开始学习</span>
+            <span class="line-height-[2]">{{ isSaveData ? '继续学习' : '开始学习' }}</span>
             <IconFluentArrowCircleRight16Regular class="text-xl"/>
           </div>
         </BaseButton>

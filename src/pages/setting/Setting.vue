@@ -10,7 +10,7 @@ import {
   APP_NAME,
   APP_VERSION,
   EXPORT_DATA_KEY,
-  LOCAL_FILE_KEY,
+  LOCAL_FILE_KEY, PracticeSaveArticleKey,
   PracticeSaveWordKey,
   SAVE_DICT_KEY,
   SAVE_SETTING_KEY,
@@ -184,7 +184,12 @@ async function exportData(notice = '导出成功！') {
       [PracticeSaveWordKey.key]: {
         version: PracticeSaveWordKey.version,
         val: {}
-      }
+      },
+      [PracticeSaveArticleKey.key]: {
+        version: PracticeSaveArticleKey.version,
+        val: {}
+      },
+      [APP_VERSION.key]: -1
     }
   }
   let d = localStorage.getItem(PracticeSaveWordKey.key)
@@ -194,6 +199,15 @@ async function exportData(notice = '导出成功！') {
     } catch (e) {
     }
   }
+  let d1 = localStorage.getItem(PracticeSaveArticleKey.key)
+  if (d1) {
+    try {
+      data.val[PracticeSaveArticleKey.key] = JSON.parse(d1)
+    } catch (e) {
+    }
+  }
+  let r = await get(APP_VERSION.key)
+  data.val[APP_VERSION.key] = r
 
   const zip = new JSZip();
   zip.file("data.json", JSON.stringify(data));
@@ -216,7 +230,9 @@ function importJson(str: string, notice: boolean = true) {
     val: {
       setting: {},
       dict: {},
-      [PracticeSaveWordKey.key]: {}
+      [PracticeSaveWordKey.key]: {},
+      [PracticeSaveArticleKey.key]: {},
+      [APP_VERSION.key]: {},
     }
   }
   try {
@@ -234,6 +250,23 @@ function importJson(str: string, notice: boolean = true) {
         if (save.val && Object.keys(save.val).length > 0) {
           localStorage.setItem(PracticeSaveWordKey.key, JSON.stringify(obj.val[PracticeSaveWordKey.key]))
         }
+      } catch (e) {
+        //todo 上报
+      }
+    }
+    if (obj.version >= 4) {
+      try {
+        let save: any = obj.val[PracticeSaveArticleKey.key] || {}
+        if (save.val && Object.keys(save.val).length > 0) {
+          localStorage.setItem(PracticeSaveArticleKey.key, JSON.stringify(obj.val[PracticeSaveArticleKey.key]))
+        }
+      } catch (e) {
+        //todo 上报
+      }
+      try {
+        let r: any = obj.val[APP_VERSION.key] || -1
+        set(APP_VERSION.key, r)
+        runtimeStore.isNew = r ? (APP_VERSION.version > Number(r)) : true
       } catch (e) {
         //todo 上报
       }
