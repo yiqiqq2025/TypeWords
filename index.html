@@ -64,18 +64,13 @@
           s.parentNode.insertBefore(umami, s);
         })();
 
-        // 异常上报，只上报官方网站的，不然跨域的太多了
-        if (location.host === '2study.top') {
-          var a = document.createElement("script");
-          a.src = 'https://js.fundebug.cn/fundebug.2.8.6.min.js'
-          a.setAttribute("apikey", "a30bfcc79c4bfa9483368adaa6b363412513d7bb5f3f43a3a6bc634cfc211286");
-          var b = document.createElement("script");
-          b.src = 'https://js.fundebug.cn/fundebug.revideo.0.7.1.min.js'
-
+        (function () {
+          var umami2 = document.createElement("script");
+          umami2.src = 'https://stat.2study.top/script.js'
+          umami2.setAttribute("data-website-id", "4d728ae3-5393-4efe-81dc-30dcb4f33c00");
           var s = document.getElementsByTagName("script")[0];
-          s.parentNode.insertBefore(a, s);
-          s.parentNode.insertBefore(b, s);
-        }
+          s.parentNode.insertBefore(umami2, s);
+        })();
       }
     </script>
 </head>
