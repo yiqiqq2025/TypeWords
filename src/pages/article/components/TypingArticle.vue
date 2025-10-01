@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { inject, onMounted, onUnmounted, provide, watch } from "vue"
-import { Article, ArticleWord, Sentence, Word } from "@/types/types.ts";
+import { inject, onMounted, onUnmounted, watch } from "vue"
+import { Article, ArticleWord, PracticeArticleWordType, Sentence, Word } from "@/types/types.ts";
 import { useBaseStore } from "@/stores/base.ts";
 import { useSettingStore } from "@/stores/setting.ts";
 import { usePlayBeep, usePlayCorrect, usePlayKeyboardAudio } from "@/hooks/sound.ts";
@@ -18,7 +18,7 @@ import Space from "@/pages/article/components/Space.vue";
 import { useWordOptions } from "@/hooks/dict.ts";
 import nlp from "compromise/three";
 import { nanoid } from "nanoid";
-import { PracticeSaveArticleKey, PracticeSaveWordKey } from "@/utils/const.ts";
+import { PracticeSaveArticleKey } from "@/utils/const.ts";
 import { usePracticeStore } from "@/stores/practice.ts";
 
 interface IProps {
@@ -221,7 +221,7 @@ function nextSentence() {
   })
 
   //todo 计得把略过的单词加上统计里面去
-  // if (!store.allIgnoreWords.includes(currentWord.word.toLowerCase()) && !currentWord.isSymbol) {
+  // if (!store.allIgnoreWords.includes(currentWord.word.toLowerCase()) && currentWord.type === PracticeArticleWordType.Word) {
   //   statisticsStore.inputNumber++
   // }
   isSpace = false;
@@ -295,7 +295,7 @@ function onTyping(e: KeyboardEvent) {
       isRight = key === letter
     }
     if (!isRight) {
-      if (!currentWord.isSymbol) {
+      if (currentWord.type === PracticeArticleWordType.Word) {
         emit('wrong', currentWord)
       }
       playBeep()
@@ -308,7 +308,7 @@ function onTyping(e: KeyboardEvent) {
     if (!currentWord.word[stringIndex]) {
       input = ''
       //如果不是符号，播放完成音效
-      if (!currentWord.isSymbol) playCorrect()
+      if (currentWord.type === PracticeArticleWordType.Word) playCorrect()
       if (currentWord.nextSpace) {
         isSpace = true
       } else {
@@ -562,7 +562,8 @@ const currentPractice = inject('currentPractice', [])
                           @mouseleave="hideSentence"
                           :class="[
                            hoverIndex.sectionIndex === indexI && hoverIndex.sentenceIndex === indexJ && hoverIndex.wordIndex === indexW
-                          &&'hover-show'
+                          &&'hover-show',
+                          word.type === PracticeArticleWordType.Number && 'font-family text-xl'
                           ]"
                     >
                       <TypingWord :word="word"

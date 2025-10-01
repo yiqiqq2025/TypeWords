@@ -4,14 +4,24 @@ import { computed, onMounted, onUnmounted, provide, watch } from "vue";
 import { useBaseStore } from "@/stores/base.ts";
 import { emitter, EventKey, useEvents } from "@/utils/eventBus.ts";
 import { useSettingStore } from "@/stores/setting.ts";
-import { Article, ArticleItem, ArticleWord, Dict, DictType, ShortcutKey, Statistics, Word } from "@/types/types.ts";
+import {
+  Article,
+  ArticleItem,
+  ArticleWord,
+  Dict,
+  DictType,
+  PracticeArticleWordType,
+  ShortcutKey,
+  Statistics,
+  Word
+} from "@/types/types.ts";
 import { useDisableEventListener, useOnKeyboardEventListener, useStartKeyboardEventListener } from "@/hooks/event.ts";
 import useTheme from "@/hooks/theme.ts";
 import Toast from '@/components/base/toast/Toast.ts'
-import { _getDictDataByUrl, _nextTick, cloneDeep, msToHourMinute, msToMinute, total } from "@/utils";
+import { _getDictDataByUrl, _nextTick, cloneDeep, msToMinute, total } from "@/utils";
 import { usePracticeStore } from "@/stores/practice.ts";
 import { useArticleOptions } from "@/hooks/dict.ts";
-import { genArticleSectionData, syncBookInMyStudyList, usePlaySentenceAudio } from "@/hooks/article.ts";
+import { genArticleSectionData, usePlaySentenceAudio } from "@/hooks/article.ts";
 import { getDefaultArticle, getDefaultDict, getDefaultWord } from "@/types/func.ts";
 import TypingArticle from "@/pages/article/components/TypingArticle.vue";
 import BaseIcon from "@/components/BaseIcon.vue";
@@ -24,9 +34,7 @@ import { useRoute, useRouter } from "vue-router";
 import book_list from "@/assets/book-list.json";
 import PracticeLayout from "@/components/PracticeLayout.vue";
 import Switch from "@/components/base/Switch.vue";
-import Audio from "@/components/base/Audio.vue";
 import ArticleAudio from "@/pages/article/components/ArticleAudio.vue";
-import dayjs from "dayjs";
 import { PracticeSaveArticleKey } from "@/utils/const.ts";
 
 const store = useBaseStore()
@@ -209,7 +217,7 @@ function setArticle(val: Article) {
   articleData.article.sections.map((v, i) => {
     v.map((w) => {
       w.words.map(s => {
-        if (!ignoreList.includes(s.word.toLowerCase()) && !s.isSymbol) {
+        if (!ignoreList.includes(s.word.toLowerCase()) && s.type === PracticeArticleWordType.Word) {
           statStore.total++
         }
       })
@@ -307,7 +315,7 @@ function wrong(word: Word) {
 }
 
 function nextWord(word: ArticleWord) {
-  if (!store.allIgnoreWords.includes(word.word.toLowerCase()) && !word.isSymbol) {
+  if (!store.allIgnoreWords.includes(word.word.toLowerCase()) && word.type === PracticeArticleWordType.Word) {
     statStore.inputWordNumber++
   }
 }

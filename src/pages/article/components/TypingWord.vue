@@ -1,6 +1,7 @@
 <script setup lang="tsx">
 import {useSettingStore} from "@/stores/setting.ts";
 import Space from "@/pages/article/components/Space.vue";
+import { PracticeArticleWordType } from "@/types/types.ts";
 //引入这个编译就报错
 // import {ArticleWord} from "@/types/types.ts";
 
@@ -15,7 +16,7 @@ function compare(a: string, b: string) {
 }
 
 const isHide = $computed(() => {
-  if (settingStore.dictation && !props.word.isSymbol) return 'hide'
+  if (settingStore.dictation && props.word.type === PracticeArticleWordType.Word) return 'hide'
   return ''
 })
 

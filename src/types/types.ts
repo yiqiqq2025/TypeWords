@@ -53,9 +53,9 @@ export enum DictType {
 
 export interface ArticleWord extends Word {
   nextSpace: boolean,
-  isSymbol: boolean,
   symbolPosition: 'start' | 'end' | '',
   input: string
+  type: PracticeArticleWordType
 }
 
 export interface Sentence {
@@ -193,4 +193,10 @@ export class DictId {
   static wordWrong = 'wordWrong'
   static wordKnown = 'wordKnown'
   static articleCollect = 'articleCollect'
+}
+
+export enum PracticeArticleWordType {
+  Symbol,
+  Number,
+  Word
 }

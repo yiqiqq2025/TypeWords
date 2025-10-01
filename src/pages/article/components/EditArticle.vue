@@ -79,7 +79,7 @@ function apply(isHandle: boolean = true) {
 
 //分句原文
 function splitText() {
-  editArticle.text = splitEnArticle2(editArticle.text.trim())
+  editArticle.text = splitEnArticle2(editArticle.text)
 }
 
 //分句翻译

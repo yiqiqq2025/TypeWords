@@ -1,12 +1,12 @@
-import {Article, ArticleWord, Dict, DictType, Word} from "@/types/types.ts";
-import {shallowReactive} from "vue";
-import {cloneDeep} from "@/utils";
-import {nanoid} from "nanoid";
+import { Article, ArticleWord, Dict, DictType, PracticeArticleWordType, Word } from "@/types/types.ts";
+import { shallowReactive } from "vue";
+import { cloneDeep } from "@/utils";
+import { nanoid } from "nanoid";
 
 export function getDefaultWord(val: Partial<Word> = {}): Word {
   return {
     custom: false,
-    id : nanoid(6),
+    id: nanoid(6),
     "word": "",
     "phonetic0": "",
     "phonetic1": "",
@@ -26,9 +26,9 @@ export function getDefaultWord(val: Partial<Word> = {}): Word {
 export function getDefaultArticleWord(val: Partial<ArticleWord> = {}): ArticleWord {
   return getDefaultWord({
     nextSpace: true,
-    isSymbol: false,
     symbolPosition: '',
     input: '',
+    type: PracticeArticleWordType.Word,
     ...val
   }) as ArticleWord
 }
