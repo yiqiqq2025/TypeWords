@@ -66,12 +66,6 @@ function startStudy() {
     if (!base.sbook.articles.length) {
       return Toast.warning('没有文章可学习！')
     }
-    window.umami?.track('startStudyArticle', {
-      name: base.sbook.name,
-      index: base.sbook.lastLearnIndex,
-      custom: base.sbook.custom,
-      complete: base.sbook.complete,
-    })
     nav('/practice-articles/' + store.sbook.id)
   } else {
     window.umami?.track('no-book')

@@ -216,6 +216,14 @@ function setArticle(val: Article) {
     })
   })
   _nextTick(typingArticleRef?.init)
+
+  window.umami?.track('startStudyArticle', {
+    name: store.sbook.name,
+    index: store.sbook.lastLearnIndex,
+    custom: store.sbook.custom,
+    complete: store.sbook.complete,
+    title: articleData.article.title,
+  })
 }
 
 function complete() {
@@ -234,18 +242,17 @@ function complete() {
     wrong: statStore.wrong,
   }
   let reportData = {
-    ...data,
     name: store.sbook.name,
+    index: store.sbook.lastLearnIndex,
+    custom: store.sbook.custom,
+    complete: store.sbook.complete,
+    title: articleData.article.title,
     spend: Number(statStore.spend / 1000 / 60).toFixed(1),
-    custom: store.sdict.custom,
-    complete: store.sdict.complete,
-    index: store.sdict.lastLearnIndex,
     s: ''
   }
   reportData.s = `name:${store.sbook.name},title:${store.sbook.lastLearnIndex}.${data.title},spend:${Number(statStore.spend / 1000 / 60).toFixed(1)}`
-  window.umami?.track('studyArticleEnd', reportData)
+  window.umami?.track('endStudyArticle', reportData)
   store.sbook.statistics.push(data as any)
-  console.log(data, reportData)
 
   //重置
   statStore.wrong = 0

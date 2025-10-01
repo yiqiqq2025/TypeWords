@@ -69,7 +69,7 @@ function startPractice() {
     if (!store.sdict.words.length) {
       return Toast.warning('没有单词可学习！')
     }
-    window.umami?.track('startStudyDict', {
+    window.umami?.track('startStudyWord', {
       name: store.sdict.name,
       index: store.sdict.lastLearnIndex,
       perDayStudyNumber: store.sdict.perDayStudyNumber,

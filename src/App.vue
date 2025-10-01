@@ -63,6 +63,7 @@ async function init() {
       runtimeStore.isNew = r ? (APP_VERSION.version > Number(r)) : true
     })
   }
+  window.umami?.track('host', window.location.host)
 }
 
 onMounted(init)

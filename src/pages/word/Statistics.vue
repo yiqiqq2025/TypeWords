@@ -57,7 +57,7 @@ watch(model, (newVal) => {
       new: statStore.newWordNumber,
       review: statStore.reviewWordNumber + statStore.writeWordNumber
     }
-    window.umami?.track('studyWordEnd', {
+    window.umami?.track('endStudyWord', {
       name: store.sdict.name,
       spend: Number(statStore.spend / 1000 / 60).toFixed(1),
       index: store.sdict.lastLearnIndex,
