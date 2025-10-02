@@ -3,6 +3,7 @@
 :root {
   --color-reverse-white: white;
   --color-reverse-black: black;
+  --bg-history: white;
   --color-item-bg: rgb(228, 230, 232);
   --color-item-hover: white;
   //--color-item-active: rgb(75, 110, 175);
@@ -92,6 +93,7 @@ html.dark {
   --color-select-text: black;
   --color-notice-bg: rgb(43, 45, 48);
 
+  --bg-history: rgb(43, 45, 48);
   --color-item-bg: rgb(43, 45, 48);
   --color-item-hover: rgb(67, 69, 74);
   --color-item-active: rgb(84, 84, 84);

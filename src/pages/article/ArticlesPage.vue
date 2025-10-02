@@ -113,6 +113,12 @@ const totalSpend = $computed(() => {
   }
   return 0
 })
+const todayTotalSpend = $computed(() => {
+  if (base.sbook.statistics?.length) {
+    return msToHourMinute(total(base.sbook.statistics.filter(v => dayjs(v.startDate).isSame(dayjs(), 'day')), 'spend'))
+  }
+  return 0
+})
 
 const totalDay = $computed(() => {
   if (base.sbook.statistics?.length) {
@@ -176,16 +182,16 @@ const weekList = $computed(() => {
         </div>
         <div class="flex gap-4 items-center mt-3 gap-space">
           <div class="stat">
-            <div class="num">{{ totalSpend }}</div>
-            <div class="txt">总学习时长</div>
+            <div class="num">{{ todayTotalSpend }}</div>
+            <div class="txt">今日学习时长</div>
           </div>
           <div class="stat">
             <div class="num">{{ totalDay }}</div>
             <div class="txt">总学习天数</div>
           </div>
           <div class="stat">
-            <div class="num">{{ base.sbook?.statistics?.length || 0 }}</div>
-            <div class="txt">总学习次数</div>
+            <div class="num">{{ totalSpend }}</div>
+            <div class="txt">总学习时长</div>
           </div>
         </div>
 
@@ -263,7 +269,7 @@ const weekList = $computed(() => {
   border: 1px solid gainsboro;
 
   .num {
-    @apply color-[#409eff] text-2xl font-bold;
+    @apply color-[#409eff] text-xl font-bold;
   }
 
   .txt {

@@ -5,7 +5,7 @@ import { useBaseStore } from "@/stores/base.ts";
 import { useSettingStore } from "@/stores/setting.ts";
 import { usePlayBeep, usePlayCorrect, usePlayKeyboardAudio } from "@/hooks/sound.ts";
 import { emitter, EventKey } from "@/utils/eventBus.ts";
-import { _dateFormat, _nextTick, msToMinute } from "@/utils";
+import { _dateFormat, _nextTick, msToHourMinute, msToMinute, total } from "@/utils";
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css'
 import ContextMenu from '@imengyu/vue3-context-menu'
 import { getTranslateText } from "@/hooks/article.ts";
@@ -250,75 +250,81 @@ function onTyping(e: KeyboardEvent) {
   if (isTyping) return;
   isTyping = true;
   // console.log('keyDown', e.key, e.code, e.keyCode)
-  let currentSection = props.article.sections[sectionIndex]
-  let currentSentence = currentSection[sentenceIndex]
-  let currentWord: ArticleWord = currentSentence.words[wordIndex]
-  wrong = ''
+  try {
+    let currentSection = props.article.sections[sectionIndex]
+    let currentSentence = currentSection[sentenceIndex]
+    let currentWord: ArticleWord = currentSentence.words[wordIndex]
+    wrong = ''
 
-  const next = () => {
-    isSpace = false;
-    input = wrong = ''
-    stringIndex = 0;
-    // 检查下一个单词是否存在
-    if (wordIndex + 1 < currentSentence.words.length) {
-      wordIndex++;
-      emit('nextWord', currentWord);
-    } else {
-      nextSentence()
-    }
-  }
-
-  if (isSpace) {
-    if (e.code === 'Space') {
-      next()
-    } else {
-      wrong = ' '
-      playBeep()
-      setTimeout(() => {
-        wrong = ''
-        wrong = input = ''
-      }, 500)
-    }
-  } else {
-    //如果是首句首词
-    if (sectionIndex === 0 && sentenceIndex === 0 && wordIndex === 0 && stringIndex === 0) {
-      emit('play', {sentence: currentSection[sentenceIndex], handle: false})
-    }
-    let letter = e.key
-    let key = currentWord.word[stringIndex]
-    // console.log('key', key,)
-
-    let isRight = false
-    if (settingStore.ignoreCase) {
-      isRight = key.toLowerCase() === letter.toLowerCase()
-    } else {
-      isRight = key === letter
-    }
-    if (!isRight) {
-      if (currentWord.type === PracticeArticleWordType.Word) {
-        emit('wrong', currentWord)
-      }
-      playBeep()
-    }
-
-    input += letter
-    currentWord.input = input
-    stringIndex++
-    //单词输入完毕
-    if (!currentWord.word[stringIndex]) {
-      input = ''
-      //如果不是符号，播放完成音效
-      if (currentWord.type === PracticeArticleWordType.Word) playCorrect()
-      if (currentWord.nextSpace) {
-        isSpace = true
+    const next = () => {
+      isSpace = false;
+      input = wrong = ''
+      stringIndex = 0;
+      // 检查下一个单词是否存在
+      if (wordIndex + 1 < currentSentence.words.length) {
+        wordIndex++;
+        emit('nextWord', currentWord);
       } else {
-        next()
+        nextSentence()
       }
     }
+
+    if (isSpace) {
+      if (e.code === 'Space') {
+        next()
+      } else {
+        wrong = ' '
+        playBeep()
+        setTimeout(() => {
+          wrong = ''
+          wrong = input = ''
+        }, 500)
+      }
+    } else {
+      //如果是首句首词
+      if (sectionIndex === 0 && sentenceIndex === 0 && wordIndex === 0 && stringIndex === 0) {
+        emit('play', {sentence: currentSection[sentenceIndex], handle: false})
+      }
+      let letter = e.key
+      let key = currentWord.word[stringIndex]
+      // console.log('key', key,)
+
+      let isRight = false
+      if (settingStore.ignoreCase) {
+        isRight = key.toLowerCase() === letter.toLowerCase()
+      } else {
+        isRight = key === letter
+      }
+      if (!isRight) {
+        if (currentWord.type === PracticeArticleWordType.Word) {
+          emit('wrong', currentWord)
+        }
+        playBeep()
+      }
+
+      input += letter
+      currentWord.input = input
+      stringIndex++
+      //单词输入完毕
+      if (!currentWord.word[stringIndex]) {
+        input = ''
+        //如果不是符号，播放完成音效
+        if (currentWord.type === PracticeArticleWordType.Word) playCorrect()
+        if (currentWord.nextSpace) {
+          isSpace = true
+        } else {
+          next()
+        }
+      }
+    }
+    playKeyboardAudio()
+    e.preventDefault()
+    isTyping = false
+  } catch (e) {
+    //todo 上报
+    localStorage.removeItem(PracticeSaveArticleKey.key)
+    init()
   }
-  playKeyboardAudio()
-  e.preventDefault()
-  isTyping = false
 }
 
 function play() {
@@ -614,25 +620,22 @@ const currentPractice = inject('currentPractice', [])
           @click="emit('next')">下一篇
       </BaseButton>
     </div>
-    <div class="mb-50 mt-10" v-if="currentPractice.length && isEnd">
-      <div class="title">历史记录</div>
-      <div class="item text-lg" :class="i === currentPractice.length-1 && 'color-red'"
+
+    <div class="font-family text-base pr-2 mb-50 mt-10" v-if="currentPractice.length && isEnd">
+      <div class="text-2xl font-bold">学习记录</div>
+      <div class="mt-1 mb-3">总学习时长：{{ msToHourMinute(total(currentPractice, 'spend')) }}</div>
+      <div class="item border border-item border-solid mt-2 p-2 bg-[var(--bg-history)] rounded-md flex justify-between"
+           :class="i === currentPractice.length-1 && 'color-red!'"
            v-for="(item,i) in currentPractice">
-        <span>{{ i + 1 }}.</span>
-        <span class="ml-2 mr-4">{{ _dateFormat(item.startDate, 'YYYY-MM-DD HH:mm') }}</span>
-        <span>{{ msToMinute(item.spend) }}</span>
+        <span :class="i === currentPractice.length-1 ? 'color-red':'color-gray'"
+        >{{
+            i === currentPractice.length - 1 ? '当前' : i + 1
+          }}.&nbsp;&nbsp;{{ _dateFormat(item.startDate, 'YYYY/MM/DD HH:mm') }}</span>
+        <span>{{ msToHourMinute(item.spend) }}</span>
       </div>
     </div>
 
     <template v-if="false">
-      <div class="translate-bottom mb-10" v-if="settingStore.translate">
-        <header class="mb-4">
-          <div class="text-2xl center">{{ props.article.titleTranslate }}</div>
-        </header>
-        <template v-if="getTranslateText(article).length">
-          <div class="text-xl mb-4 indent-8" v-for="t in getTranslateText(article)">{{ t }}</div>
-        </template>
-      </div>
       <div class="center">
         <BaseButton @click="showQuestions =! showQuestions">显示题目</BaseButton>
       </div>

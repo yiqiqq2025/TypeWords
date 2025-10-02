@@ -182,10 +182,11 @@ const totalSpend = $computed(() => {
         </div>
         <div class="right flex-[4] shrink-0 pl-4 overflow-auto">
           <div v-if="selectArticle.id">
-            <div class="font-family text-base mb-4" v-if="currentPractice.length">
-              <div>学习记录：{{ msToHourMinute(total(currentPractice, 'spend'))}}</div>
-              <div class="item" v-for="i in currentPractice">
-                {{_dateFormat(i.startDate,'YYYY/MM/DD HH:mm')}}: {{ msToHourMinute(i.spend) }}
+            <div class="font-family text-base mb-4 pr-2" v-if="currentPractice.length">
+              <div class="text-2xl font-bold">学习记录</div>
+              <div class="mt-1 mb-3">总学习时长：{{ msToHourMinute(total(currentPractice, 'spend'))}}</div>
+              <div class="item border border-item border-solid mt-2 p-2 bg-[var(--bg-history)] rounded-md flex justify-between" v-for="i in currentPractice">
+                <span class="color-gray ">{{_dateFormat(i.startDate,'YYYY/MM/DD HH:mm')}}</span> <span>{{ msToHourMinute(i.spend) }}</span>
               </div>
             </div>
             <div class="en-article-family title text-xl">
