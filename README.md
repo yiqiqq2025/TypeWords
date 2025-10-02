@@ -21,6 +21,15 @@
 <a href="https://trendshift.io/repositories/14139" target="_blank" class="trendshift-badge"><img src="https://trendshift.io/api/badge/repositories/14139" alt="TypeWords | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 </div>
 
+<p align="center">
+  <br/>
+  <a href="https://skywork.ai/p/GrXQb4"><img src="https://github.com/user-attachments/assets/24b255a7-f0bc-41b5-9044-52694546d59e" alt="License"></a>
+  Skywork.AI:<a href="https://skywork.ai/p/GrXQb4" target="_blank">10 tasks in 1 hour, not 10 hours →Limited free spots: 127 left</a>
+  <br/>
+  <br/>
+  <br/>
+</p>  
+
 ![image](/public/word.png)
 ![image](/public/article.png)
 
