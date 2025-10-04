@@ -11,14 +11,16 @@ import Progress from '@/components/base/Progress.vue';
 import Toast from '@/components/base/toast/Toast.ts'
 import BaseButton from "@/components/BaseButton.vue";
 import PopConfirm from "@/components/PopConfirm.vue";
-import { onMounted, watch } from "vue";
+import { watch } from "vue";
 import { getDefaultDict } from "@/types/func.ts";
 import DeleteIcon from "@/components/icon/DeleteIcon.vue";
 import recommendBookList from "@/assets/book-list.json";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import { PracticeSaveArticleKey } from "@/utils/const.ts";
+import isoWeek from 'dayjs/plugin/isoWeek'
 
+dayjs.extend(isoWeek)
 dayjs.extend(isBetween);
 
 const {nav} = useNav()
@@ -131,8 +133,8 @@ const weekList = $computed(() => {
   const list = Array(7).fill(false);
 
   // 获取本周的起止时间
-  const startOfWeek = dayjs().startOf('week').add(1, 'day'); // 周一
-  const endOfWeek = dayjs().endOf('week').add(1, 'day');     // 周日
+  const startOfWeek = dayjs().startOf('isoWeek'); // 周一
+  const endOfWeek = dayjs().endOf('isoWeek');     // 周日
 
   store.sbook.statistics?.forEach(item => {
     const date = dayjs(item.startDate);

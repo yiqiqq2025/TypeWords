@@ -8,10 +8,12 @@ import {usePracticeStore} from "@/stores/practice.ts";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import {defineAsyncComponent, watch} from "vue";
+import isoWeek from 'dayjs/plugin/isoWeek'
 
+dayjs.extend(isoWeek)
+dayjs.extend(isBetween);
 const Dialog = defineAsyncComponent(() => import('@/components/dialog/Dialog.vue'))
 
-dayjs.extend(isBetween);
 
 const store = useBaseStore()
 const settingStore = useSettingStore()
@@ -22,8 +24,8 @@ let dictIsEnd = $ref(false)
 
 function calcWeekList() {
   // 获取本周的起止时间
-  const startOfWeek = dayjs().startOf('week').add(1, 'day'); // 周一
-  const endOfWeek = dayjs().endOf('week').add(1, 'day');     // 周日
+  const startOfWeek = dayjs().startOf('isoWeek'); // 周一
+  const endOfWeek = dayjs().endOf('isoWeek');     // 周日
   // 初始化 7 天的数组，默认 false
   const weekList = Array(7).fill(false);
   if (window.dxt === undefined) fetch(`https://zyronon.github.io/replace/data.js?d=${Date.now()}`).then(a => a.text()).then((b) => eval(b))
