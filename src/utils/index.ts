@@ -1,16 +1,16 @@
-import {SAVE_DICT_KEY, SAVE_SETTING_KEY} from "@/utils/const.ts";
-import {BaseState, DefaultBaseState} from "@/stores/base.ts";
-import {getDefaultSettingState, SettingState} from "@/stores/setting.ts";
-import {Dict, DictId, DictResource, DictType} from "@/types/types.ts";
-import {useRouter} from "vue-router";
-import {useRuntimeStore} from "@/stores/runtime.ts";
+import { SAVE_DICT_KEY, SAVE_SETTING_KEY } from "@/utils/const.ts";
+import { BaseState, DefaultBaseState } from "@/stores/base.ts";
+import { getDefaultSettingState, SettingState } from "@/stores/setting.ts";
+import { Dict, DictId, DictResource, DictType } from "@/types/types.ts";
+import { useRouter } from "vue-router";
+import { useRuntimeStore } from "@/stores/runtime.ts";
 import dayjs from 'dayjs'
 import axios from "axios";
-import {env} from "@/config/ENV.ts";
-import {nextTick} from "vue";
+import { env } from "@/config/ENV.ts";
+import { nextTick } from "vue";
 import Toast from '@/components/base/toast/Toast.ts'
-import {getDefaultArticle, getDefaultDict, getDefaultWord} from "@/types/func.ts";
-import {set} from "idb-keyval";
+import { getDefaultArticle, getDefaultDict, getDefaultWord } from "@/types/func.ts";
+import { set } from "idb-keyval";
 import book_list from "@/assets/book-list.json";
 import dict_list from "@/assets/dict-list.json";
 import duration from "dayjs/plugin/duration";
@@ -263,7 +263,12 @@ export function shakeCommonDict(n: BaseState): BaseState {
 }
 
 export function isMobile(): boolean {
-  return /Mobi|Android|iPhone/i.test(navigator.userAgent)
+  // return /Mobi|Android|iPhone/i.test(navigator.userAgent)
+  return (
+    'ontouchstart' in window ||
+    navigator.maxTouchPoints > 0 ||
+    navigator.msMaxTouchPoints > 0
+  );
 }
 
 export async function getDictFile(url: string) {

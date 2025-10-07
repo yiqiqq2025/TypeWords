@@ -464,3 +464,11 @@ a {
     border-left: .1rem solid transparent;
   }
 }
+
+#typing-listener{
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  height: 3rem;
+}

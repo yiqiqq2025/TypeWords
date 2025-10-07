@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import {onMounted, onUnmounted, watch} from "vue";
+import { onMounted, onUnmounted, watch } from "vue";
 import Tooltip from "@/components/base/Tooltip.vue";
-import {useEventListener} from "@/hooks/event.ts";
+import { useEventListener } from "@/hooks/event.ts";
 
 import BaseButton from "@/components/BaseButton.vue";
-import {useRuntimeStore} from "@/stores/runtime.ts";
-import BaseIcon from "@/components/BaseIcon.vue";
+import { useRuntimeStore } from "@/stores/runtime.ts";
 
 export interface ModalProps {
   modelValue?: boolean,

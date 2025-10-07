@@ -1,8 +1,9 @@
-import {onMounted, onUnmounted, watch, onDeactivated} from "vue";
-import {emitter, EventKey} from "@/utils/eventBus.ts";
-import {useRuntimeStore} from "@/stores/runtime.ts";
-import {useSettingStore} from "@/stores/setting.ts";
-import {ShortcutKey} from "@/types/types.ts";
+import { onMounted, onUnmounted, watch, onDeactivated } from "vue";
+import { emitter, EventKey } from "@/utils/eventBus.ts";
+import { useRuntimeStore } from "@/stores/runtime.ts";
+import { useSettingStore } from "@/stores/setting.ts";
+import { ShortcutKey } from "@/types/types.ts";
+import { isMobile } from "@/utils";
 
 export function useWindowClick(cb: (e: PointerEvent) => void) {
   onMounted(() => {
@@ -15,9 +16,55 @@ export function useWindowClick(cb: (e: PointerEvent) => void) {
 }
 
 export function useEventListener(type: string, listener: EventListenerOrEventListenerObject) {
-  onMounted(() => window.addEventListener(type, listener))
-  onUnmounted(() => window.removeEventListener(type, listener))
-  onDeactivated(() => window.removeEventListener(type, listener))
+  onMounted(() => {
+    if (isMobile()) {
+      let tx: HTMLInputElement = document.querySelector('#typing-listener')
+      if (!tx) {
+        tx = document.createElement('input')
+        tx.id = 'typing-listener'
+        tx.type = 'text'
+      }
+      tx.addEventListener('input', (e: any) => {
+        if (e.data === ' ') e.code = 'Space'
+        if (e.data === null) {
+          e.key = 'Backspace'
+          e.keyCode = 1
+        } else {
+          e.keyCode = 66
+          e.key = e.data
+        }
+
+        e.ctrlKey = false
+        e.altKey = false
+        e.shiftKey = false
+        listener(e)
+        e.target.value = '1'
+      })
+      const ss = () => {
+        setTimeout(() => tx.focus(), 100)
+      }
+      window.removeEventListener('click', ss)
+      window.addEventListener('click', ss)
+      document.body.appendChild(tx)
+      tx.focus()
+    } else {
+      window.addEventListener(type, listener)
+    }
+  })
+  const remove = () => {
+    console.log('onUnmounted')
+    if (isMobile()) {
+      let s = document.querySelector('#typing-listener')
+      if (s) {
+        s.removeEventListener(type, listener)
+        s.parentNode.removeChild(s)
+      }
+    } else {
+      window.removeEventListener(type, listener)
+    }
+  }
+  onUnmounted(remove)
+  onDeactivated(remove)
 }
 
 export function getShortcutKey(e: KeyboardEvent) {
@@ -59,19 +106,19 @@ export function useStartKeyboardEventListener() {
       if (e.code === 'Space') {
         // 获取当前正在输入的单词信息
         const currentWord = window.__CURRENT_WORD_INFO__;
-        
+
         // 如果当前单词包含空格，且下一个字符应该是空格，则将空格键视为输入
         // 或者如果当前处于输入锁定状态（等待空格输入），也将空格键视为输入
-        if (currentWord && 
-            ((currentWord.word && 
-             currentWord.word.includes(' ') && 
-             currentWord.word[currentWord.input.length] === ' ') ||
-             currentWord.inputLock === true)) {
+        if (currentWord &&
+          ((currentWord.word &&
+              currentWord.word.includes(' ') &&
+              currentWord.word[currentWord.input.length] === ' ') ||
+            currentWord.inputLock === true)) {
           e.preventDefault();
           return emitter.emit(EventKey.onTyping, e);
         }
       }
-      
+
       let shortcutKey = getShortcutKey(e)
       // console.log('shortcutKey', shortcutKey)
 
@@ -95,7 +142,7 @@ export function useStartKeyboardEventListener() {
           e.preventDefault();
           return emitter.emit(EventKey.onTyping, e);
         }
-        
+
         if (((e.keyCode >= 65 && e.keyCode <= 90)
           || (e.keyCode >= 48 && e.keyCode <= 57)
           // 空格键已经在上面处理过了
