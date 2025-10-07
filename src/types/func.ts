@@ -41,7 +41,6 @@ export function getDefaultArticle(val: Partial<Article> = {}): Article {
     text: '',
     textTranslate: '',
     newWords: [],
-    textAllWords: [],
     sections: [],
     audioSrc: '',
     audioFileId: '',

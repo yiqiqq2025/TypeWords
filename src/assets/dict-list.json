@@ -1030,19 +1030,6 @@
       "translateLanguage": "zh-CN"
     },
     {
-      "id": "IELTS9988wangyong",
-      "name": "雅思9988wangyong",
-      "description": "雅思9988wangyong",
-      "category": "国际考试",
-      "tags": [
-        "IELTS"
-      ],
-      "url": "IELTS9988wangyong.json",
-      "length": 3698,
-      "language": "en",
-      "translateLanguage": "zh-CN"
-    },
-    {
       "id": "IELTSKingLu807",
       "name": "wanglu807雅思词汇听力第2版",
       "description": "wanglu807雅思词汇听力第2版",
@@ -1909,6 +1896,9 @@
       "category": "青少年英语",
       "tags": [
         "通用"
+      ],
+      "words": [
+        "private","fuck","add","remove"
       ],
       "url": "GaoKaoZhenTiHeXinGaoPin.json",
       "length": 799,

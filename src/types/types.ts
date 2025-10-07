@@ -72,7 +72,6 @@ export interface Article {
   text: string,
   textTranslate: string,
   newWords: Word[],
-  textAllWords: string[],
   sections: Sentence[][],
   audioSrc: string,
   audioFileId: string,
