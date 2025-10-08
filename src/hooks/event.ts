@@ -45,6 +45,7 @@ export function useEventListener(type: string, listener: EventListenerOrEventLis
       }
       window.removeEventListener('click', ss)
       window.addEventListener('click', ss)
+      window.addEventListener(type, listener)
       document.body.appendChild(tx)
       tx.focus()
     } else {
@@ -59,6 +60,7 @@ export function useEventListener(type: string, listener: EventListenerOrEventLis
         s.removeEventListener(type, listener)
         s.parentNode.removeChild(s)
       }
+      window.removeEventListener(type, listener)
     } else {
       window.removeEventListener(type, listener)
     }
