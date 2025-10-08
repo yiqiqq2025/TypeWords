@@ -209,7 +209,7 @@ function next() {
               <div
                   class="item border border-item border-solid mt-2 p-2 bg-[var(--bg-history)] rounded-md flex justify-between"
                   v-for="i in currentPractice">
-                <span class="color-gray ">{{ _dateFormat(i.startDate, 'YYYY/MM/DD HH:mm') }}</span>
+                <span class="color-gray">{{ _dateFormat(i.startDate, 'YYYY/MM/DD HH:mm') }}</span>
                 <span>{{ msToHourMinute(i.spend) }}</span>
               </div>
             </div>

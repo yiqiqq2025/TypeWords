@@ -308,7 +308,8 @@ export function msToHourMinute(ms) {
   const d = dayjs.duration(ms);
   const hours = d.hours();
   const minutes = d.minutes();
-  return `${hours}小时${minutes}分钟`;
+  if (hours) return `${hours}小时${minutes}分钟`;
+  return `${minutes}分钟`;
 }
 
 export function msToMinute(ms) {
