@@ -152,7 +152,9 @@ function getShortcutKeyName(key: string): string {
     'ToggleDictation': '切换默写模式',
     'ToggleTheme': '切换主题',
     'ToggleConciseMode': '切换简洁模式',
-    'TogglePanel': '切换面板'
+    'TogglePanel': '切换面板',
+    'RandomWrite': '随机默写',
+    'NextRandomWrite': '继续随机默写'
   }
 
   return shortcutKeyNameMap[key] || key

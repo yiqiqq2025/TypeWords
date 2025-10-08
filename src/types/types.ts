@@ -115,7 +115,9 @@ export enum ShortcutKey {
   ToggleDictation = 'ToggleDictation',
   ToggleTheme = 'ToggleTheme',
   ToggleConciseMode = 'ToggleConciseMode',
-  TogglePanel = 'TogglePanel'
+  TogglePanel = 'TogglePanel',
+  RandomWrite = 'RandomWrite',
+  NextRandomWrite = 'NextRandomWrite'
 }
 
 export const DefaultShortcutKeyMap = {
@@ -135,6 +137,8 @@ export const DefaultShortcutKeyMap = {
   [ShortcutKey.ToggleTheme]: 'Ctrl+Q',
   [ShortcutKey.ToggleConciseMode]: 'Ctrl+M',
   [ShortcutKey.TogglePanel]: 'Ctrl+L',
+  [ShortcutKey.RandomWrite]: 'Ctrl+R',
+  [ShortcutKey.NextRandomWrite]: 'Ctrl+Shift+R',
 }
 
 export enum TranslateEngine {

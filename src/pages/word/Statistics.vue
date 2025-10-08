@@ -168,6 +168,11 @@ function options(emitType: string) {
             @click="options(EventKey.continueStudy)">
           {{ dictIsEnd ? '重新练习' : '再来一组' }}
         </BaseButton>
+        <BaseButton
+            :keyboard="settingStore.shortcutKeyMap[ShortcutKey.NextRandomWrite]"
+            @click="options(EventKey.randomWrite)">
+            继续默写
+        </BaseButton>
         <BaseButton @click="$router.back">
           返回主页
         </BaseButton>

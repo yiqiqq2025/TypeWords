@@ -57,6 +57,8 @@ let data = $ref<PracticeData>({
   wrongWords: [],
 })
 
+let isRandomWrite = false;
+
 async function loadDict() {
   // console.log('load好了开始加载')
   let dict = getDefaultDict()
@@ -229,7 +231,8 @@ function next(isTyping: boolean = true) {
 
       //开始默写新词
       if (statStore.step === 0) {
-        if (settingStore.wordPracticeMode === 1) {
+        if (settingStore.wordPracticeMode === 1 || isRandomWrite) {
+          isRandomWrite = false
           console.log('自由模式，全完学完了')
           showStatDialog = true
           localStorage.removeItem(PracticeSaveWordKey.key)
@@ -380,9 +383,24 @@ function continueStudy() {
   initData(getCurrentStudyWord())
 }
 
+function randomWrite() {
+  console.log('随机默写')
+  data.words = shuffle(data.words);
+  data.index = 0
+  settingStore.dictation = true
+  isRandomWrite = true
+}
+function nextRandomWrite() {
+  console.log('继续随机默写')
+  initData(getCurrentStudyWord())
+  randomWrite();
+  showStatDialog = false
+}
+
 useEvents([
   [EventKey.repeatStudy, repeat],
   [EventKey.continueStudy, continueStudy],
+  [EventKey.randomWrite, nextRandomWrite],
   [EventKey.changeDict, () => {
     initData(getCurrentStudyWord())
   }],
@@ -401,6 +419,8 @@ useEvents([
   [ShortcutKey.ToggleTheme, toggleTheme],
   [ShortcutKey.ToggleConciseMode, toggleConciseMode],
   [ShortcutKey.TogglePanel, togglePanel],
+  [ShortcutKey.RandomWrite, randomWrite],
+  [ShortcutKey.NextRandomWrite, nextRandomWrite],
 ])
 
 </script>
@@ -452,6 +472,11 @@ useEvents([
                 @click="continueStudy"
                 :title="`下一组(${settingStore.shortcutKeyMap[ShortcutKey.NextChapter]})`">
               <IconFluentArrowRight16Regular class="arrow" width="22"/>
+            </BaseIcon>
+            <BaseIcon
+                @click="randomWrite"
+                :title="`随机默写(${settingStore.shortcutKeyMap[ShortcutKey.RandomWrite]})`">
+              <IconFluentArrowShuffle16Regular class="arrow" width="22"/>
             </BaseIcon>
           </div>
         </template>
