@@ -33,9 +33,9 @@ import ConflictNotice from "@/components/ConflictNotice.vue";
 import { useRoute, useRouter } from "vue-router";
 import book_list from "@/assets/book-list.json";
 import PracticeLayout from "@/components/PracticeLayout.vue";
-import Switch from "@/components/base/Switch.vue";
 import ArticleAudio from "@/pages/article/components/ArticleAudio.vue";
 import { PracticeSaveArticleKey } from "@/utils/const.ts";
+import VolumeSetting from "@/pages/article/components/VolumeSetting.vue";
 
 const store = useBaseStore()
 const settingStore = useSettingStore()
@@ -497,17 +497,14 @@ provide('currentPractice', currentPractice)
                 <div class="name">单词总数</div>
               </div>
             </div>
-            <ArticleAudio 
-              ref="audioRef" 
-              :article="articleData.article"
-              :article-list="articleData.list"
-              :current-index="store.sbook.lastLearnIndex"
-              @play-next="handlePlayNext"></ArticleAudio>
+            <ArticleAudio
+                ref="audioRef"
+                :article="articleData.article"
+                :autoplay="settingStore.articleAutoPlayNext"
+                @ended="settingStore.articleAutoPlayNext && next()"></ArticleAudio>
             <div class="flex flex-col items-center justify-center gap-1">
               <div class="flex gap-2 center">
-                <Tooltip title="自动发音">
-                  <Switch v-model="settingStore.articleSound"/>
-                </Tooltip>
+                <VolumeSetting/>
                 <BaseIcon
                     :title="`下一句(${settingStore.shortcutKeyMap[ShortcutKey.Next]})`"
                     @click="skip">
@@ -518,7 +515,6 @@ provide('currentPractice', currentPractice)
                     @click="play">
                   <IconFluentReplay20Regular/>
                 </BaseIcon>
-
                 <BaseIcon
                     @click="settingStore.dictation = !settingStore.dictation"
                     :title="`开关默写模式(${settingStore.shortcutKeyMap[ShortcutKey.ToggleDictation]})`"

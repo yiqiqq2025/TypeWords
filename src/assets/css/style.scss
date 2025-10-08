@@ -348,6 +348,10 @@ a {
     gap: .5rem;
     color: var(--color-main-text);
 
+    span{
+      flex-shrink: 0;
+    }
+
     .word {
       font-size: 1.2rem;
       display: flex;

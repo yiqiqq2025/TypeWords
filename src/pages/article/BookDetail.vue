@@ -4,23 +4,25 @@ import BasePage from "@/components/BasePage.vue";
 import BackIcon from "@/components/BackIcon.vue";
 import Empty from "@/components/Empty.vue";
 import ArticleList from "@/components/list/ArticleList.vue";
-import {useBaseStore} from "@/stores/base.ts";
-import {Article, Dict, DictId, DictType} from "@/types/types.ts";
-import {useRuntimeStore} from "@/stores/runtime.ts";
+import { useBaseStore } from "@/stores/base.ts";
+import { Article, Dict, DictId, DictType } from "@/types/types.ts";
+import { useRuntimeStore } from "@/stores/runtime.ts";
 import BaseButton from "@/components/BaseButton.vue";
-import {useRoute, useRouter} from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import EditBook from "@/pages/article/components/EditBook.vue";
-import {computed, onMounted} from "vue";
-import {_dateFormat, _getDictDataByUrl, cloneDeep, msToHourMinute, total, useNav} from "@/utils";
+import { computed, onMounted } from "vue";
+import { _dateFormat, _getDictDataByUrl, cloneDeep, msToHourMinute, total, useNav } from "@/utils";
 import BaseIcon from "@/components/BaseIcon.vue";
-import {useArticleOptions} from "@/hooks/dict.ts";
-import {getDefaultArticle, getDefaultDict} from "@/types/func.ts";
+import { useArticleOptions } from "@/hooks/dict.ts";
+import { getDefaultArticle, getDefaultDict } from "@/types/func.ts";
 import Toast from "@/components/base/toast/Toast.ts";
 import ArticleAudio from "@/pages/article/components/ArticleAudio.vue";
-import {MessageBox} from "@/utils/MessageBox.tsx";
+import { MessageBox } from "@/utils/MessageBox.tsx";
 import book_list from "@/assets/book-list.json";
+import { useSettingStore } from "@/stores/setting.ts";
 
 const runtimeStore = useRuntimeStore()
+const settingStore = useSettingStore()
 const base = useBaseStore()
 const router = useRouter()
 const route = useRoute()
@@ -143,11 +145,20 @@ const currentPractice = $computed(() => {
 
 const totalSpend = $computed(() => {
   if (runtimeStore.editDict.statistics?.length) {
-    return msToHourMinute(total(runtimeStore.editDict.statistics,'spend'))
+    return msToHourMinute(total(runtimeStore.editDict.statistics, 'spend'))
   }
   return 0
 })
 
+function next() {
+  if (!settingStore.articleAutoPlayNext) return
+  let index = runtimeStore.editDict.articles.findIndex(v => v.id === selectArticle.id)
+  if (index > -1) {
+    //如果是最后一个
+    if (index === runtimeStore.editDict.articles.length - 1) index = -1
+    selectArticle = runtimeStore.editDict.articles[index + 1]
+  }
+}
 </script>
 
 <template>
@@ -194,18 +205,20 @@ const totalSpend = $computed(() => {
           <div v-if="selectArticle.id">
             <div class="font-family text-base mb-4 pr-2" v-if="currentPractice.length">
               <div class="text-2xl font-bold">学习记录</div>
-              <div class="mt-1 mb-3">总学习时长：{{ msToHourMinute(total(currentPractice, 'spend'))}}</div>
-              <div class="item border border-item border-solid mt-2 p-2 bg-[var(--bg-history)] rounded-md flex justify-between" v-for="i in currentPractice">
-                <span class="color-gray ">{{_dateFormat(i.startDate,'YYYY/MM/DD HH:mm')}}</span> <span>{{ msToHourMinute(i.spend) }}</span>
+              <div class="mt-1 mb-3">总学习时长：{{ msToHourMinute(total(currentPractice, 'spend')) }}</div>
+              <div
+                  class="item border border-item border-solid mt-2 p-2 bg-[var(--bg-history)] rounded-md flex justify-between"
+                  v-for="i in currentPractice">
+                <span class="color-gray ">{{ _dateFormat(i.startDate, 'YYYY/MM/DD HH:mm') }}</span>
+                <span>{{ msToHourMinute(i.spend) }}</span>
               </div>
             </div>
             <div class="en-article-family title text-xl">
               <div class="text-center text-2xl my-2">
-                <ArticleAudio 
-                  :article="selectArticle"
-                  :article-list="runtimeStore.editDict.articles"
-                  :current-index="currentArticleIndex"
-                  @play-next="handlePlayNext"></ArticleAudio>
+                <ArticleAudio
+                    :article="selectArticle"
+                    :autoplay="settingStore.articleAutoPlayNext"
+                    @ended="next"/>
               </div>
               <div class="text-center text-2xl">{{ selectArticle.title }}</div>
               <div class="text-2xl" v-if="selectArticle.text">

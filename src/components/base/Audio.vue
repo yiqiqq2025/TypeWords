@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, computed, watch, useAttrs} from 'vue';
+import { computed, ref, useAttrs, watch } from 'vue';
 
 interface IProps {
   src?: string;
@@ -20,6 +20,9 @@ const props = withDefaults(defineProps<IProps>(), {
   disabled: false
 });
 
+const emit = defineEmits<{
+  ended: []
+}>();
 
 const attrs = useAttrs();
 
@@ -118,10 +121,6 @@ const handlePlay = () => {
 const handlePause = () => {
   isPlaying.value = false;
 };
-
-const emit = defineEmits<{
-  ended: []
-}>();
 
 const handleEnded = () => {
   isPlaying.value = false;

@@ -12,6 +12,7 @@ export interface SettingState {
   wordSoundSpeed: number,
 
   articleSound: boolean,
+  articleAutoPlayNext: boolean,
   articleSoundVolume: number,
   articleSoundSpeed: number,
 
@@ -60,6 +61,7 @@ export const getDefaultSettingState = (): SettingState => ({
   wordSoundSpeed: 1,
 
   articleSound: true,
+  articleAutoPlayNext: false,
   articleSoundVolume: 100,
   articleSoundSpeed: 1,
 

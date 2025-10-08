@@ -605,8 +605,11 @@ function importOldData() {
           <!--          发音-->
           <div class="line"></div>
           <SettingItem mainTitle="音效"/>
-          <SettingItem title="自动发音">
+          <SettingItem title="自动播放句子">
             <Switch v-model="settingStore.articleSound"/>
+          </SettingItem>
+          <SettingItem title="自动播放下一篇">
+            <Switch v-model="settingStore.articleAutoPlayNext"/>
           </SettingItem>
           <SettingItem title="音量">
             <Slider v-model="settingStore.articleSoundVolume"/>

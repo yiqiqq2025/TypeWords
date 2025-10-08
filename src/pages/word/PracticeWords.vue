@@ -57,8 +57,6 @@ let data = $ref<PracticeData>({
   wrongWords: [],
 })
 
-let isRandomWrite = false;
-
 async function loadDict() {
   // console.log('load好了开始加载')
   let dict = getDefaultDict()
@@ -231,8 +229,7 @@ function next(isTyping: boolean = true) {
 
       //开始默写新词
       if (statStore.step === 0) {
-        if (settingStore.wordPracticeMode === 1 || isRandomWrite) {
-          isRandomWrite = false
+        if (settingStore.wordPracticeMode === 1) {
           console.log('自由模式，全完学完了')
           showStatDialog = true
           localStorage.removeItem(PracticeSaveWordKey.key)
@@ -388,7 +385,6 @@ function randomWrite() {
   data.words = shuffle(data.words);
   data.index = 0
   settingStore.dictation = true
-  isRandomWrite = true
 }
 function nextRandomWrite() {
   console.log('继续随机默写')

@@ -47,8 +47,8 @@ defineExpose({scrollToBottom, scrollToItem})
       <slot name="prefix" :item="item" :index="index"></slot>
     </template>
     <template v-slot="{ item, index }">
-      <div class="item-title word-title">
-        <span class="index">{{ index + 1 }}.</span>
+      <div class="item-title">
+        <span class="text-sm">{{ index + 1 }}.</span>
         <span class="word" :class="!showWord && 'word-shadow'">{{ item.word }}</span>
         <span class="phonetic" :class="!showWord && 'word-shadow'">{{ item.phonetic0 }}</span>
         <VolumeIcon class="volume" @click="playWordAudio(item.word)"></VolumeIcon>
@@ -71,12 +71,3 @@ defineExpose({scrollToBottom, scrollToItem})
     </template>
   </BaseList>
 </template>
-
-<style scoped lang="scss">
-.word-title{
-  display: flex;
-  span{
-    flex-shrink: 0;
-  }
-}
-</style>

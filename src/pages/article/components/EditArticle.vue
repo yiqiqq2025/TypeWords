@@ -415,7 +415,7 @@ function setStartTime(val: Sentence, i: number, j: number) {
       <div class="flex gap-2">
         <div class="title">结果</div>
         <div class="flex gap-2 flex-1 justify-end">
-          <ArticleAudio ref="audioRef" :article="editArticle"/>
+          <ArticleAudio ref="audioRef" :article="editArticle" :autoplay="false"/>
         </div>
       </div>
       <template v-if="editArticle?.sections?.length">
@@ -524,7 +524,10 @@ function setStartTime(val: Sentence, i: number, j: number) {
           教程：点击音频播放按钮，当播放到句子开始时，点击开始时间的 <span class="color-red">记录</span>
           按钮；当播放到句子结束时，点击结束时间的 <span class="color-red">记录</span> 按钮，最后再试听是否正确
         </div>
-        <ArticleAudio ref="sentenceAudioRef" :article="editArticle" class="w-full"/>
+        <ArticleAudio ref="sentenceAudioRef"
+                      :article="editArticle"
+                      :autoplay="false"
+                      class="w-full"/>
         <div class="flex items-center gap-2 space-between mb-2" v-if="editSentence.audioPosition?.length">
           <div>{{ editSentence.text }}</div>
           <div class="flex items-center gap-2 shrink-0">
