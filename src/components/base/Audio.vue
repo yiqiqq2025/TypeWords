@@ -119,9 +119,14 @@ const handlePause = () => {
   isPlaying.value = false;
 };
 
+const emit = defineEmits<{
+  ended: []
+}>();
+
 const handleEnded = () => {
   isPlaying.value = false;
   currentTime.value = 0;
+  emit('ended');
 };
 
 const handleError = () => {
