@@ -33,6 +33,16 @@ let studyLoading = $ref(false)
 
 let selectArticle: Article = $ref(getDefaultArticle())
 
+// 计算当前选中文章的索引
+const currentArticleIndex = computed(() => {
+  return runtimeStore.editDict.articles.findIndex(article => article.id === selectArticle.id)
+})
+
+// 处理播放下一个音频
+const handlePlayNext = (nextArticle: Article) => {
+  selectArticle = nextArticle
+}
+
 function handleCheckedChange(val) {
   selectArticle = val.item
 }
@@ -191,7 +201,11 @@ const totalSpend = $computed(() => {
             </div>
             <div class="en-article-family title text-xl">
               <div class="text-center text-2xl my-2">
-                <ArticleAudio :article="selectArticle"></ArticleAudio>
+                <ArticleAudio 
+                  :article="selectArticle"
+                  :article-list="runtimeStore.editDict.articles"
+                  :current-index="currentArticleIndex"
+                  @play-next="handlePlayNext"></ArticleAudio>
               </div>
               <div class="text-center text-2xl">{{ selectArticle.title }}</div>
               <div class="text-2xl" v-if="selectArticle.text">
