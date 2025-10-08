@@ -328,6 +328,14 @@ function changeArticle(val: ArticleItem) {
   }
 }
 
+const handlePlayNext = (nextArticle: Article) => {
+  let rIndex = articleData.list.findIndex(v => v.id === nextArticle.id)
+  if (rIndex > -1) {
+    store.sbook.lastLearnIndex = rIndex
+    getCurrentPractice()
+  }
+}
+
 const {
   isArticleCollect,
   toggleArticleCollect
@@ -489,7 +497,12 @@ provide('currentPractice', currentPractice)
                 <div class="name">单词总数</div>
               </div>
             </div>
-            <ArticleAudio ref="audioRef" :article="articleData.article"></ArticleAudio>
+            <ArticleAudio 
+              ref="audioRef" 
+              :article="articleData.article"
+              :article-list="articleData.list"
+              :current-index="store.sbook.lastLearnIndex"
+              @play-next="handlePlayNext"></ArticleAudio>
             <div class="flex flex-col items-center justify-center gap-1">
               <div class="flex gap-2 center">
                 <Tooltip title="自动发音">
