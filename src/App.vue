@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import {onMounted, watch} from "vue";
-import {BaseState, useBaseStore} from "@/stores/base.ts";
-import {useRuntimeStore} from "@/stores/runtime.ts";
-import {useSettingStore} from "@/stores/setting.ts";
+import { onMounted, watch } from "vue";
+import { BaseState, useBaseStore } from "@/stores/base.ts";
+import { useRuntimeStore } from "@/stores/runtime.ts";
+import { useSettingStore } from "@/stores/setting.ts";
 import useTheme from "@/hooks/theme.ts";
-import {APP_VERSION, LOCAL_FILE_KEY, SAVE_DICT_KEY, SAVE_SETTING_KEY} from "@/utils/const.ts";
-import {shakeCommonDict} from "@/utils";
-import {routes} from "@/router.ts";
-import {get, set} from 'idb-keyval'
+import { APP_VERSION, LOCAL_FILE_KEY, SAVE_DICT_KEY, SAVE_SETTING_KEY } from "@/utils/const.ts";
+import { shakeCommonDict } from "@/utils";
+import { routes } from "@/router.ts";
+import { get, set } from 'idb-keyval'
 
-import {useRoute} from "vue-router";
-import {DictId} from "@/types/types.ts";
+import { useRoute } from "vue-router";
+import { DictId } from "@/types/types.ts";
 
 const store = useBaseStore()
 const runtimeStore = useRuntimeStore()
@@ -63,7 +63,7 @@ async function init() {
       runtimeStore.isNew = r ? (APP_VERSION.version > Number(r)) : true
     })
   }
-  window.umami?.track('host', window.location.host)
+  window.umami?.track('host', {host: window.location.host})
 }
 
 onMounted(init)
