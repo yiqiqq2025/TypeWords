@@ -1,13 +1,14 @@
-import {createApp} from 'vue'
+import { createApp } from 'vue'
 import './assets/css/style.scss'
 import 'virtual:uno.css';
 import App from './App.vue'
-import {createPinia} from "pinia"
+import { createPinia } from "pinia"
 import router from "@/router.ts";
 import VueVirtualScroller from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import './types/global.d.ts'
 import loadingDirective from './directives/loading.tsx'
+
 
 const pinia = createPinia()
 const app = createApp(App)

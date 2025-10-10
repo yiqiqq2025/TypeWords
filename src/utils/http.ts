@@ -1,9 +1,9 @@
-import axios, { AxiosInstance } from 'axios'
-import { env } from "@/config/env.ts";
+import axios, { AxiosInstance, AxiosResponse } from 'axios'
+import { ENV } from "@/config/env.ts";
 import Toast from "@/components/base/toast/Toast.ts";
 
 export const axiosInstance: AxiosInstance = axios.create({
-  baseURL: env.api,
+  baseURL: ENV.API,
   timeout: 15000,
 })
 
@@ -77,7 +77,7 @@ axiosInstance.interceptors.response.use(
 )
 
 
-async function request(url, data = {}, params = {}, method) {
+async function request<T>(url, data = {}, params = {}, method): Promise<T> {
   return axiosInstance({
     url: '/v1/' + url,
     method,

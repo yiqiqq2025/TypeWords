@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { groupBy, useNav } from "@/utils";
+import { groupBy, resourceWrap, useNav } from "@/utils";
 import BasePage from "@/components/BasePage.vue";
 import { DictResource } from "@/types/types.ts";
 import { useRuntimeStore } from "@/stores/runtime.ts";
@@ -46,7 +46,7 @@ function groupByDictTags(dictList: DictResource[]) {
   }, {})
 }
 
-const {data: dict_list, isFetching} = useFetch(DICT_LIST.WORD.ALL).json()
+const {data: dict_list, isFetching} = useFetch(resourceWrap(DICT_LIST.WORD.ALL)).json()
 
 const groupedByCategoryAndTag = $computed(() => {
   let data = []

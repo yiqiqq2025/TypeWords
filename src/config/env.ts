@@ -1,3 +1,5 @@
+import { useBaseStore } from "@/stores/base.ts";
+
 export const GITHUB = 'https://github.com/zyronon/TypeWords'
 export const ProjectName = 'Type Words'
 export const Host = '2study.top'
@@ -8,20 +10,23 @@ const common = {
   word_dict_list_version: 1
 }
 const map = {
-  dev: {
-    api: 'http://localhost/',
+  DEV: {
+    API: 'http://localhost/',
   }
 }
-export const env = Object.assign(map['dev'], common)
+
+export const ENV = Object.assign(map['DEV'], common)
+export const IS_OFFICIAL = import.meta.env.DEV
+export const RESOURCE_PATH = ENV.API + 'static'
 
 export const DICT_LIST = {
   WORD: {
-    ALL: '/list/dict-list.json',
-    RECOMMENDED: '/list/recommend-dict-list.json',
+    ALL: '/list/dictionary.json',
+    RECOMMENDED: '/list/recommend_dictionary.json',
   },
   ARTICLE: {
-    ALL: '/list/book-list.json',
-    RECOMMENDED: '/list/book-list.json',
+    ALL: '/list/article.json',
+    RECOMMENDED: '/list/article.json',
   }
 }
 

@@ -156,6 +156,7 @@ export type DictResource = {
   translateLanguage: TranslateLanguageType
   //todo 可以考虑删除了
   type?: DictType
+  version?: number
   language: LanguageType
 }
 

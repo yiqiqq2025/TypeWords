@@ -2,7 +2,7 @@
 import { useBaseStore } from "@/stores/base.ts";
 import { useRouter } from "vue-router";
 import BasePage from "@/components/BasePage.vue";
-import { _getDictDataByUrl, msToHourMinute, total, useNav } from "@/utils";
+import { _getDictDataByUrl, msToHourMinute, resourceWrap, total, useNav } from "@/utils";
 import { DictResource, DictType } from "@/types/types.ts";
 import { useRuntimeStore } from "@/stores/runtime.ts";
 import BaseIcon from "@/components/BaseIcon.vue";
@@ -153,7 +153,7 @@ const weekList = $computed(() => {
   return list
 })
 
-const {data: recommendBookList, isFetching} = useFetch(DICT_LIST.ARTICLE.RECOMMENDED).json()
+const {data: recommendBookList, isFetching} = useFetch(resourceWrap(DICT_LIST.ARTICLE.RECOMMENDED)).json()
 
 </script>
 

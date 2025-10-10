@@ -2,7 +2,7 @@
 import { useBaseStore } from "@/stores/base.ts";
 import { useRouter } from "vue-router";
 import BaseIcon from "@/components/BaseIcon.vue";
-import { _getAccomplishDate, _getDictDataByUrl, useNav } from "@/utils";
+import { _getAccomplishDate, _getDictDataByUrl, resourceWrap, useNav } from "@/utils";
 import BasePage from "@/components/BasePage.vue";
 import { DictResource } from "@/types/types.ts";
 import { watch } from "vue";
@@ -154,7 +154,11 @@ function saveLastPracticeIndex(e) {
   currentStudy = getCurrentStudyWord()
 }
 
-const {data: recommendDictList, isFetching} = useFetch(DICT_LIST.WORD.RECOMMENDED).json()
+const {
+  data: recommendDictList,
+  isFetching
+} = useFetch(resourceWrap(DICT_LIST.WORD.RECOMMENDED)).json()
+
 </script>
 
 <template>

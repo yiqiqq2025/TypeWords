@@ -10,7 +10,7 @@ import { Dict, PracticeData, ShortcutKey, TaskWords, Word } from "@/types/types.
 import { useDisableEventListener, useOnKeyboardEventListener, useStartKeyboardEventListener } from "@/hooks/event.ts";
 import useTheme from "@/hooks/theme.ts";
 import { getCurrentStudyWord, useWordOptions } from "@/hooks/dict.ts";
-import { _getDictDataByUrl, cloneDeep, shuffle } from "@/utils";
+import { _getDictDataByUrl, cloneDeep, resourceWrap, shuffle } from "@/utils";
 import { useRoute, useRouter } from "vue-router";
 import Footer from "@/pages/word/components/Footer.vue";
 import Panel from "@/components/Panel.vue";
@@ -64,7 +64,7 @@ async function loadDict() {
   if (dictId) {
     //先在自己的词典列表里面找，如果没有再在资源列表里面找
     dict = store.word.bookList.find(v => v.id === dictId)
-    let r = await fetch(DICT_LIST.WORD.ALL)
+    let r = await fetch(resourceWrap(DICT_LIST.WORD.ALL))
     let dict_list = await r.json()
     if (!dict) dict = dict_list.flat().find(v => v.id === dictId) as Dict
     if (dict && dict.id) {

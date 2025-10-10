@@ -11,7 +11,7 @@ import BaseButton from "@/components/BaseButton.vue";
 import { useRoute, useRouter } from "vue-router";
 import EditBook from "@/pages/article/components/EditBook.vue";
 import { computed, onMounted } from "vue";
-import { _dateFormat, _getDictDataByUrl, msToHourMinute, total, useNav } from "@/utils";
+import { _dateFormat, _getDictDataByUrl, msToHourMinute, resourceWrap, total, useNav } from "@/utils";
 import BaseIcon from "@/components/BaseIcon.vue";
 import { useArticleOptions } from "@/hooks/dict.ts";
 import { getDefaultArticle, getDefaultDict } from "@/types/func.ts";
@@ -110,7 +110,7 @@ const {
   toggleArticleCollect
 } = useArticleOptions()
 
-const {data: book_list} = useFetch(DICT_LIST.ARTICLE.ALL).json()
+const {data: book_list} = useFetch(resourceWrap(DICT_LIST.ARTICLE.ALL)).json()
 
 function reset() {
   MessageBox.confirm(

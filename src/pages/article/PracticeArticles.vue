@@ -18,7 +18,7 @@ import {
 import { useDisableEventListener, useOnKeyboardEventListener, useStartKeyboardEventListener } from "@/hooks/event.ts";
 import useTheme from "@/hooks/theme.ts";
 import Toast from '@/components/base/toast/Toast.ts'
-import { _getDictDataByUrl, _nextTick, cloneDeep, msToMinute, total } from "@/utils";
+import { _getDictDataByUrl, _nextTick, cloneDeep, msToMinute, resourceWrap, total } from "@/utils";
 import { usePracticeStore } from "@/stores/practice.ts";
 import { useArticleOptions } from "@/hooks/dict.ts";
 import { genArticleSectionData, usePlaySentenceAudio } from "@/hooks/article.ts";
@@ -107,7 +107,7 @@ async function init() {
   if (dictId) {
     //先在自己的词典列表里面找，如果没有再在资源列表里面找
     dict = store.article.bookList.find(v => v.id === dictId)
-    let r = await fetch(DICT_LIST.ARTICLE.ALL)
+    let r = await fetch(resourceWrap(DICT_LIST.ARTICLE.ALL))
     let book_list = await r.json()
     if (!dict) dict = book_list.flat().find(v => v.id === dictId) as Dict
     if (dict && dict.id) {

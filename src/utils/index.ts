@@ -1,11 +1,11 @@
-import { BaseState, DefaultBaseState } from "@/stores/base.ts";
+import { BaseState, DefaultBaseState, useBaseStore } from "@/stores/base.ts";
 import { getDefaultSettingState, SettingState } from "@/stores/setting.ts";
 import { Dict, DictId, DictResource, DictType } from "@/types/types.ts";
 import { useRouter } from "vue-router";
 import { useRuntimeStore } from "@/stores/runtime.ts";
 import dayjs from 'dayjs'
 import axios from "axios";
-import { env, SAVE_DICT_KEY, SAVE_SETTING_KEY } from "@/config/env.ts";
+import { ENV, IS_OFFICIAL, RESOURCE_PATH, SAVE_DICT_KEY, SAVE_SETTING_KEY } from "@/config/env.ts";
 import { nextTick } from "vue";
 import Toast from '@/components/base/toast/Toast.ts'
 import { getDefaultDict, getDefaultWord } from "@/types/func.ts";
@@ -129,16 +129,6 @@ export function isMobile(): boolean {
   return ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0);
 }
 
-export async function getDictFile(url: string) {
-  try {
-    const r = await fetch(url);
-    return await r.json();
-  } catch (err) {
-    console.log('getDictFile_error', err);
-    return null;
-  }
-}
-
 export function useNav() {
   const router = useRouter()
   const runtimeStore = useRuntimeStore()
@@ -172,81 +162,6 @@ export function msToHourMinute(ms) {
 
 export function msToMinute(ms) {
   return `${Math.floor(dayjs.duration(ms).asMinutes())}分钟`;
-}
-
-
-export function _fetch(url: string) {
-  return new Promise<any[]>(async (resolve, reject) => {
-    await fetch(url).then(async r => {
-      let v = await r.json()
-      resolve(v)
-    }).catch(r => {
-      console.log('err', r)
-      reject(r)
-    })
-  })
-}
-
-export async function _checkDictWords(dict: Dict) {
-  if ([DictType.collect,
-    DictType.known,
-    DictType.wrong].includes(dict.dictType)) {
-  } else {
-    //TODO　需要和其他需要下载的地方统一
-    //如果不是自定义词典，并且有url地址才去下载
-    if (!dict.custom && dict.fileName) {
-      // let rrr = await axios('http://localhost/static/dict/en/zh/Top50Prepositions-v1.json')
-      // console.log('r', rrr)
-      // return
-      let url = `http://localhost/index.php/v1/support/getDictFile?id=${dict.id}&v=${dict.version}`
-      // let res: any = await axios(`http://localhost/index.php/v1/support/getDictFile?id=2`)
-      let res: any
-      try {
-        res = await axios(url)
-      } catch (err) {
-        console.log('err', err)
-      }
-      console.log('res', res)
-      //说明重定向了
-      let r
-      if (res && res.request.responseURL !== url) {
-        r = res.data
-      } else {
-        let dictLocalUrl = `./dicts/${dict.language}/${dict.type}/${dict.translateLanguage}/${dict.url}`;
-        let r3 = await fetch(dictLocalUrl)
-        try {
-          r = await r3.json()
-        } catch (e) {
-        }
-        console.log('r', r)
-      }
-      // // dict.words = Object.freeze(v)
-      // dict.words = v
-      dict = Object.assign(dict, r)
-    }
-  }
-}
-
-export async function getWordDictList() {
-  let url = `${env.api}/v1/support/getWordDictListFile?v=${env.word_dict_list_version}`
-  let res: any = await axios(url)
-  // let res: any = await axios(`http://localhost/index.php/v1/support/getDictFile?id=2`)
-  console.log('res', res)
-  //说明重定向了
-  let r
-  if (res.request.responseURL !== url) {
-    r = res.data
-  } else {
-    let dictLocalUrl = `./word_dict_list.json`;
-    let r3 = await fetch(dictLocalUrl)
-    try {
-      let r1 = await r3.json()
-      r = r1.data
-    } catch (e) {
-
-    }
-  }
-  return r
 }
 
 //获取完成天数
@@ -311,7 +226,7 @@ export async function _getDictDataByUrl(val: DictResource, type: DictType = Dict
   if (type === DictType.article) {
     dictResourceUrl = `/dicts/${val.language}/article/${val.url}`;
   }
-  let s = await getDictFile(dictResourceUrl)
+  let s = await fetch(resourceWrap(dictResourceUrl, val.version)).then(r => r.json())
   if (s) {
     if (type === DictType.word) {
       return getDefaultDict({...val, words: s})
@@ -524,4 +439,17 @@ export function total(arr, key) {
     a += b[key];
     return a
   }, 0);
+}
+
+export function resourceWrap(resource: string, version?: number) {
+  if (IS_OFFICIAL) {
+    if (resource.includes('.json')) resource = resource.replace('.json', '');
+    if (!resource.includes('http')) resource = RESOURCE_PATH + resource
+    if (version === undefined) {
+      const store = useBaseStore()
+      return `${resource}_v${store.dictListVersion}.json`
+    }
+    return `${resource}_v${version}.json`
+  }
+  return resource;
 }

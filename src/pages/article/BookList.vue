@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useNav } from "@/utils";
+import { resourceWrap, useNav } from "@/utils";
 import BasePage from "@/components/BasePage.vue";
 import { DictResource } from "@/types/types.ts";
 import { useRuntimeStore } from "@/stores/runtime.ts";
@@ -31,7 +31,7 @@ async function getDictDetail(val: DictResource) {
 
 let showSearchInput = $ref(false)
 let searchKey = $ref('')
-const {data: bookList, isFetching} = useFetch(DICT_LIST.ARTICLE.ALL).json()
+const {data: bookList, isFetching} = useFetch(resourceWrap(DICT_LIST.ARTICLE.ALL)).json()
 
 const searchList = computed<any[]>(() => {
   if (searchKey) {
