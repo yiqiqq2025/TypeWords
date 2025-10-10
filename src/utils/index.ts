@@ -1,4 +1,3 @@
-
 import { BaseState, DefaultBaseState } from "@/stores/base.ts";
 import { getDefaultSettingState, SettingState } from "@/stores/setting.ts";
 import { Dict, DictId, DictResource, DictType } from "@/types/types.ts";
@@ -6,7 +5,7 @@ import { useRouter } from "vue-router";
 import { useRuntimeStore } from "@/stores/runtime.ts";
 import dayjs from 'dayjs'
 import axios from "axios";
-import { env, SAVE_DICT_KEY, SAVE_SETTING_KEY } from "@/config/ENV.ts";
+import { env, SAVE_DICT_KEY, SAVE_SETTING_KEY } from "@/config/env.ts";
 import { nextTick } from "vue";
 import Toast from '@/components/base/toast/Toast.ts'
 import { getDefaultDict, getDefaultWord } from "@/types/func.ts";

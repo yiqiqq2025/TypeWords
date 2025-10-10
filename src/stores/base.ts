@@ -4,7 +4,7 @@ import {_getAccomplishDate, _getStudyProgress, checkAndUpgradeSaveDict} from "@/
 import {shallowReactive} from "vue";
 import {getDefaultDict} from "@/types/func.ts";
 import {get, set} from 'idb-keyval'
-import { SAVE_DICT_KEY } from "@/config/ENV.ts";
+import { SAVE_DICT_KEY } from "@/config/env.ts";
 
 export interface BaseState {
   simpleWords: string[],

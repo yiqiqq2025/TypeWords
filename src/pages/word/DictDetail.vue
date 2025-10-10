@@ -26,7 +26,7 @@ import {getCurrentStudyWord} from "@/hooks/dict.ts";
 import PracticeSettingDialog from "@/pages/word/components/PracticeSettingDialog.vue";
 import {useSettingStore} from "@/stores/setting.ts";
 import {MessageBox} from "@/utils/MessageBox.tsx";
-import {Origin} from "@/config/ENV.ts";
+import {Origin} from "@/config/env.ts";
 
 const runtimeStore = useRuntimeStore()
 const base = useBaseStore()

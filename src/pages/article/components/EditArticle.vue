@@ -21,7 +21,7 @@ import {update} from "idb-keyval";
 import ArticleAudio from "@/pages/article/components/ArticleAudio.vue";
 import BaseInput from "@/components/base/BaseInput.vue";
 import Textarea from "@/components/base/Textarea.vue";
-import { LOCAL_FILE_KEY } from "@/config/ENV.ts";
+import { LOCAL_FILE_KEY } from "@/config/env.ts";
 
 const Dialog = defineAsyncComponent(() => import('@/components/dialog/Dialog.vue'))
 

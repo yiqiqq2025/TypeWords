@@ -34,7 +34,7 @@ import { useRoute, useRouter } from "vue-router";
 import PracticeLayout from "@/components/PracticeLayout.vue";
 import ArticleAudio from "@/pages/article/components/ArticleAudio.vue";
 import VolumeSetting from "@/pages/article/components/VolumeSetting.vue";
-import { DICT_LIST, PracticeSaveArticleKey } from "@/config/ENV.ts";
+import { DICT_LIST, PracticeSaveArticleKey } from "@/config/env.ts";
 
 const store = useBaseStore()
 const settingStore = useSettingStore()

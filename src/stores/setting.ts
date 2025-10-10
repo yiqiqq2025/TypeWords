@@ -2,7 +2,7 @@ import {defineStore} from "pinia"
 import {checkAndUpgradeSaveSetting, cloneDeep} from "@/utils";
 import {DefaultShortcutKeyMap} from "@/types/types.ts";
 import {get} from "idb-keyval";
-import { APP_VERSION, SAVE_SETTING_KEY } from "@/config/ENV.ts";
+import { APP_VERSION, SAVE_SETTING_KEY } from "@/config/env.ts";
 
 export interface SettingState {
   soundType: string,

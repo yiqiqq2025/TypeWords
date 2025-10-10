@@ -4,7 +4,7 @@ import BaseButton from "@/components/BaseButton.vue";
 import {checkAndUpgradeSaveDict} from "@/utils";
 import str from './data.json'
 import {get} from 'idb-keyval'
-import { SAVE_DICT_KEY } from "@/config/ENV.ts";
+import { SAVE_DICT_KEY } from "@/config/env.ts";
 
 let data = {}
 let origin = {}

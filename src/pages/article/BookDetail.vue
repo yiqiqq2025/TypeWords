@@ -20,7 +20,7 @@ import ArticleAudio from "@/pages/article/components/ArticleAudio.vue";
 import { MessageBox } from "@/utils/MessageBox.tsx";
 import { useSettingStore } from "@/stores/setting.ts";
 import { useFetch } from "@vueuse/core";
-import { DICT_LIST } from "@/config/ENV.ts";
+import { DICT_LIST } from "@/config/env.ts";
 
 const runtimeStore = useRuntimeStore()
 const settingStore = useSettingStore()

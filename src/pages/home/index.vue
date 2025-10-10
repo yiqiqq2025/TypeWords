@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {GITHUB, ProjectName} from "@/config/ENV.ts";
+import {GITHUB, ProjectName} from "@/config/env.ts";
 import BaseButton from "@/components/BaseButton.vue";
 import BaseIcon from "@/components/BaseIcon.vue";
 import {defineAsyncComponent} from "vue";

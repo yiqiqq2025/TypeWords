@@ -19,7 +19,7 @@ import { useWordOptions } from "@/hooks/dict.ts";
 import nlp from "compromise/three";
 import { nanoid } from "nanoid";
 import { usePracticeStore } from "@/stores/practice.ts";
-import { PracticeSaveArticleKey } from "@/config/ENV.ts";
+import { PracticeSaveArticleKey } from "@/config/env.ts";
 
 interface IProps {
   article: Article,

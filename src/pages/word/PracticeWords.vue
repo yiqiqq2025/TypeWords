@@ -26,7 +26,7 @@ import { getDefaultDict, getDefaultWord } from "@/types/func.ts";
 import ConflictNotice from "@/components/ConflictNotice.vue";
 import PracticeLayout from "@/components/PracticeLayout.vue";
 
-import { DICT_LIST, PracticeSaveWordKey } from "@/config/ENV.ts";
+import { DICT_LIST, PracticeSaveWordKey } from "@/config/env.ts";
 
 const {
   isWordCollect,

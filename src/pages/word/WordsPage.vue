@@ -20,7 +20,7 @@ import ChangeLastPracticeIndexDialog from "@/pages/word/components/ChangeLastPra
 import { useSettingStore } from "@/stores/setting.ts";
 import CollectNotice from "@/components/CollectNotice.vue";
 import { useFetch } from "@vueuse/core";
-import { DICT_LIST, PracticeSaveWordKey } from "@/config/ENV.ts";
+import { DICT_LIST, PracticeSaveWordKey } from "@/config/env.ts";
 
 
 const store = useBaseStore()

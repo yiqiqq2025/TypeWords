@@ -15,7 +15,7 @@ import {getDefaultArticle} from "@/types/func.ts";
 import BackIcon from "@/components/BackIcon.vue";
 import MiniDialog from "@/components/dialog/MiniDialog.vue";
 import {onMounted} from "vue";
-import {Origin} from "@/config/ENV.ts";
+import {Origin} from "@/config/env.ts";
 import {syncBookInMyStudyList} from "@/hooks/article.ts";
 
 const base = useBaseStore()

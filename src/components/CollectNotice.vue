@@ -6,7 +6,7 @@ import {watch} from "vue";
 import {useSettingStore} from "@/stores/setting.ts";
 
 import {isMobile} from "@/utils";
-import {ProjectName, Host} from "@/config/ENV.ts";
+import {ProjectName, Host} from "@/config/env.ts";
 
 let settingStore = useSettingStore()
 let showNotice = $ref(false)

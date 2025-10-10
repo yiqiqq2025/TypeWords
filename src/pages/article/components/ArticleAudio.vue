@@ -3,7 +3,7 @@ import { Article } from "@/types/types.ts";
 import { watch } from "vue";
 import { get } from "idb-keyval";
 import Audio from "@/components/base/Audio.vue";
-import { LOCAL_FILE_KEY } from "@/config/ENV.ts";
+import { LOCAL_FILE_KEY } from "@/config/env.ts";
 
 const props = defineProps<{
   article: Article

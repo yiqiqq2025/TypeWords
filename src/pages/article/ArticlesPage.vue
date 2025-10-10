@@ -18,7 +18,7 @@ import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import isoWeek from 'dayjs/plugin/isoWeek'
 import { useFetch } from "@vueuse/core";
-import { DICT_LIST, PracticeSaveArticleKey } from "@/config/ENV.ts";
+import { DICT_LIST, PracticeSaveArticleKey } from "@/config/env.ts";
 
 dayjs.extend(isoWeek)
 dayjs.extend(isBetween);

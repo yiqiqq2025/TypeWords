@@ -15,7 +15,7 @@ import { useRouter } from "vue-router";
 import { computed } from "vue";
 import { getDefaultDict } from "@/types/func.ts";
 import { useFetch } from "@vueuse/core";
-import { DICT_LIST } from "@/config/ENV.ts";
+import { DICT_LIST } from "@/config/env.ts";
 
 const {nav} = useNav()
 const runtimeStore = useRuntimeStore()

@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios'
-import { env } from "@/config/ENV.ts";
+import { env } from "@/config/env.ts";
 import Toast from "@/components/base/toast/Toast.ts";
 
 export const axiosInstance: AxiosInstance = axios.create({

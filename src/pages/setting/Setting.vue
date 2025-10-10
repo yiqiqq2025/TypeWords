@@ -16,7 +16,7 @@ import {
   Origin,
   PracticeSaveArticleKey,
   PracticeSaveWordKey, SAVE_DICT_KEY, SAVE_SETTING_KEY, SoundFileOptions
-} from "@/config/ENV.ts";
+} from "@/config/env.ts";
 import dayjs from "dayjs";
 import BasePage from "@/components/BasePage.vue";
 import Toast from '@/components/base/toast/Toast.ts'
