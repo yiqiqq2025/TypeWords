@@ -38,7 +38,3 @@ useWindowClick(() => show = false)
     </MiniDialog>
   </div>
 </template>
-
-<style scoped lang="scss">
-@import "@/assets/css/style";
-</style>

@@ -11,15 +11,16 @@ import BaseButton from "@/components/BaseButton.vue";
 import { useRoute, useRouter } from "vue-router";
 import EditBook from "@/pages/article/components/EditBook.vue";
 import { computed, onMounted } from "vue";
-import { _dateFormat, _getDictDataByUrl, cloneDeep, msToHourMinute, total, useNav } from "@/utils";
+import { _dateFormat, _getDictDataByUrl, msToHourMinute, total, useNav } from "@/utils";
 import BaseIcon from "@/components/BaseIcon.vue";
 import { useArticleOptions } from "@/hooks/dict.ts";
 import { getDefaultArticle, getDefaultDict } from "@/types/func.ts";
 import Toast from "@/components/base/toast/Toast.ts";
 import ArticleAudio from "@/pages/article/components/ArticleAudio.vue";
 import { MessageBox } from "@/utils/MessageBox.tsx";
-import book_list from "@/assets/book-list.json";
 import { useSettingStore } from "@/stores/setting.ts";
+import { useFetch } from "@vueuse/core";
+import { DICT_LIST } from "@/config/ENV.ts";
 
 const runtimeStore = useRuntimeStore()
 const settingStore = useSettingStore()
@@ -109,12 +110,14 @@ const {
   toggleArticleCollect
 } = useArticleOptions()
 
+const {data: book_list} = useFetch(DICT_LIST.ARTICLE.ALL).json()
+
 function reset() {
   MessageBox.confirm(
       '继续此操作会重置所有文章，并从官方书籍获取最新文章列表，学习记录不会被重置。确认恢复默认吗？',
       '恢复默认',
       async () => {
-        let dict = book_list.flat().find(v => v.url === runtimeStore.editDict.url) as Dict
+        let dict = book_list.value.find(v => v.url === runtimeStore.editDict.url) as Dict
         if (dict && dict.id) {
           dict = await _getDictDataByUrl(dict, DictType.article)
           let rIndex = base.article.bookList.findIndex(v => v.id === runtimeStore.editDict.id)

@@ -1,8 +1,8 @@
 const {SitemapStream, streamToPromise} = require('sitemap')
 const {createWriteStream} = require('fs')
 const {resolve} = require('path')
-const bookList = require('../src/assets/book-list.json')
-const dictList = require('../src/assets/dict-list.json')
+const bookList = require('../public/list/book-list.json')
+const dictList = require('../public/list/dict-list.json')
 // 你的网站域名
 const SITE_URL = 'https://2study.top'
 

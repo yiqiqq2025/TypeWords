@@ -1,4 +1,3 @@
-import {SAVE_SETTING_KEY} from "@/utils/const";
 
 export default {
   $notice(val) {

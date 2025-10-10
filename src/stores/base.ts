@@ -1,10 +1,10 @@
 import {defineStore} from 'pinia'
 import {Dict, DictId, Word} from "../types/types.ts"
 import {_getAccomplishDate, _getStudyProgress, checkAndUpgradeSaveDict} from "@/utils";
-import {SAVE_DICT_KEY} from "@/utils/const.ts";
 import {shallowReactive} from "vue";
 import {getDefaultDict} from "@/types/func.ts";
 import {get, set} from 'idb-keyval'
+import { SAVE_DICT_KEY } from "@/config/ENV.ts";
 
 export interface BaseState {
   simpleWords: string[],

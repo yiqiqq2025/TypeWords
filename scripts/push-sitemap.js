@@ -1,6 +1,6 @@
 const fs = require("fs");
-const bookList = require('../src/assets/book-list.json')
-const dictList = require('../src/assets/dict-list.json')
+const bookList = require('../public/list/book-list.json')
+const dictList = require('../public/list/dict-list.json')
 
 async function pushUrls() {
   // 配置区：改成你的

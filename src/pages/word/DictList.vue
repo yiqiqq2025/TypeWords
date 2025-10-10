@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import {groupBy, useNav} from "@/utils";
+import { groupBy, useNav } from "@/utils";
 import BasePage from "@/components/BasePage.vue";
-import {DictResource} from "@/types/types.ts";
-import {useRuntimeStore} from "@/stores/runtime.ts";
+import { DictResource } from "@/types/types.ts";
+import { useRuntimeStore } from "@/stores/runtime.ts";
 import BaseIcon from "@/components/BaseIcon.vue";
 import Empty from "@/components/Empty.vue";
 import Input from "@/components/Input.vue";
@@ -10,11 +10,12 @@ import BaseButton from "@/components/BaseButton.vue";
 import DictList from "@/components/list/DictList.vue";
 import BackIcon from "@/components/BackIcon.vue";
 import DictGroup from "@/components/list/DictGroup.vue";
-import {useBaseStore} from "@/stores/base.ts";
-import {useRouter} from "vue-router";
-import {computed} from "vue";
-import {getDefaultDict} from "@/types/func.ts";
-import dict_list from "@/assets/dict-list.json";
+import { useBaseStore } from "@/stores/base.ts";
+import { useRouter } from "vue-router";
+import { computed } from "vue";
+import { getDefaultDict } from "@/types/func.ts";
+import { useFetch } from "@vueuse/core";
+import { DICT_LIST } from "@/config/ENV.ts";
 
 const {nav} = useNav()
 const runtimeStore = useRuntimeStore()
@@ -45,9 +46,12 @@ function groupByDictTags(dictList: DictResource[]) {
   }, {})
 }
 
+const {data: dict_list, isFetching} = useFetch(DICT_LIST.WORD.ALL).json()
+
 const groupedByCategoryAndTag = $computed(() => {
-  const groupByCategory = groupBy(dict_list.flat(), 'category')
   let data = []
+  if (!dict_list.value) return data
+  const groupByCategory = groupBy(dict_list.value.flat(), 'category')
   for (const [key, value] of Object.entries(groupByCategory)) {
     data.push([key, groupByDictTags(value)])
   }
@@ -61,7 +65,7 @@ let searchKey = $ref('')
 const searchList = computed<any[]>(() => {
   if (searchKey) {
     let s = searchKey.toLowerCase()
-    return dict_list.flat().filter((item) => {
+    return dict_list.value.flat().filter((item) => {
       return item.id.toLowerCase().includes(s)
           || item.name.toLowerCase().includes(s)
           || item.category.toLowerCase().includes(s)
@@ -76,7 +80,7 @@ const searchList = computed<any[]>(() => {
 
 <template>
   <BasePage>
-    <div class="card">
+    <div class="card min-h-200" v-loading="isFetching">
       <div class="flex items-center relative gap-2">
         <BackIcon class="z-2" @click='router.back'/>
         <div class="flex flex-1 gap-4" v-if="showSearchInput">
@@ -85,9 +89,11 @@ const searchList = computed<any[]>(() => {
         </div>
         <div class="py-1 flex flex-1 justify-end" v-else>
           <span class="page-title absolute w-full center">词典列表</span>
-          <BaseIcon @click="showSearchInput = true"
-                    class="z-1"
-                    icon="fluent:search-24-regular">
+          <BaseIcon
+              title="搜索"
+              @click="showSearchInput = true"
+              class="z-1"
+              icon="fluent:search-24-regular">
             <IconFluentSearch24Regular/>
           </BaseIcon>
         </div>

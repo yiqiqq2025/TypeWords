@@ -1,7 +1,8 @@
 import {onMounted, watchEffect} from "vue"
 import {useSettingStore} from "@/stores/setting.ts";
 import {PronunciationApi} from "@/types/types.ts";
-import {SoundFileOptions} from "@/utils/const.ts";
+
+import { SoundFileOptions } from "@/config/ENV.ts";
 
 export function useSound(audioSrcList?: string[], audioFileLength?: number) {
   let audioList: HTMLAudioElement[] = $ref([])

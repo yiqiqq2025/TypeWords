@@ -24,9 +24,9 @@ import { usePracticeStore } from "@/stores/practice.ts";
 import Toast from '@/components/base/toast/Toast.ts'
 import { getDefaultDict, getDefaultWord } from "@/types/func.ts";
 import ConflictNotice from "@/components/ConflictNotice.vue";
-import dict_list from "@/assets/dict-list.json";
 import PracticeLayout from "@/components/PracticeLayout.vue";
-import { PracticeSaveWordKey } from "@/utils/const.ts";
+
+import { DICT_LIST, PracticeSaveWordKey } from "@/config/ENV.ts";
 
 const {
   isWordCollect,
@@ -64,6 +64,8 @@ async function loadDict() {
   if (dictId) {
     //先在自己的词典列表里面找，如果没有再在资源列表里面找
     dict = store.word.bookList.find(v => v.id === dictId)
+    let r = await fetch(DICT_LIST.WORD.ALL)
+    let dict_list = await r.json()
     if (!dict) dict = dict_list.flat().find(v => v.id === dictId) as Dict
     if (dict && dict.id) {
       //如果是不是自定义词典，就请求数据

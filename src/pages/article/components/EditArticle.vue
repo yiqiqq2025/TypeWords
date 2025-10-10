@@ -18,10 +18,10 @@ import Tooltip from "@/components/base/Tooltip.vue";
 import InputNumber from "@/components/base/InputNumber.vue";
 import {nanoid} from "nanoid";
 import {update} from "idb-keyval";
-import {LOCAL_FILE_KEY} from "@/utils/const.ts";
 import ArticleAudio from "@/pages/article/components/ArticleAudio.vue";
 import BaseInput from "@/components/base/BaseInput.vue";
 import Textarea from "@/components/base/Textarea.vue";
+import { LOCAL_FILE_KEY } from "@/config/ENV.ts";
 
 const Dialog = defineAsyncComponent(() => import('@/components/dialog/Dialog.vue'))
 

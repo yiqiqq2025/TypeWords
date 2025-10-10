@@ -1,18 +1,19 @@
 <script setup lang="ts">
-import {useNav} from "@/utils";
+import { useNav } from "@/utils";
 import BasePage from "@/components/BasePage.vue";
-import {DictResource} from "@/types/types.ts";
-import {useRuntimeStore} from "@/stores/runtime.ts";
+import { DictResource } from "@/types/types.ts";
+import { useRuntimeStore } from "@/stores/runtime.ts";
 import BaseIcon from "@/components/BaseIcon.vue";
 import Empty from "@/components/Empty.vue";
 import Input from "@/components/Input.vue";
 import BaseButton from "@/components/BaseButton.vue";
 import DictList from "@/components/list/DictList.vue";
 import BackIcon from "@/components/BackIcon.vue";
-import {useRouter} from "vue-router";
-import book_list from "@/assets/book-list.json";
-import {computed} from "vue";
-import {getDefaultDict} from "@/types/func.ts";
+import { useRouter } from "vue-router";
+import { computed } from "vue";
+import { getDefaultDict } from "@/types/func.ts";
+import { useFetch } from "@vueuse/core";
+import { DICT_LIST } from "@/config/ENV.ts";
 
 const {nav} = useNav()
 const runtimeStore = useRuntimeStore()
@@ -30,11 +31,12 @@ async function getDictDetail(val: DictResource) {
 
 let showSearchInput = $ref(false)
 let searchKey = $ref('')
+const {data: bookList, isFetching} = useFetch(DICT_LIST.ARTICLE.ALL).json()
 
 const searchList = computed<any[]>(() => {
   if (searchKey) {
     let s = searchKey.toLowerCase()
-    return book_list.flat().filter((item) => {
+    return bookList.value.filter((item) => {
       return item.id.toLowerCase().includes(s)
           || item.name.toLowerCase().includes(s)
           || item.category.toLowerCase().includes(s)
@@ -49,7 +51,7 @@ const searchList = computed<any[]>(() => {
 
 <template>
   <BasePage>
-    <div class="card">
+    <div class="card min-h-50" v-loading="isFetching">
       <div class="flex items-center relative gap-2">
         <BackIcon class="z-2" @Click='router.back'/>
         <div class="flex flex-1 gap-4" v-if="showSearchInput">
@@ -75,9 +77,9 @@ const searchList = computed<any[]>(() => {
       </div>
       <div class="w-full mt-2" v-else>
         <DictList
-            v-if="book_list.flat().length "
+            v-if="bookList?.length "
             @selectDict="selectDict"
-            :list="book_list.flat()"
+            :list="bookList"
             quantifier="篇"
             :select-id="'-1'"/>
       </div>

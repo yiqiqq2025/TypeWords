@@ -18,8 +18,8 @@ import Space from "@/pages/article/components/Space.vue";
 import { useWordOptions } from "@/hooks/dict.ts";
 import nlp from "compromise/three";
 import { nanoid } from "nanoid";
-import { PracticeSaveArticleKey } from "@/utils/const.ts";
 import { usePracticeStore } from "@/stores/practice.ts";
+import { PracticeSaveArticleKey } from "@/config/ENV.ts";
 
 interface IProps {
   article: Article,

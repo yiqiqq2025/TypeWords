@@ -4,13 +4,13 @@ import { BaseState, useBaseStore } from "@/stores/base.ts";
 import { useRuntimeStore } from "@/stores/runtime.ts";
 import { useSettingStore } from "@/stores/setting.ts";
 import useTheme from "@/hooks/theme.ts";
-import { APP_VERSION, LOCAL_FILE_KEY, SAVE_DICT_KEY, SAVE_SETTING_KEY } from "@/utils/const.ts";
 import { shakeCommonDict } from "@/utils";
 import { routes } from "@/router.ts";
 import { get, set } from 'idb-keyval'
 
 import { useRoute } from "vue-router";
 import { DictId } from "@/types/types.ts";
+import { APP_VERSION, LOCAL_FILE_KEY, SAVE_DICT_KEY, SAVE_SETTING_KEY } from "@/config/ENV.ts";
 
 const store = useBaseStore()
 const runtimeStore = useRuntimeStore()

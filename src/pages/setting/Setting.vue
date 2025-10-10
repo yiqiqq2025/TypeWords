@@ -6,20 +6,17 @@ import { getShortcutKey, useEventListener } from "@/hooks/event.ts";
 import { checkAndUpgradeSaveDict, checkAndUpgradeSaveSetting, cloneDeep, loadJsLib, shakeCommonDict } from "@/utils";
 import { DefaultShortcutKeyMap, ShortcutKey } from "@/types/types.ts";
 import BaseButton from "@/components/BaseButton.vue";
-import {
-  APP_NAME,
-  APP_VERSION,
-  EXPORT_DATA_KEY,
-  LOCAL_FILE_KEY, PracticeSaveArticleKey,
-  PracticeSaveWordKey,
-  SAVE_DICT_KEY,
-  SAVE_SETTING_KEY,
-  SoundFileOptions
-} from "@/utils/const.ts";
 import VolumeIcon from "@/components/icon/VolumeIcon.vue";
 import { useBaseStore } from "@/stores/base.ts";
 import { saveAs } from "file-saver";
-import { Origin } from "@/config/ENV.ts";
+import {
+  APP_NAME, APP_VERSION,
+  EXPORT_DATA_KEY,
+  LOCAL_FILE_KEY,
+  Origin,
+  PracticeSaveArticleKey,
+  PracticeSaveWordKey, SAVE_DICT_KEY, SAVE_SETTING_KEY, SoundFileOptions
+} from "@/config/ENV.ts";
 import dayjs from "dayjs";
 import BasePage from "@/components/BasePage.vue";
 import Toast from '@/components/base/toast/Toast.ts'

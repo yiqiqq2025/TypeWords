@@ -18,9 +18,9 @@ import DeleteIcon from "@/components/icon/DeleteIcon.vue";
 import PracticeSettingDialog from "@/pages/word/components/PracticeSettingDialog.vue";
 import ChangeLastPracticeIndexDialog from "@/pages/word/components/ChangeLastPracticeIndexDialog.vue";
 import { useSettingStore } from "@/stores/setting.ts";
-import recommendDictList from "@/assets/recommend-dict-list.json";
 import CollectNotice from "@/components/CollectNotice.vue";
-import { PracticeSaveWordKey } from "@/utils/const.ts";
+import { useFetch } from "@vueuse/core";
+import { DICT_LIST, PracticeSaveWordKey } from "@/config/ENV.ts";
 
 
 const store = useBaseStore()
@@ -130,7 +130,6 @@ const progressTextRight = $computed(() => {
   return store.sdict?.lastLearnIndex
 })
 
-
 function check(cb: Function) {
   if (!store.sdict.id) {
     Toast.warning('请先选择一本词典')
@@ -154,6 +153,8 @@ function saveLastPracticeIndex(e) {
   localStorage.removeItem(PracticeSaveWordKey.key)
   currentStudy = getCurrentStudyWord()
 }
+
+const {data: recommendDictList, isFetching} = useFetch(DICT_LIST.WORD.RECOMMENDED).json()
 </script>
 
 <template>
@@ -266,7 +267,7 @@ function saveLastPracticeIndex(e) {
       </div>
     </div>
 
-    <div class="card  flex flex-col">
+    <div class="card  flex flex-col overflow-hidden" v-loading="isFetching">
       <div class="flex justify-between">
         <div class="title">推荐</div>
         <div class="flex gap-4 items-center">
@@ -274,7 +275,7 @@ function saveLastPracticeIndex(e) {
         </div>
       </div>
 
-      <div class="flex gap-4 flex-wrap  mt-4">
+      <div class="flex gap-4 flex-wrap  mt-4 min-h-50">
         <Book :is-add="false"
               quantifier="个词"
               :item="item as any"

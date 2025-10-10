@@ -31,11 +31,10 @@ import EditSingleArticleModal from "@/pages/article/components/EditSingleArticle
 import Tooltip from "@/components/base/Tooltip.vue";
 import ConflictNotice from "@/components/ConflictNotice.vue";
 import { useRoute, useRouter } from "vue-router";
-import book_list from "@/assets/book-list.json";
 import PracticeLayout from "@/components/PracticeLayout.vue";
 import ArticleAudio from "@/pages/article/components/ArticleAudio.vue";
-import { PracticeSaveArticleKey } from "@/utils/const.ts";
 import VolumeSetting from "@/pages/article/components/VolumeSetting.vue";
+import { DICT_LIST, PracticeSaveArticleKey } from "@/config/ENV.ts";
 
 const store = useBaseStore()
 const settingStore = useSettingStore()
@@ -51,7 +50,6 @@ let typingArticleRef = $ref<any>()
 let loading = $ref<boolean>(false)
 let allWrongWords = new Set()
 let editArticle = $ref<Article>(getDefaultArticle())
-let speedMinute = $ref(0)
 let timer = $ref(0)
 let isFocus = true
 
@@ -109,6 +107,8 @@ async function init() {
   if (dictId) {
     //先在自己的词典列表里面找，如果没有再在资源列表里面找
     dict = store.article.bookList.find(v => v.id === dictId)
+    let r = await fetch(DICT_LIST.ARTICLE.ALL)
+    let book_list = await r.json()
     if (!dict) dict = book_list.flat().find(v => v.id === dictId) as Dict
     if (dict && dict.id) {
       //如果是不是自定义词典，就请求数据

@@ -73,7 +73,6 @@ declare module 'vue' {
     IconFluentSearch24Regular: typeof import('~icons/fluent/search24-regular')['default']
     IconFluentSettings20Regular: typeof import('~icons/fluent/settings20-regular')['default']
     IconFluentShieldQuestion20Regular: typeof import('~icons/fluent/shield-question20-regular')['default']
-    IconFluentSpeaker220Regular: typeof import('~icons/fluent/speaker220-regular')['default']
     IconFluentSpeakerEdit20Regular: typeof import('~icons/fluent/speaker-edit20-regular')['default']
     IconFluentSpeakerSettings20Regular: typeof import('~icons/fluent/speaker-settings20-regular')['default']
     IconFluentStar12Regular: typeof import('~icons/fluent/star12-regular')['default']

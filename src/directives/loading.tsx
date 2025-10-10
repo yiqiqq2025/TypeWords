@@ -1,5 +1,6 @@
 // src/directives/loading.js
 import {createApp, h} from 'vue'
+//@ts-ignore
 import IconEosIconsLoading from '~icons/eos-icons/loading'
 
 // 创建一个 Loading 组件

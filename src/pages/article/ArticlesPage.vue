@@ -14,11 +14,11 @@ import PopConfirm from "@/components/PopConfirm.vue";
 import { watch } from "vue";
 import { getDefaultDict } from "@/types/func.ts";
 import DeleteIcon from "@/components/icon/DeleteIcon.vue";
-import recommendBookList from "@/assets/book-list.json";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
-import { PracticeSaveArticleKey } from "@/utils/const.ts";
 import isoWeek from 'dayjs/plugin/isoWeek'
+import { useFetch } from "@vueuse/core";
+import { DICT_LIST, PracticeSaveArticleKey } from "@/config/ENV.ts";
 
 dayjs.extend(isoWeek)
 dayjs.extend(isBetween);
@@ -152,6 +152,9 @@ const weekList = $computed(() => {
   });
   return list
 })
+
+const {data: recommendBookList, isFetching} = useFetch(DICT_LIST.ARTICLE.RECOMMENDED).json()
+
 </script>
 
 <template>
@@ -246,7 +249,8 @@ const weekList = $computed(() => {
       </div>
     </div>
 
-    <div class="card  flex flex-col">
+
+    <div class="card flex flex-col min-h-50" v-loading="isFetching">
       <div class="flex justify-between">
         <div class="title">推荐</div>
         <div class="flex gap-4 items-center">
@@ -258,7 +262,7 @@ const weekList = $computed(() => {
         <Book :is-add="false"
               quantifier="篇"
               :item="item as any"
-              v-for="(item, j) in recommendBookList[0]" @click="goBookDetail(item as any)"/>
+              v-for="(item, j) in recommendBookList" @click="goBookDetail(item as any)"/>
       </div>
     </div>
   </BasePage>

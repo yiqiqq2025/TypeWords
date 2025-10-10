@@ -2,9 +2,9 @@
 // import origin from './data.json'
 import BaseButton from "@/components/BaseButton.vue";
 import {checkAndUpgradeSaveDict} from "@/utils";
-import {SAVE_DICT_KEY} from "@/utils/const.ts";
 import str from './data.json'
 import {get} from 'idb-keyval'
+import { SAVE_DICT_KEY } from "@/config/ENV.ts";
 
 let data = {}
 let origin = {}
