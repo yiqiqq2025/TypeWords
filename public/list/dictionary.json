@@ -1,5 +1,4 @@
 [
-  [
     {
       "id": "cet4",
       "name": "CET-4",
@@ -675,9 +674,9 @@
       "length": 1665,
       "language": "en",
       "translateLanguage": "zh-CN"
-    }
-  ],
-  [
+    },
+
+
     {
       "id": "pet-2024",
       "name": "PET-2024",
@@ -1873,9 +1872,9 @@
       "length": 438,
       "language": "en",
       "translateLanguage": "zh-CN"
-    }
-  ],
-  [
+    },
+
+
     {
       "id": "gaokao3500",
       "name": "高考 3500 词",
@@ -3257,5 +3256,4 @@
       "language": "en",
       "translateLanguage": "zh-CN"
     }
-  ]
 ]

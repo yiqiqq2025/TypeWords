@@ -51,11 +51,12 @@ const {data: dict_list, isFetching} = useFetch(resourceWrap(DICT_LIST.WORD.ALL))
 const groupedByCategoryAndTag = $computed(() => {
   let data = []
   if (!dict_list.value) return data
-  const groupByCategory = groupBy(dict_list.value.flat(), 'category')
+  const groupByCategory = groupBy(dict_list.value, 'category')
   for (const [key, value] of Object.entries(groupByCategory)) {
     data.push([key, groupByDictTags(value)])
   }
   [data[2], data[3]] = [data[3], data[2]];
+  console.log('data',data)
   return data
 })
 
@@ -65,7 +66,7 @@ let searchKey = $ref('')
 const searchList = computed<any[]>(() => {
   if (searchKey) {
     let s = searchKey.toLowerCase()
-    return dict_list.value.flat().filter((item) => {
+    return dict_list.value.filter((item) => {
       return item.id.toLowerCase().includes(s)
           || item.name.toLowerCase().includes(s)
           || item.category.toLowerCase().includes(s)

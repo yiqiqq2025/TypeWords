@@ -4,8 +4,9 @@ import { _getStudyProgress, checkAndUpgradeSaveDict, shakeCommonDict } from "@/u
 import { shallowReactive } from "vue";
 import { getDefaultDict } from "@/types/func.ts";
 import { get, set } from 'idb-keyval'
-import { IS_OFFICIAL, SAVE_DICT_KEY } from "@/config/env.ts";
-import { dictListVersion } from "@/apis";
+import { CAN_REQUEST, IS_LOGIN, IS_OFFICIAL, SAVE_DICT_KEY } from "@/config/env.ts";
+import { add2MyDict, dictListVersion, myDictList } from "@/apis";
+import Toast from "@/components/base/toast/Toast.ts";
 
 export interface BaseState {
   simpleWords: string[],
@@ -36,18 +37,6 @@ export const DefaultBaseState = (): BaseState => ({
       getDefaultDict({id: DictId.wordCollect, name: '收藏'}),
       getDefaultDict({id: DictId.wordWrong, name: '错词'}),
       getDefaultDict({id: DictId.wordKnown, name: '已掌握', description: '已掌握后的单词不会出现在练习中'}),
-      // getDefaultDict({
-      //   id: 'nce-new-2',
-      //   name: '新概念英语(新版)-2',
-      //   description: '新概念英语新版第二册',
-      //   category: '青少年英语',
-      //   tags: ['新概念英语'],
-      //   url: 'nce-new-2_v2.json',
-      //   length: 862,
-      //   translateLanguage: 'common',
-      //   language: 'en',
-      //   type: DictType.word
-      // }),
     ],
     studyIndex: -1,
   },
@@ -137,7 +126,16 @@ export const useBaseStore = defineStore('base', {
           let configStr: string = await get(SAVE_DICT_KEY.key)
           let data = checkAndUpgradeSaveDict(configStr)
           if (IS_OFFICIAL) {
-            data.dictListVersion = await dictListVersion()
+            let r = await dictListVersion()
+            if (r.success) {
+              data.dictListVersion = r.data
+            }
+          }
+          if (CAN_REQUEST) {
+            let res = await myDictList()
+            if (res.success) {
+              Object.assign(data, res.data)
+            }
           }
           this.setState(data)
           set(SAVE_DICT_KEY.key, JSON.stringify({val: shakeCommonDict(this.$state), version: SAVE_DICT_KEY.version}))
@@ -169,7 +167,13 @@ export const useBaseStore = defineStore('base', {
       }
     },
     //改变书籍
-    changeBook(val: Dict) {
+    async changeBook(val: Dict) {
+      if (CAN_REQUEST) {
+        let r = await add2MyDict({id: val.id, switch: true})
+        if (!r.success) {
+          return Toast.error(r.msg)
+        }
+      }
       //把其他的书籍里面的文章数据都删掉，全保存在内存里太卡了
       this.article.bookList.slice(1).map(v => {
         if (!v.custom) {

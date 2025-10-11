@@ -53,7 +53,6 @@ export function useEventListener(type: string, listener: EventListenerOrEventLis
     }
   })
   const remove = () => {
-    console.log('onUnmounted')
     if (isMobile()) {
       let s = document.querySelector('#typing-listener')
       if (s) {

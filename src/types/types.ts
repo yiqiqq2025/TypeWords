@@ -66,7 +66,7 @@ export interface Sentence {
 }
 
 export interface Article {
-  id: string,
+  id?: number,
   title: string,
   titleTranslate: string,
   text: string,
@@ -150,6 +150,7 @@ export type DictResource = {
   name: string
   description: string
   url: string
+  en_name?: string
   length: number
   category: string
   tags: string[]

@@ -34,9 +34,12 @@ import { useRoute, useRouter } from "vue-router";
 import PracticeLayout from "@/components/PracticeLayout.vue";
 import ArticleAudio from "@/pages/article/components/ArticleAudio.vue";
 import VolumeSetting from "@/pages/article/components/VolumeSetting.vue";
-import { DICT_LIST, PracticeSaveArticleKey } from "@/config/env.ts";
+import { CAN_REQUEST, DICT_LIST, PracticeSaveArticleKey } from "@/config/env.ts";
+import { addStat, setDictProp } from "@/apis";
+import { useRuntimeStore } from "@/stores/runtime.ts";
 
 const store = useBaseStore()
+const runtimeStore = useRuntimeStore()
 const settingStore = useSettingStore()
 const statStore = usePracticeStore()
 const {toggleTheme} = useTheme()
@@ -106,10 +109,10 @@ async function init() {
   let dictId = route.params.id
   if (dictId) {
     //先在自己的词典列表里面找，如果没有再在资源列表里面找
-    dict = store.article.bookList.find(v => v.id === dictId)
+    dict = store.article.bookList.find(v => v.id == dictId)
     let r = await fetch(resourceWrap(DICT_LIST.ARTICLE.ALL))
     let book_list = await r.json()
-    if (!dict) dict = book_list.flat().find(v => v.id === dictId) as Dict
+    if (!dict) dict = book_list.find(v => v.id === dictId) as Dict
     if (dict && dict.id) {
       //如果是不是自定义词典，就请求数据
       if (!dict.custom) dict = await _getDictDataByUrl(dict, DictType.article)
@@ -117,7 +120,7 @@ async function init() {
         router.push('/articles')
         return Toast.warning('没有文章可学习！')
       }
-      store.changeBook(dict)
+      await store.changeBook(dict)
       articleData.list = cloneDeep(store.sbook.articles)
       getCurrentPractice()
       loading = false
@@ -143,6 +146,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  runtimeStore.disableEventListener = false
   clearInterval(timer)
   savePracticeData(true, false)
 })
@@ -234,21 +238,29 @@ function setArticle(val: Article) {
   })
 }
 
-function complete() {
+async function complete() {
   clearInterval(timer)
   setTimeout(() => {
     localStorage.removeItem(PracticeSaveArticleKey.key)
   }, 1500)
 
   //todo 有空了改成实时保存
-  let data: Partial<Statistics> & { title: string, id: string } = {
-    id: articleData.article.id,
+  let data: Partial<Statistics> & { title: string, articleId: number } = {
+    articleId: articleData.article.id,
     title: articleData.article.title,
     spend: statStore.spend,
     startDate: statStore.startDate,
     total: statStore.total,
     wrong: statStore.wrong,
   }
+
+  if (CAN_REQUEST) {
+    let res = await addStat({...data, type: 'article'})
+    if (!res.success) {
+      Toast.error(res.msg)
+    }
+  }
+
   let reportData = {
     name: store.sbook.name,
     index: store.sbook.lastLearnIndex,
@@ -271,7 +283,6 @@ function getCurrentPractice() {
   emitter.emit(EventKey.resetWord)
   let currentArticle = articleData.list[store.sbook.lastLearnIndex]
   let article = getDefaultArticle(currentArticle)
-  // console.log('article', article)
   if (article.sections.length) {
     setArticle(article)
   } else {
@@ -320,11 +331,18 @@ function nextWord(word: ArticleWord) {
   }
 }
 
-function changeArticle(val: ArticleItem) {
+async function changeArticle(val: ArticleItem) {
   let rIndex = articleData.list.findIndex(v => v.id === val.item.id)
   if (rIndex > -1) {
     store.sbook.lastLearnIndex = rIndex
     getCurrentPractice()
+
+    if (CAN_REQUEST) {
+      let res = await setDictProp(null, store.sbook)
+      if (!res.success) {
+        Toast.error(res.msg)
+      }
+    }
   }
 }
 

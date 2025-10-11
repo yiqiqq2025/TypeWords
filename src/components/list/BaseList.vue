@@ -5,13 +5,13 @@ import { nextTick, watch } from 'vue'
 const props = withDefaults(defineProps<{
   list?: any[],
   activeIndex?: number,
-  activeId?: string,
+  activeId?: number,
   isActive?: boolean
   static?: boolean
 }>(), {
   list: [],
   activeIndex: -1,
-  activeId: '',
+  activeId: null,
   isActive: false,
   static: true
 })

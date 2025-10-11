@@ -155,6 +155,8 @@ const weekList = $computed(() => {
 
 const {data: recommendBookList, isFetching} = useFetch(resourceWrap(DICT_LIST.ARTICLE.RECOMMENDED)).json()
 
+
+
 </script>
 
 <template>

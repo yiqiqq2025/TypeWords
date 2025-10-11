@@ -20,7 +20,9 @@ import ArticleAudio from "@/pages/article/components/ArticleAudio.vue";
 import { MessageBox } from "@/utils/MessageBox.tsx";
 import { useSettingStore } from "@/stores/setting.ts";
 import { useFetch } from "@vueuse/core";
-import { DICT_LIST } from "@/config/env.ts";
+import { CAN_REQUEST, DICT_LIST } from "@/config/env.ts";
+import { detail } from "@/apis";
+import { run } from "vue-tsc";
 
 const runtimeStore = useRuntimeStore()
 const settingStore = useSettingStore()
@@ -57,7 +59,7 @@ async function addMyStudyList() {
   }
 
   studyLoading = true
-  base.changeBook(sbook)
+  await base.changeBook(sbook)
   studyLoading = false
 
   window.umami?.track('startStudyArticle', {
@@ -83,17 +85,28 @@ async function init() {
     } else {
       if (!runtimeStore.editDict?.articles?.length
           && !runtimeStore.editDict?.custom
-          && ![DictId.articleCollect].includes(runtimeStore.editDict.id)
+          && ![DictId.articleCollect].includes(runtimeStore.editDict.en_name || runtimeStore.editDict.id)
       ) {
         loading = true
         let r = await _getDictDataByUrl(runtimeStore.editDict, DictType.article)
         loading = false
         runtimeStore.editDict = r
       }
+
+      if (base.article.bookList.find(book => book.id === runtimeStore.editDict.id)) {
+        if (CAN_REQUEST) {
+          let res = await detail({id: runtimeStore.editDict.id})
+          if (res.success) {
+            runtimeStore.editDict.statistics = res.data.statistics
+            if (res.data.articles.length){
+              runtimeStore.editDict.articles = res.data.articles
+            }
+          }
+        }
+      }
       if (runtimeStore.editDict.articles.length) {
         selectArticle = runtimeStore.editDict.articles[0]
       }
-      console.log('runtimeStore.editDict', runtimeStore.editDict)
     }
   }
 }
