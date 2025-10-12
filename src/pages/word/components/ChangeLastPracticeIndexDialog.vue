@@ -4,11 +4,13 @@ import BaseTable from "@/components/BaseTable.vue";
 import WordItem from "@/components/WordItem.vue";
 import {useBaseStore} from "@/stores/base.ts";
 import {defineAsyncComponent} from "vue";
+import { useRuntimeStore } from "@/stores/runtime.ts";
 
 const Dialog = defineAsyncComponent(() => import('@/components/dialog/Dialog.vue'))
 
 const model = defineModel()
-const store = useBaseStore()
+const runtimeStore = useRuntimeStore()
+
 defineEmits<{
   ok: [number]
 }>()
@@ -21,7 +23,7 @@ defineEmits<{
     <div class="px-4 pb-4 h-80vh w-30rem">
       <BaseTable
           class="h-full"
-          :list='store.sdict.words'
+          :list='runtimeStore.editDict.words'
           :loading='false'
           :show-toolbar="false"
       >

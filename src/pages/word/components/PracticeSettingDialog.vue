@@ -12,11 +12,13 @@ import {useSettingStore} from "@/stores/setting.ts";
 import Toast from "@/components/base/toast/Toast.ts";
 import ChangeLastPracticeIndexDialog from "@/pages/word/components/ChangeLastPracticeIndexDialog.vue";
 import Tooltip from "@/components/base/Tooltip.vue";
+import { useRuntimeStore } from "@/stores/runtime.ts";
 
 const Dialog = defineAsyncComponent(() => import('@/components/dialog/Dialog.vue'))
 
 const store = useBaseStore()
 const settings = useSettingStore()
+const runtimeStore = useRuntimeStore()
 
 const model = defineModel()
 
@@ -36,8 +38,8 @@ let tempDisableShowPracticeSettingDialog = $ref(false)
 
 
 function changePerDayStudyNumber() {
-  store.sdict.perDayStudyNumber = tempPerDayStudyNumber
-  store.sdict.lastLearnIndex = tempLastLearnIndex
+  runtimeStore.editDict.perDayStudyNumber = tempPerDayStudyNumber
+  runtimeStore.editDict.lastLearnIndex = tempLastLearnIndex
   settings.wordPracticeMode = temPracticeMode
   settings.disableShowPracticeSettingDialog = tempDisableShowPracticeSettingDialog
   emit('ok')
@@ -45,9 +47,9 @@ function changePerDayStudyNumber() {
 
 watch(() => model.value, (n) => {
   if (n) {
-    if (store.sdict.id) {
-      tempPerDayStudyNumber = store.sdict.perDayStudyNumber
-      tempLastLearnIndex = store.sdict.lastLearnIndex
+    if (runtimeStore.editDict.id) {
+      tempPerDayStudyNumber = runtimeStore.editDict.perDayStudyNumber
+      tempLastLearnIndex = runtimeStore.editDict.lastLearnIndex
       temPracticeMode = settings.wordPracticeMode
       tempDisableShowPracticeSettingDialog = settings.disableShowPracticeSettingDialog
     } else {
@@ -66,7 +68,7 @@ watch(() => model.value, (n) => {
         <span>每日<span class="text-3xl mx-2 lh">{{ tempPerDayStudyNumber }}</span>个，</span>
         <span>预计<span
             class="text-3xl mx-2 lh">{{
-            _getAccomplishDays(store.sdict.length - tempLastLearnIndex, tempPerDayStudyNumber)
+            _getAccomplishDays(runtimeStore.editDict.length - tempLastLearnIndex, tempPerDayStudyNumber)
           }}</span>天完成</span>
       </div>
       <div class="flex mb-4 gap-space">
@@ -84,7 +86,7 @@ watch(() => model.value, (n) => {
                   :step="10"
                   show-text
                   class="my-1"
-                  :max="store.sdict.words.length" v-model="tempLastLearnIndex"/>
+                  :max="runtimeStore.editDict.words.length" v-model="tempLastLearnIndex"/>
           <BaseButton @click="show = true">从词典选起始位置</BaseButton>
         </div>
       </div>

@@ -23,8 +23,8 @@ export const RESOURCE_PATH = ENV.API + 'static'
 
 export const DICT_LIST = {
   WORD: {
-    ALL: '/list/dictionary.json',
-    RECOMMENDED: '/list/recommend_dictionary.json',
+    ALL: '/list/word.json',
+    RECOMMENDED: '/list/recommend_word.json',
   },
   ARTICLE: {
     ALL: '/list/article.json',

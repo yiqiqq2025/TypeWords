@@ -1,11 +1,11 @@
 <script setup lang="tsx">
-import {DictId} from "@/types/types.ts";
+import { DictId } from "@/types/types.ts";
 
 import BasePage from "@/components/BasePage.vue";
-import {computed, onMounted, reactive, ref, shallowReactive} from "vue";
-import {useRuntimeStore} from "@/stores/runtime.ts";
-import {_getDictDataByUrl, _nextTick, convertToWord, loadJsLib, useNav} from "@/utils";
-import {nanoid} from "nanoid";
+import { computed, onMounted, reactive, ref, shallowReactive } from "vue";
+import { useRuntimeStore } from "@/stores/runtime.ts";
+import { _getDictDataByUrl, _nextTick, convertToWord, loadJsLib, useNav } from "@/utils";
+import { nanoid } from "nanoid";
 import BaseIcon from "@/components/BaseIcon.vue";
 import BaseTable from "@/components/BaseTable.vue";
 import WordItem from "@/components/WordItem.vue";
@@ -13,20 +13,21 @@ import Toast from '@/components/base/toast/Toast.ts'
 import PopConfirm from "@/components/PopConfirm.vue";
 import BackIcon from "@/components/BackIcon.vue";
 import BaseButton from "@/components/BaseButton.vue";
-import {useRoute, useRouter} from "vue-router";
-import {useBaseStore} from "@/stores/base.ts";
+import { useRoute, useRouter } from "vue-router";
+import { useBaseStore } from "@/stores/base.ts";
 import EditBook from "@/pages/article/components/EditBook.vue";
-import {getDefaultDict} from "@/types/func.ts";
+import { getDefaultDict } from "@/types/func.ts";
 import BaseInput from "@/components/base/BaseInput.vue";
 import Textarea from "@/components/base/Textarea.vue";
 import FormItem from "@/components/base/form/FormItem.vue";
 import Form from "@/components/base/form/Form.vue";
 import DeleteIcon from "@/components/icon/DeleteIcon.vue";
-import {getCurrentStudyWord} from "@/hooks/dict.ts";
+import { getCurrentStudyWord } from "@/hooks/dict.ts";
 import PracticeSettingDialog from "@/pages/word/components/PracticeSettingDialog.vue";
-import {useSettingStore} from "@/stores/setting.ts";
-import {MessageBox} from "@/utils/MessageBox.tsx";
-import {Origin} from "@/config/env.ts";
+import { useSettingStore } from "@/stores/setting.ts";
+import { MessageBox } from "@/utils/MessageBox.tsx";
+import { CAN_REQUEST, Origin } from "@/config/env.ts";
+import { detail } from "@/apis";
 
 const runtimeStore = useRuntimeStore()
 const base = useBaseStore()
@@ -177,7 +178,7 @@ const showBookDetail = computed(() => {
   return !(isAdd || isEdit);
 })
 
-onMounted(() => {
+onMounted(async () => {
   if (route.query?.isAdd) {
     isAdd = true
     runtimeStore.editDict = getDefaultDict()
@@ -187,14 +188,25 @@ onMounted(() => {
     } else {
       if (!runtimeStore.editDict.words.length
           && !runtimeStore.editDict.custom
-          && ![DictId.wordCollect, DictId.wordWrong, DictId.wordKnown].includes(runtimeStore.editDict.id)
+          && ![DictId.wordCollect, DictId.wordWrong, DictId.wordKnown].includes(runtimeStore.editDict.en_name || runtimeStore.editDict.id)
       ) {
         loading = true
-        _getDictDataByUrl(runtimeStore.editDict).then(r => {
-          loading = false
-          runtimeStore.editDict = r
-        })
+        let r = await _getDictDataByUrl(runtimeStore.editDict)
+        runtimeStore.editDict = r
       }
+
+      if (base.word.bookList.find(book => book.id === runtimeStore.editDict.id)) {
+        if (CAN_REQUEST) {
+          let res = await detail({id: runtimeStore.editDict.id})
+          if (res.success) {
+            runtimeStore.editDict.statistics = res.data.statistics
+            if (res.data.words.length) {
+              runtimeStore.editDict.words = res.data.words
+            }
+          }
+        }
+      }
+      loading = false
     }
   }
 })
@@ -211,38 +223,32 @@ const settingStore = useSettingStore()
 const {nav} = useNav()
 
 //todo 可以和首页合并
-function startPractice() {
-  if (store.sdict.id) {
-    if (!store.sdict.words.length) {
-      return Toast.warning('没有单词可学习！')
-    }
-    window.umami?.track('startStudyWord', {
-      name: store.sdict.name,
-      index: store.sdict.lastLearnIndex,
-      perDayStudyNumber: store.sdict.perDayStudyNumber,
-      custom: store.sdict.custom,
-      complete: store.sdict.complete,
-      wordPracticeMode: settingStore.wordPracticeMode
-    })
-    let currentStudy = getCurrentStudyWord()
-    nav('practice-words/' + store.sdict.id, {}, currentStudy)
-  } else {
-    window.umami?.track('no-dict')
-    Toast.warning('请先选择一本词典')
-  }
-}
-
-async function addMyStudyList() {
+async function startPractice() {
   studyLoading = true
   await base.changeDict(runtimeStore.editDict)
   studyLoading = false
+  window.umami?.track('startStudyWord', {
+    name: store.sdict.name,
+    index: store.sdict.lastLearnIndex,
+    perDayStudyNumber: store.sdict.perDayStudyNumber,
+    custom: store.sdict.custom,
+    complete: store.sdict.complete,
+    wordPracticeMode: settingStore.wordPracticeMode
+  })
+  let currentStudy = getCurrentStudyWord()
+  nav('practice-words/' + store.sdict.id, {}, currentStudy)
+}
+
+async function addMyStudyList() {
+  if (!runtimeStore.editDict.words.length) {
+    return Toast.warning('没有单词可学习！')
+  }
   if (!settingStore.disableShowPracticeSettingDialog) {
     showPracticeSettingDialog = true
     return
   }
   startPractice()
 }
-
 
 let exportLoading = $ref(false)
 let importLoading = $ref(false)

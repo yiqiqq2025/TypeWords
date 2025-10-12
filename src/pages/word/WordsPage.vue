@@ -20,7 +20,8 @@ import ChangeLastPracticeIndexDialog from "@/pages/word/components/ChangeLastPra
 import { useSettingStore } from "@/stores/setting.ts";
 import CollectNotice from "@/components/CollectNotice.vue";
 import { useFetch } from "@vueuse/core";
-import { DICT_LIST, PracticeSaveWordKey } from "@/config/env.ts";
+import { CAN_REQUEST, DICT_LIST, PracticeSaveWordKey } from "@/config/env.ts";
+import { myDictList } from "@/apis";
 
 
 const store = useBaseStore()
@@ -41,6 +42,12 @@ watch(() => store.load, n => {
 }, {immediate: true})
 
 async function init() {
+  if (CAN_REQUEST) {
+    let res = await myDictList({type: "word"})
+    if (res.success) {
+      store.setState(Object.assign(store.$state, res.data))
+    }
+  }
   if (store.word.studyIndex >= 3) {
     if (!store.sdict.custom && !store.sdict.words.length) {
       store.word.bookList[store.word.studyIndex] = await _getDictDataByUrl(store.sdict)
@@ -134,23 +141,26 @@ function check(cb: Function) {
   if (!store.sdict.id) {
     Toast.warning('请先选择一本词典')
   } else {
+    runtimeStore.editDict = getDefaultDict(store.sdict)
     cb()
   }
 }
 
-function savePracticeSetting() {
+async function savePracticeSetting() {
   Toast.success('修改成功')
   isSaveData = false
   localStorage.removeItem(PracticeSaveWordKey.key)
+  await store.changeDict(runtimeStore.editDict)
   currentStudy = getCurrentStudyWord()
 }
 
-function saveLastPracticeIndex(e) {
-  store.sdict.lastLearnIndex = e
-  showChangeLastPracticeIndexDialog = false
+async function saveLastPracticeIndex(e) {
   Toast.success('修改成功')
+  runtimeStore.editDict.lastLearnIndex = e
+  showChangeLastPracticeIndexDialog = false
   isSaveData = false
   localStorage.removeItem(PracticeSaveWordKey.key)
+  await store.changeDict(runtimeStore.editDict)
   currentStudy = getCurrentStudyWord()
 }
 

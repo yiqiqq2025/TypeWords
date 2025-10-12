@@ -22,7 +22,6 @@ import { useSettingStore } from "@/stores/setting.ts";
 import { useFetch } from "@vueuse/core";
 import { CAN_REQUEST, DICT_LIST } from "@/config/env.ts";
 import { detail } from "@/apis";
-import { run } from "vue-tsc";
 
 const runtimeStore = useRuntimeStore()
 const settingStore = useSettingStore()
@@ -89,7 +88,6 @@ async function init() {
       ) {
         loading = true
         let r = await _getDictDataByUrl(runtimeStore.editDict, DictType.article)
-        loading = false
         runtimeStore.editDict = r
       }
 
@@ -107,6 +105,7 @@ async function init() {
       if (runtimeStore.editDict.articles.length) {
         selectArticle = runtimeStore.editDict.articles[0]
       }
+      loading = false
     }
   }
 }

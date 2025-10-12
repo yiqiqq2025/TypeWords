@@ -146,7 +146,13 @@ export const useBaseStore = defineStore('base', {
       })
     },
     //改变词典
-    changeDict(val: Dict) {
+    async changeDict(val: Dict) {
+      if (CAN_REQUEST) {
+        let r = await add2MyDict(val)
+        if (!r.success) {
+          return Toast.error(r.msg)
+        }
+      }
       //把其他的词典的单词数据都删掉，全保存在内存里太卡了
       this.word.bookList.slice(3).map(v => {
         if (!v.custom) {
@@ -161,6 +167,7 @@ export const useBaseStore = defineStore('base', {
         this.word.studyIndex = rIndex
         this.word.bookList[this.word.studyIndex].words = shallowReactive(val.words)
         this.word.bookList[this.word.studyIndex].perDayStudyNumber = val.perDayStudyNumber
+        this.word.bookList[this.word.studyIndex].lastLearnIndex = val.lastLearnIndex
       } else {
         this.word.bookList.push(getDefaultDict(val))
         this.word.studyIndex = this.word.bookList.length - 1
@@ -169,7 +176,7 @@ export const useBaseStore = defineStore('base', {
     //改变书籍
     async changeBook(val: Dict) {
       if (CAN_REQUEST) {
-        let r = await add2MyDict({id: val.id, switch: true})
+        let r = await add2MyDict(val)
         if (!r.success) {
           return Toast.error(r.msg)
         }

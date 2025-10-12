@@ -18,7 +18,8 @@ import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import isoWeek from 'dayjs/plugin/isoWeek'
 import { useFetch } from "@vueuse/core";
-import { DICT_LIST, PracticeSaveArticleKey } from "@/config/env.ts";
+import { CAN_REQUEST, DICT_LIST, PracticeSaveArticleKey } from "@/config/env.ts";
+import { myDictList } from "@/apis";
 
 dayjs.extend(isoWeek)
 dayjs.extend(isBetween);
@@ -35,6 +36,12 @@ watch(() => store.load, n => {
 }, {immediate: true})
 
 async function init() {
+  if (CAN_REQUEST) {
+    let res = await myDictList({type: "article"})
+    if (res.success) {
+      store.setState(Object.assign(store.$state, res.data))
+    }
+  }
   if (store.article.studyIndex >= 1) {
     if (!store.sbook.custom && !store.sbook.articles.length) {
       store.article.bookList[store.article.studyIndex] = await _getDictDataByUrl(store.sbook, DictType.article)
@@ -154,7 +161,6 @@ const weekList = $computed(() => {
 })
 
 const {data: recommendBookList, isFetching} = useFetch(resourceWrap(DICT_LIST.ARTICLE.RECOMMENDED)).json()
-
 
 
 </script>
