@@ -263,7 +263,7 @@ export function shakeCommonDict(n: BaseState): BaseState {
 }
 
 export function isMobile(): boolean {
-  // return /Mobi|Android|iPhone/i.test(navigator.userAgent)
+  return /Mobi|Android|iPhone/i.test(navigator.userAgent)
   return (
     'ontouchstart' in window ||
     navigator.maxTouchPoints > 0 ||
