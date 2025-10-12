@@ -1,17 +1,19 @@
 <script setup lang="ts">
 
-import {Dict, DictId, DictType} from "@/types/types.ts";
-import {cloneDeep} from "@/utils";
+import { Dict, DictId, DictType } from "@/types/types.ts";
+import { cloneDeep } from "@/utils";
 import Toast from '@/components/base/toast/Toast.ts'
-import {onMounted, reactive} from "vue";
-import {useRuntimeStore} from "@/stores/runtime.ts";
-import {useBaseStore} from "@/stores/base.ts";
+import { onMounted, reactive } from "vue";
+import { useRuntimeStore } from "@/stores/runtime.ts";
+import { useBaseStore } from "@/stores/base.ts";
 import BaseButton from "@/components/BaseButton.vue";
-import {getDefaultDict} from "@/types/func.ts";
-import {Option, Select} from "@/components/base/select";
+import { getDefaultDict } from "@/types/func.ts";
+import { Option, Select } from "@/components/base/select";
 import BaseInput from "@/components/base/BaseInput.vue";
 import Form from "@/components/base/form/Form.vue";
 import FormItem from "@/components/base/form/FormItem.vue";
+import { CAN_REQUEST } from "@/config/env.ts";
+import { addDict } from "@/apis";
 
 const props = defineProps<{
   isAdd: boolean,
@@ -35,6 +37,7 @@ const DefaultDictForm = {
 }
 let dictForm: any = $ref(cloneDeep(DefaultDictForm))
 const dictFormRef = $ref()
+let loading = $ref(false)
 const dictRules = reactive({
   name: [
     {required: true, message: '请输入名称', trigger: 'blur'},
@@ -43,9 +46,10 @@ const dictRules = reactive({
 })
 
 async function onSubmit() {
-  await dictFormRef.validate((valid) => {
+  await dictFormRef.validate(async (valid) => {
     if (valid) {
       let data: Dict = getDefaultDict(dictForm)
+      data.type = props.isBook ? DictType.article : DictType.word
       let source = [store.article, store.word][props.isBook ? 0 : 1]
       //todo 可以检查的更准确些，比如json对比
       if (props.isAdd) {
@@ -54,6 +58,16 @@ async function onSubmit() {
           Toast.warning('已有相同名称！')
           return
         } else {
+          if (CAN_REQUEST) {
+            loading = true
+            let res = await addDict(null, data)
+            loading = false
+            if (res.success) {
+              data = getDefaultDict(res.data)
+            } else {
+              return Toast.error(res.msg)
+            }
+          }
           source.bookList.push(cloneDeep(data))
           runtimeStore.editDict = data
           emit('submit')
@@ -62,7 +76,7 @@ async function onSubmit() {
       } else {
         let rIndex = source.bookList.findIndex(v => v.id === data.id)
         //任意修改，都将其变为自定义词典
-        if (!data.custom && ![DictId.wordKnown, DictId.wordWrong, DictId.wordCollect, DictId.articleCollect].includes(data.id)) {
+        if (!data.custom && ![DictId.wordKnown, DictId.wordWrong, DictId.wordCollect, DictId.articleCollect].includes(data.en_name || data.id)) {
           data.custom = true
           data.id += '_custom'
         }
@@ -104,7 +118,7 @@ onMounted(() => {
       <FormItem label="描述">
         <BaseInput v-model="dictForm.description" textarea/>
       </FormItem>
-      <FormItem label="原文语言">
+      <FormItem label="原文语言" v-if="false">
         <Select v-model="dictForm.language" placeholder="请选择选项">
           <Option label="英语" value="en"/>
           <Option label="德语" value="de"/>
@@ -112,7 +126,7 @@ onMounted(() => {
           <Option label="代码" value="code"/>
         </Select>
       </FormItem>
-      <FormItem label="译文语言">
+      <FormItem label="译文语言" v-if="false">
         <Select v-model="dictForm.translateLanguage" placeholder="请选择选项">
           <Option label="中文" value="zh-CN"/>
           <Option label="英语" value="en"/>
@@ -122,7 +136,7 @@ onMounted(() => {
       </FormItem>
       <div class="center">
         <base-button type="info" @click="emit('close')">关闭</base-button>
-        <base-button type="primary" @click="onSubmit">确定</base-button>
+        <base-button type="primary" :loading="loading" @click="onSubmit">确定</base-button>
       </div>
     </Form>
   </div>

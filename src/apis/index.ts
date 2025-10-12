@@ -13,25 +13,37 @@ function remove(data?: any) {
 }
 
 export function dictListVersion() {
-  return http<number>('dicts/dictListVersion', null, null, 'get')
+  return http<number>('dict/dictListVersion', null, null, 'get')
 }
 
 export function myDictList(params?) {
-  return http('dicts/myDictList', null, params, 'get')
+  return http('dict/myDictList', null, params, 'get')
 }
 
 export function add2MyDict(data) {
-  return http('dicts/add2MyDict', remove(data), null, 'post')
+  return http('dict/add2MyDict', remove(data), null, 'post')
 }
 
 export function addStat(data) {
-  return http('dicts/addStat', data, null, 'post')
+  return http('dict/addStat', data, null, 'post')
 }
 
 export function detail(params?, data?) {
-  return http<Dict>('dicts/detail', data, params, 'get')
+  return http<Dict>('dict/detail', data, params, 'get')
 }
 
 export function setDictProp(params?, data?) {
-  return http<Dict>('dicts/setDictProp', remove(data), remove(params), 'post')
+  return http<Dict>('dict/setDictProp', remove(data), remove(params), 'post')
+}
+
+export function syncSetting(params?, data?) {
+  return http<Dict>('dict/syncSetting', remove(data), remove(params), 'post')
+}
+
+export function getSetting(params?, data?) {
+  return http<Dict>('dict/getSetting', remove(data), remove(params), 'get')
+}
+
+export function addDict(params?, data?) {
+  return http<Dict>('dict/addDict', remove(data), remove(params), 'post')
 }

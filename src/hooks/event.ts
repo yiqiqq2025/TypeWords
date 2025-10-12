@@ -37,6 +37,7 @@ export function useEventListener(type: string, listener: EventListenerOrEventLis
         e.ctrlKey = false
         e.altKey = false
         e.shiftKey = false
+        //@ts-ignore
         listener(e)
         e.target.value = '1'
       })

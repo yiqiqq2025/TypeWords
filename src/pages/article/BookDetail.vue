@@ -85,6 +85,7 @@ async function init() {
       if (!runtimeStore.editDict?.articles?.length
           && !runtimeStore.editDict?.custom
           && ![DictId.articleCollect].includes(runtimeStore.editDict.en_name || runtimeStore.editDict.id)
+          && !runtimeStore.editDict?.is_default
       ) {
         loading = true
         let r = await _getDictDataByUrl(runtimeStore.editDict, DictType.article)
@@ -96,7 +97,7 @@ async function init() {
           let res = await detail({id: runtimeStore.editDict.id})
           if (res.success) {
             runtimeStore.editDict.statistics = res.data.statistics
-            if (res.data.articles.length){
+            if (res.data.articles.length) {
               runtimeStore.editDict.articles = res.data.articles
             }
           }

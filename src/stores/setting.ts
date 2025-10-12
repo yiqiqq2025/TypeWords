@@ -1,8 +1,9 @@
-import {defineStore} from "pinia"
-import {checkAndUpgradeSaveSetting, cloneDeep} from "@/utils";
-import {DefaultShortcutKeyMap} from "@/types/types.ts";
-import {get} from "idb-keyval";
-import { APP_VERSION, SAVE_SETTING_KEY } from "@/config/env.ts";
+import { defineStore } from "pinia"
+import { checkAndUpgradeSaveSetting, cloneDeep } from "@/utils";
+import { DefaultShortcutKeyMap } from "@/types/types.ts";
+import { get } from "idb-keyval";
+import { CAN_REQUEST, SAVE_SETTING_KEY } from "@/config/env.ts";
+import { getSetting } from "@/apis";
 
 export interface SettingState {
   soundType: string,
@@ -120,6 +121,12 @@ export const useSettingStore = defineStore('setting', {
           configStr = configStr2
         }
         let data = checkAndUpgradeSaveSetting(configStr)
+        if (CAN_REQUEST) {
+          let res = await getSetting()
+          if (res.success) {
+            Object.assign(data, res.data)
+          }
+        }
         this.setState({...data, load: true})
         resolve(true)
       })

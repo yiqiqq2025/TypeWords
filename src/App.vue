@@ -10,7 +10,8 @@ import { get, set } from 'idb-keyval'
 
 import { useRoute } from "vue-router";
 import { DictId } from "@/types/types.ts";
-import { APP_VERSION, LOCAL_FILE_KEY, SAVE_DICT_KEY, SAVE_SETTING_KEY } from "@/config/env.ts";
+import { APP_VERSION, CAN_REQUEST, LOCAL_FILE_KEY, SAVE_DICT_KEY, SAVE_SETTING_KEY } from "@/config/env.ts";
+import { syncSetting } from "@/apis";
 
 const store = useBaseStore()
 const runtimeStore = useRuntimeStore()
@@ -50,6 +51,9 @@ watch(store.$state, (n: BaseState) => {
 
 watch(settingStore.$state, (n) => {
   set(SAVE_SETTING_KEY.key, JSON.stringify({val: n, version: SAVE_SETTING_KEY.version}))
+  if (CAN_REQUEST) {
+    syncSetting(null, settingStore.$state)
+  }
 })
 
 async function init() {
