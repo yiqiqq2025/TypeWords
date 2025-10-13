@@ -11,7 +11,8 @@ import DictList from "@/pages/word/DictList.vue";
 import BookList from "@/pages/article/BookList.vue";
 import Setting from "@/pages/setting/Setting.vue";
 import Home from "@/pages/home/index.vue";
-import Login from "@/pages/login/index.vue";
+import Login from "@/pages/user/login.vue";
+import User from "@/pages/user/index.vue";
 
 export const routes: RouteRecordRaw[] = [
   {
@@ -35,6 +36,7 @@ export const routes: RouteRecordRaw[] = [
       {path: 'book-list', component: BookList},
       {path: 'setting', component: Setting},
       {path: 'login', component: Login},
+      {path: 'user', component: User},
     ]
   },
   {path: '/batch-edit-article', component: () => import("@/pages/article/BatchEditArticlePage.vue")},
