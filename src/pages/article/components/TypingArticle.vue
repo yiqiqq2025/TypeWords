@@ -537,7 +537,7 @@ const currentPractice = inject('currentPractice', [])
 <template>
   <div class="typing-article" ref="typeArticleRef">
     <header class="mb-4">
-      <div class="title word">{{ props.article.title }}</div>
+      <div class="title word"><span class="font-family text-3xl">{{ store.sbook.lastLearnIndex + 1 }}.</span>{{ props.article.title }}</div>
       <div class="titleTranslate" v-if="settingStore.translate">{{ props.article.titleTranslate }}</div>
     </header>
 
