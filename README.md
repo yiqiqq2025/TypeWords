@@ -1,5 +1,5 @@
-<h1 align="center">
-  Type Words
+<h1 align=center>
+  <img src="https://github.com/user-attachments/assets/9d626e0f-0601-4640-8981-ad66d8ac4853" alt="TypeWords" style="width: 500px;"/>
 </h1>
 
 <p align="center">
@@ -7,8 +7,8 @@
 </p>
 
 <p align="center">
-  学习英语，一次敲击，一点进步；记忆不再盲目，学习更高效，开源单词与文章练习工具
-</p> 
+  <b>学习英语，一次敲击，一点进步；记忆不再盲目，学习更高效，开源单词与文章练习工具</b>
+</p>
 
 <p align="center">
   <a href="https://github.com/zyronon/type-word/blob/master/LICENSE"><img src="https://img.shields.io/github/license/zyronon/type-word" alt="License"></a>
@@ -28,31 +28,30 @@
   <br/>
   <br/>
   <br/>
-</p>  
+</p>
 
 ![image](/public/word.png)
 ![image](/public/article.png)
 
 ## 在线访问
 
-中国: <https://2study.top>   
-其他: <https://vercel.2study.top> or <https://tw.2study.top>
+中国: [https://2study.top](https://2study.top)   
+其他: [https://vercel.2study.top](https://vercel.2study.top) or [https://tw.2study.top](https://tw.2study.top)
 
 ## 功能列表
 
 ### 单词练习
- 
+
 - 三种输入模式：跟打 / 复习 / 默写
 - 智能模式：记忆曲线自动计算学习单词，并通过默写加深记忆
 - 自由模式：不受限制，自行规划
 - 提供音标、发音（美音、英音）、例句、短语、近义词、同根词、词源、错误统计等功能
 
 ### 背文章
- 
+
 - 内置经典教材书籍，也可自行添加、导入文章，提供一键翻译、译文对照功能
 - 跟打 + 默写双模式，逐句输入，自动发音，让背诵更高效
 - 支持边听边默写，强化记忆
-
 
 ### 收藏、错词本、已掌握
 
@@ -61,11 +60,13 @@
 - 可主动添加到收藏中，以便巩固复习
 
 ### 高度自由
+
 - 丰富的键盘音效
 - 可自定义快捷键
 - 高度定制化的设置选项
 
 ### 简洁高效
+
 - 简洁设计，现代化UI，无广告
 - 界面清爽，操作简单
 - 不强制关注任何平台
@@ -77,21 +78,24 @@
 
 ## 运行
 
+#### 注：本项目可单独运行，数据保存在本地，换设备需手动备份数据，不影响正常使用；官方部署版本包含后端接口用于同步数据，后端项目暂未开源
 本项目是基于`Vue`开发的，需要 node 环境来运行。
 
 1. 安装 NodeJS，参考[官方文档](https://nodejs.org/en/download)
 2. 项目文件很大，推荐使用 `git clone --depth 1 https://github.com/zyronon/TypeWords.git` 命令只克隆最近一次提交。直接下载
    Github 提供的 Download ZIP 功能是无法运行的
-3. 打开命令行，在项目根目录下，运行`npm install`来下载依赖。
-4. 执行`npm start`来启动项目，项目默认地址为[`http://localhost:3000`](http://localhost:3000)
+3. 在项目根目录下，打开命令行，运行`npm install`来下载依赖。
+4. 执行`npm run dev`来启动项目，项目默认地址为[`http://localhost:3000`](http://localhost:3000)
 5. 在浏览器中打开[`http://localhost:3000`](http://localhost:3000)  来访问项目。
+6. 执行`npm run build-nocdn`打包项目文件
 
 ## 功能与建议
 
 目前项目处于开发初期，新功能正在持续添加中，如果你对软件有任何功能与建议，欢迎在 `Issues` 中提出
 如果你也喜欢本软件的设计思想，欢迎提交 `pr`，非常感谢你对我们的支持！
- 
+
 ## 贡献指南
+
 [贡献准则](/docs//CONTRIBUTING.md)
 
 如果您对本项目感兴趣，我们非常欢迎参与到项目的贡献中，我们会尽可能地提供帮助
@@ -103,4 +107,3 @@
 再次感谢您对项目的贡献！🎉
 
 
- 

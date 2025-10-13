@@ -244,10 +244,10 @@ function nextSentence() {
   }
   lock = false
 }
-
+  
 function onTyping(e: KeyboardEvent) {
   if (!props.article.sections.length) return
-  if (isTyping) return;
+  if (isTyping || isEnd) return;
   isTyping = true;
   // console.log('keyDown', e.key, e.code, e.keyCode)
   try {
@@ -319,14 +319,15 @@ function onTyping(e: KeyboardEvent) {
     }
     playKeyboardAudio()
     e.preventDefault()
-    isTyping = false
   } catch (e) {
     //todo 上报
     localStorage.removeItem(PracticeSaveArticleKey.key)
     init()
+  }finally {
+    isTyping = false
   }
 }
-
+  
 function play() {
   let currentSection = props.article.sections[sectionIndex]
   emit('play', {sentence: currentSection[sentenceIndex], handle: true})
@@ -536,7 +537,7 @@ const currentPractice = inject('currentPractice', [])
 <template>
   <div class="typing-article" ref="typeArticleRef">
     <header class="mb-4">
-      <div class="title word">{{ props.article.title }}</div>
+      <div class="title word"><span class="font-family text-3xl">{{ store.sbook.lastLearnIndex + 1 }}.</span>{{ props.article.title }}</div>
       <div class="titleTranslate" v-if="settingStore.translate">{{ props.article.titleTranslate }}</div>
     </header>
 
