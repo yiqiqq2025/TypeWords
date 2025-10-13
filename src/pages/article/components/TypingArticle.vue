@@ -244,10 +244,10 @@ function nextSentence() {
   }
   lock = false
 }
-
+  
 function onTyping(e: KeyboardEvent) {
   if (!props.article.sections.length) return
-  if (isTyping) return;
+  if (isTyping || isEnd) return;
   isTyping = true;
   // console.log('keyDown', e.key, e.code, e.keyCode)
   try {
@@ -319,14 +319,15 @@ function onTyping(e: KeyboardEvent) {
     }
     playKeyboardAudio()
     e.preventDefault()
-    isTyping = false
   } catch (e) {
     //todo 上报
     localStorage.removeItem(PracticeSaveArticleKey.key)
     init()
+  }finally {
+    isTyping = false
   }
 }
-
+  
 function play() {
   let currentSection = props.article.sections[sectionIndex]
   emit('play', {sentence: currentSection[sentenceIndex], handle: true})
