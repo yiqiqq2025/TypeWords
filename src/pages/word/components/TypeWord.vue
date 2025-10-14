@@ -340,73 +340,78 @@ function checkCursorPosition() {
             <div class="text-base anim" v-opacity="settingStore.translate">{{ item.cn }}</div>
           </div>
         </div>
-        <div class="line-white my-2 mb-5"></div>
+        <div class="line-white my-2 mb-5 anim" v-opacity="settingStore.translate"></div>
       </template>
 
-      <template v-if="word?.phrases?.length">
-        <div class="flex">
-          <div class="label">短语</div>
-          <div class="flex flex-col">
-            <div class="flex items-center gap-4" v-for="item in word.phrases">
-              <SentenceHightLightWord class="en" :text="item.c" :word="word.word"
-                                      :dictation="(settingStore.dictation && !showFullWord)"/>
-              <div class="cn anim" v-opacity="settingStore.translate">{{ item.cn }}</div>
+
+      <div class="anim" v-opacity="settingStore.translate">
+        <template v-if="word?.phrases?.length">
+          <div class="flex">
+            <div class="label">短语</div>
+            <div class="flex flex-col">
+              <div class="flex items-center gap-4" v-for="item in word.phrases">
+                <SentenceHightLightWord class="en" :text="item.c" :word="word.word"
+                                        :dictation="(settingStore.dictation && !showFullWord)"/>
+                <div class="cn anim" v-opacity="settingStore.translate">{{ item.cn }}</div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="line-white mt-3 mb-2"></div>
-      </template>
+          <div class="line-white mt-3 mb-2"></div>
+        </template>
 
-      <template v-if="word?.synos?.length">
-        <div class="flex">
-          <div class='label'>同近义词</div>
-          <div class="flex flex-col gap-3">
-            <div class="flex" v-for="item in word.synos">
-              <div class="pos line-height-1.4rem!">{{ item.pos }}</div>
-              <div>
-                <div class="cn">{{ item.cn }}</div>
+        <template v-if="word?.synos?.length">
+          <div class="flex">
+            <div class='label'>同近义词</div>
+            <div class="flex flex-col gap-3">
+              <div class="flex" v-for="item in word.synos">
+                <div class="pos line-height-1.4rem!">{{ item.pos }}</div>
                 <div>
-                  <span class="en" v-for="(i,j) in item.ws">{{ i }} {{ j !== item.ws.length - 1 ? ' / ' : '' }} </span>
+                  <div class="cn">{{ item.cn }}</div>
+                  <div>
+                    <span class="en" v-for="(i,j) in item.ws">{{ i }} {{
+                        j !== item.ws.length - 1 ? ' / ' : ''
+                      }} </span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="line-white my-2"></div>
-      </template>
+          <div class="line-white my-2"></div>
+        </template>
 
-      <template v-if="word?.etymology?.length">
-        <div class="flex">
-          <div class="label">词源</div>
-          <div class="text-base">
-            <div class="mb-2" v-for="item in word.etymology">
-              <div class="">{{ item.t }}</div>
-              <div class="">{{ item.d }}</div>
+        <template v-if="word?.etymology?.length">
+          <div class="flex">
+            <div class="label">词源</div>
+            <div class="text-base">
+              <div class="mb-2" v-for="item in word.etymology">
+                <div class="">{{ item.t }}</div>
+                <div class="">{{ item.d }}</div>
+              </div>
             </div>
           </div>
-        </div>
-<!--        <div class="line-white my-2"></div>-->
-      </template>
+          <!--        <div class="line-white my-2"></div>-->
+        </template>
 
-      <template v-if="word?.relWords?.root && false">
-        <div class="flex">
-          <div class="label">同根词</div>
-          <div class="flex flex-col gap-3">
-            <div v-if="word.relWords.root" class=" ">
-              词根：<span class="en">{{ word.relWords.root }}</span>
-            </div>
-            <div class="flex" v-for="item in word.relWords.rels">
-              <div class="pos">{{ item.pos }}</div>
-              <div>
-                <div class="flex items-center gap-4" v-for="itemj in item.words">
-                  <div class="en">{{ itemj.c }}</div>
-                  <div class="cn">{{ itemj.cn }}</div>
+        <template v-if="word?.relWords?.root && false">
+          <div class="flex">
+            <div class="label">同根词</div>
+            <div class="flex flex-col gap-3">
+              <div v-if="word.relWords.root" class=" ">
+                词根：<span class="en">{{ word.relWords.root }}</span>
+              </div>
+              <div class="flex" v-for="item in word.relWords.rels">
+                <div class="pos">{{ item.pos }}</div>
+                <div>
+                  <div class="flex items-center gap-4" v-for="itemj in item.words">
+                    <div class="en">{{ itemj.c }}</div>
+                    <div class="cn">{{ itemj.cn }}</div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </template>
+        </template>
+      </div>
     </div>
     <div class="cursor"
          :style="{top:cursor.top+'px',left:cursor.left+'px',height: settingStore.fontSize.wordForeignFontSize +'px'}"></div>
