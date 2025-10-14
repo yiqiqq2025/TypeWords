@@ -317,7 +317,7 @@ function checkCursorPosition() {
       </div>
 
       <div class="translate anim flex flex-col gap-2 my-3"
-           v-opacity="settingStore.translate"
+           v-opacity="settingStore.translate || showFullWord"
            :style="{
       fontSize: settingStore.fontSize.wordTranslateFontSize +'px',
     }"
@@ -337,14 +337,14 @@ function checkCursorPosition() {
           <div class="sentence" v-for="item in word.sentences">
             <SentenceHightLightWord class="text-xl" :text="item.c" :word="word.word"
                                     :dictation="(settingStore.dictation && !showFullWord)"/>
-            <div class="text-base anim" v-opacity="settingStore.translate">{{ item.cn }}</div>
+            <div class="text-base anim" v-opacity="settingStore.translate  || showFullWord">{{ item.cn }}</div>
           </div>
         </div>
-        <div class="line-white my-2 mb-5 anim" v-opacity="settingStore.translate"></div>
+        <div class="line-white my-2 mb-5 anim" v-opacity="settingStore.translate  || showFullWord"></div>
       </template>
 
 
-      <div class="anim" v-opacity="settingStore.translate">
+      <div class="anim" v-opacity="settingStore.translate || showFullWord">
         <template v-if="word?.phrases?.length">
           <div class="flex">
             <div class="label">短语</div>
