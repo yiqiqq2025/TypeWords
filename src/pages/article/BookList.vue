@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import {useNav} from "@/utils";
+import { useNav } from "@/utils";
 import BasePage from "@/components/BasePage.vue";
-import {DictResource} from "@/types/types.ts";
-import {useRuntimeStore} from "@/stores/runtime.ts";
+import { DictResource } from "@/types/types.ts";
+import { useRuntimeStore } from "@/stores/runtime.ts";
 import BaseIcon from "@/components/BaseIcon.vue";
 import Empty from "@/components/Empty.vue";
-import Input from "@/components/Input.vue";
 import BaseButton from "@/components/BaseButton.vue";
 import DictList from "@/components/list/DictList.vue";
 import BackIcon from "@/components/BackIcon.vue";
-import {useRouter} from "vue-router";
+import { useRouter } from "vue-router";
 import book_list from "@/assets/book-list.json";
-import {computed} from "vue";
-import {getDefaultDict} from "@/types/func.ts";
+import { computed } from "vue";
+import { getDefaultDict } from "@/types/func.ts";
+import BaseInput from "@/components/base/BaseInput.vue";
 
 const {nav} = useNav()
 const runtimeStore = useRuntimeStore()
@@ -53,7 +53,7 @@ const searchList = computed<any[]>(() => {
       <div class="flex items-center relative gap-2">
         <BackIcon class="z-2" @Click='router.back'/>
         <div class="flex flex-1 gap-4" v-if="showSearchInput">
-          <Input prefix-icon placeholder="请输入书籍名称/缩写/类别" v-model="searchKey" class="flex-1" autofocus/>
+          <BaseInput prefix-icon placeholder="请输入书籍名称/缩写/类别" v-model="searchKey" class="flex-1" autofocus clearable/>
           <BaseButton @click="showSearchInput = false, searchKey = ''">取消</BaseButton>
         </div>
         <div class="py-1 flex flex-1 justify-end" v-else>

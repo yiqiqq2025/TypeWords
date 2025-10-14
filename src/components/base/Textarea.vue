@@ -104,8 +104,7 @@ textarea {
 
   &:focus {
     outline: none;
-    border-color: #409eff;
-    box-shadow: 0 0 3px #409eff;
+    border: 1px solid var(--color-select-bg);
   }
 }
 </style>

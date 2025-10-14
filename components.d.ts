@@ -96,7 +96,6 @@ declare module 'vue' {
     IconSimpleIconsWechat: typeof import('~icons/simple-icons/wechat')['default']
     IconSimpleIconsXiaohongshu: typeof import('~icons/simple-icons/xiaohongshu')['default']
     IconSystemUiconsImport: typeof import('~icons/system-uicons/import')['default']
-    Input: typeof import('./src/components/Input.vue')['default']
     InputNumber: typeof import('./src/components/base/InputNumber.vue')['default']
     List: typeof import('./src/components/list/List.vue')['default']
     Logo: typeof import('./src/components/Logo.vue')['default']

@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import {groupBy, useNav} from "@/utils";
+import { groupBy, useNav } from "@/utils";
 import BasePage from "@/components/BasePage.vue";
-import {DictResource} from "@/types/types.ts";
-import {useRuntimeStore} from "@/stores/runtime.ts";
+import { DictResource } from "@/types/types.ts";
+import { useRuntimeStore } from "@/stores/runtime.ts";
 import BaseIcon from "@/components/BaseIcon.vue";
 import Empty from "@/components/Empty.vue";
-import Input from "@/components/Input.vue";
 import BaseButton from "@/components/BaseButton.vue";
 import DictList from "@/components/list/DictList.vue";
 import BackIcon from "@/components/BackIcon.vue";
 import DictGroup from "@/components/list/DictGroup.vue";
-import {useBaseStore} from "@/stores/base.ts";
-import {useRouter} from "vue-router";
-import {computed} from "vue";
-import {getDefaultDict} from "@/types/func.ts";
+import { useBaseStore } from "@/stores/base.ts";
+import { useRouter } from "vue-router";
+import { computed } from "vue";
+import { getDefaultDict } from "@/types/func.ts";
 import dict_list from "@/assets/dict-list.json";
+import BaseInput from "@/components/base/BaseInput.vue";
 
 const {nav} = useNav()
 const runtimeStore = useRuntimeStore()
@@ -80,7 +80,7 @@ const searchList = computed<any[]>(() => {
       <div class="flex items-center relative gap-2">
         <BackIcon class="z-2" @click='router.back'/>
         <div class="flex flex-1 gap-4" v-if="showSearchInput">
-          <Input prefix-icon placeholder="请输入词典名称/缩写/类别" v-model="searchKey" class="flex-1" autofocus/>
+          <BaseInput clearable placeholder="请输入词典名称/缩写/类别" v-model="searchKey" class="flex-1" autofocus/>
           <BaseButton @click="showSearchInput = false, searchKey = ''">取消</BaseButton>
         </div>
         <div class="py-1 flex flex-1 justify-end" v-else>

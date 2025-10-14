@@ -1,10 +1,8 @@
 <script setup lang="ts">
 
-import Input from "@/components/Input.vue";
-import {Article} from "@/types/types.ts";
+import { Article } from "@/types/types.ts";
 import BaseList from "@/components/list/BaseList.vue";
-import * as sea from "node:sea";
-import {watch, watchEffect} from "vue";
+import BaseInput from "@/components/base/BaseInput.vue";
 
 const props = withDefaults(defineProps<{
   list: Article[],
@@ -34,7 +32,9 @@ let localList = $computed(() => {
       let d = Number(t)
       //如果是纯数字，把那一条加进去
       if (!isNaN(d)) {
-        res.push(props.list[d])
+        if (d - 1 < props.list.length) {
+          res.push(props.list[d - 1])
+        }
       }
     } catch (err) {
     }
@@ -69,7 +69,14 @@ defineExpose({scrollToBottom, scrollToItem})
 <template>
   <div class="list">
     <div class="search">
-      <Input prefix-icon v-model="searchKey"/>
+      <BaseInput
+          clearable
+          v-model="searchKey"
+      >
+        <template #subfix>
+          <IconFluentSearch24Regular class="text-lg text-gray"/>
+        </template>
+      </BaseInput>
     </div>
     <BaseList
         ref="listRef"

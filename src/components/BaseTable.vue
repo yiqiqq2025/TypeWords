@@ -6,7 +6,6 @@ import MiniDialog from "@/components/dialog/MiniDialog.vue";
 import BaseIcon from "@/components/BaseIcon.vue";
 import BaseButton from "@/components/BaseButton.vue";
 import {cloneDeep, debounce, reverse, shuffle} from "@/utils";
-import Input from "@/components/Input.vue";
 import PopConfirm from "@/components/PopConfirm.vue";
 import Empty from "@/components/Empty.vue";
 import Pagination from '@/components/base/Pagination.vue'
@@ -14,6 +13,7 @@ import Toast from '@/components/base/toast/Toast.ts'
 import Checkbox from "@/components/base/checkbox/Checkbox.vue";
 import DeleteIcon from "@/components/icon/DeleteIcon.vue";
 import Dialog from "@/components/dialog/Dialog.vue";
+import BaseInput from "@/components/base/BaseInput.vue";
 
 let list = defineModel('list')
 
@@ -146,11 +146,17 @@ defineRender(
                   {
                     showSearchInput ? (
                         <div class="flex gap-4">
-                          <Input
-                              prefixIcon
+                          <BaseInput
+                              clearable
                               modelValue={searchKey}
                               onUpdate:modelValue={debounce(e => searchKey = e)}
-                              class="flex-1"/>
+                              class="flex-1">
+                            {{
+                              subfix: () => <IconFluentSearch24Regular
+                                  class="text-lg text-gray"
+                              />
+                            }}
+                          </BaseInput>
                           <BaseButton onClick={() => (showSearchInput = false, searchKey = '')}>取消</BaseButton>
                         </div>
                     ) : (
