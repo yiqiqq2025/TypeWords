@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { ShortcutKey, Word } from "@/types/types.ts";
+import {ShortcutKey, Word} from "@/types/types.ts";
 import VolumeIcon from "@/components/icon/VolumeIcon.vue";
-import { useSettingStore } from "@/stores/setting.ts";
-import { usePlayBeep, usePlayCorrect, usePlayKeyboardAudio, usePlayWordAudio, useTTsPlayAudio } from "@/hooks/sound.ts";
-import { emitter, EventKey } from "@/utils/eventBus.ts";
-import { nextTick, onMounted, onUnmounted, watch } from "vue";
+import {useSettingStore} from "@/stores/setting.ts";
+import {usePlayBeep, usePlayCorrect, usePlayKeyboardAudio, usePlayWordAudio, useTTsPlayAudio} from "@/hooks/sound.ts";
+import {emitter, EventKey} from "@/utils/eventBus.ts";
+import {nextTick, onMounted, onUnmounted, watch} from "vue";
 import Tooltip from "@/components/base/Tooltip.vue";
 import SentenceHightLightWord from "@/pages/word/components/SentenceHightLightWord.vue";
-import { usePracticeStore } from "@/stores/practice.ts";
-import { getDefaultWord } from "@/types/func.ts";
-import { _nextTick, sleep } from "@/utils";
+import {usePracticeStore} from "@/stores/practice.ts";
+import {getDefaultWord} from "@/types/func.ts";
+import {_nextTick, sleep} from "@/utils";
 
 interface IProps {
   word: Word,
@@ -219,8 +219,6 @@ function play() {
 
 defineExpose({del, showWord, hideWord, play})
 
-let tab = $ref(0)
-
 function mouseleave() {
   setTimeout(() => {
     showFullWord = false
@@ -299,8 +297,8 @@ function checkCursorPosition() {
           }}]
         </div>
         <VolumeIcon
-            :title="`发音(${settingStore.shortcutKeyMap[ShortcutKey.PlayWordPronunciation]})`"
-            ref="volumeIconRef" :simple="true" :cb="() => playWordAudio(word.word)"/>
+          :title="`发音(${settingStore.shortcutKeyMap[ShortcutKey.PlayWordPronunciation]})`"
+          ref="volumeIconRef" :simple="true" :cb="() => playWordAudio(word.word)"/>
       </div>
 
       <div class="word my-1"
@@ -318,76 +316,95 @@ function checkCursorPosition() {
         <span class="letter" v-else>{{ displayWord }}</span>
       </div>
 
-      <div class="translate anim"
+      <div class="translate anim flex flex-col gap-2 my-3"
            v-opacity="settingStore.translate"
            :style="{
       fontSize: settingStore.fontSize.wordTranslateFontSize +'px',
     }"
       >
-        <div class="my-2 flex" v-for="(v,i) in word.trans">
-          <div class="shrink-0" :class="v.pos && 'w-12'">{{ v.pos }}</div>
+        <div class="flex" v-for="(v,i) in word.trans">
+          <div class="shrink-0" :class="v.pos ? 'w-12 en-article-family' : '-ml-3'">{{ v.pos }}</div>
           <span v-if="settingStore.dictation && !showFullWord" v-html="hideWordInTranslation(v.cn, word.word)"></span>
           <span v-else>{{ v.cn }}</span>
         </div>
       </div>
     </div>
     <div class="other">
-      <template v-if="word.sentences && word.sentences.length">
-        <div class="line-white my-4"></div>
-        <div class="sentences">
-          <div class="sentence my-2" v-for="item in word.sentences">
-            <SentenceHightLightWord class="text-lg" :text="item.c" :word="word.word"
+      <div class="line-white my-2"></div>
+
+      <template v-if="word?.sentences?.length">
+        <div class="flex flex-col gap-3">
+          <div class="sentence" v-for="item in word.sentences">
+            <SentenceHightLightWord class="text-xl" :text="item.c" :word="word.word"
                                     :dictation="(settingStore.dictation && !showFullWord)"/>
-            <div class="text-md anim" v-opacity="settingStore.translate">{{ item.cn }}</div>
+            <div class="text-base anim" v-opacity="settingStore.translate">{{ item.cn }}</div>
           </div>
         </div>
+        <div class="line-white my-2 mb-5"></div>
       </template>
 
-      <template v-if="word.phrases.length || word.synos.length || word.relWords.root || word.etymology.length">
-        <div class="line-white my-4"></div>
-        <div class="tabs">
-          <div @click="tab = 0" class="tab" :class="tab === 0 && 'active'">短语</div>
-          <div @click="tab = 1" class="tab" :class="tab === 1 && 'active'">同近义词</div>
-          <!--          <div @click="tab = 2" class="tab" :class="tab === 2 && 'active'">同根词</div>-->
-          <div @click="tab = 3" class="tab" :class="tab === 3 && 'active'">词源</div>
-        </div>
-      </template>
-      <template v-if="tab === 0">
-        <div class="my-2" v-for="item in word.phrases">
-          <SentenceHightLightWord class="text-lg" :text="item.c" :word="word.word"
-                                  :dictation="(settingStore.dictation && !showFullWord)"/>
-          <div class="text-md anim" v-opacity="settingStore.translate">{{ item.cn }}</div>
-        </div>
-      </template>
-      <template v-if="tab === 1">
-        <div class="flex my-2" v-for="item in word.synos">
-          <div class="text-lg w-12">{{ item.pos }}</div>
-          <div>
-            <div class="text-md">{{ item.cn }}</div>
-            <span class="text-md" v-for="(i,j) in item.ws">{{ i }} {{ j !== item.ws.length - 1 ? ' / ' : '' }} </span>
+      <template v-if="word?.phrases?.length">
+        <div class="flex">
+          <div class="label">短语</div>
+          <div class="flex flex-col">
+            <div class="flex items-center gap-4" v-for="item in word.phrases">
+              <SentenceHightLightWord class="en" :text="item.c" :word="word.word"
+                                      :dictation="(settingStore.dictation && !showFullWord)"/>
+              <div class="cn anim" v-opacity="settingStore.translate">{{ item.cn }}</div>
+            </div>
           </div>
         </div>
+        <div class="line-white mt-3 mb-2"></div>
       </template>
-      <template v-if="tab === 2">
-        <div class="mt-2">
-          <div v-if="word.relWords.root">
-            词根：{{ word.relWords.root }}
-          </div>
-          <div class="flex my-2" v-for="item in word.relWords.rels">
-            <div class="text-lg w-12">{{ item.pos }}</div>
-            <div>
-              <div class="flex gap-4" v-for="itemj in item.words">
-                <div class="text-md">{{ itemj.c }}</div>
-                <div class="text-md">{{ itemj.cn }}</div>
+
+      <template v-if="word?.synos?.length">
+        <div class="flex">
+          <div class='label'>同近义词</div>
+          <div class="flex flex-col gap-3">
+            <div class="flex" v-for="item in word.synos">
+              <div class="pos line-height-1.4rem!">{{ item.pos }}</div>
+              <div>
+                <div class="cn">{{ item.cn }}</div>
+                <div>
+                  <span class="en" v-for="(i,j) in item.ws">{{ i }} {{ j !== item.ws.length - 1 ? ' / ' : '' }} </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
+        <div class="line-white my-2"></div>
       </template>
-      <template v-if="tab === 3">
-        <div class="my-2" v-for="item in word.etymology">
-          <div class="text-lg">{{ item.t }}</div>
-          <div class="text-md">{{ item.d }}</div>
+
+      <template v-if="word?.etymology?.length">
+        <div class="flex">
+          <div class="label">词源</div>
+          <div class="text-base">
+            <div class="mb-2" v-for="item in word.etymology">
+              <div class="">{{ item.t }}</div>
+              <div class="">{{ item.d }}</div>
+            </div>
+          </div>
+        </div>
+<!--        <div class="line-white my-2"></div>-->
+      </template>
+
+      <template v-if="word?.relWords?.root && false">
+        <div class="flex">
+          <div class="label">同根词</div>
+          <div class="flex flex-col gap-3">
+            <div v-if="word.relWords.root" class=" ">
+              词根：<span class="en">{{ word.relWords.root }}</span>
+            </div>
+            <div class="flex" v-for="item in word.relWords.rels">
+              <div class="pos">{{ item.pos }}</div>
+              <div>
+                <div class="flex items-center gap-4" v-for="itemj in item.words">
+                  <div class="en">{{ itemj.c }}</div>
+                  <div class="cn">{{ itemj.cn }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </template>
     </div>
@@ -445,6 +462,25 @@ function checkCursorPosition() {
         border-bottom: 2px solid var(--color-font-2);
       }
     }
+  }
+
+  .label {
+    width: 6rem;
+    padding-top: 0.2rem;
+    flex-shrink: 0;
+  }
+
+  .cn {
+    @apply text-base;
+  }
+
+  .en {
+    @apply text-lg;
+  }
+
+  .pos {
+    font-family: var(--en-article-family);
+    @apply text-lg w-12;
   }
 
 }
