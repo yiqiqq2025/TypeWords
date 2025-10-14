@@ -40,5 +40,4 @@ useWindowClick(() => show = false)
 </template>
 
 <style scoped lang="scss">
-@import "@/assets/css/style";
 </style>
