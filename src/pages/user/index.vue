@@ -6,8 +6,9 @@ import router from "@/router.ts";
 
 onMounted(() => {
   if (!IS_LOGIN) {
-    router.push({path: "/login"});
   }
+  router.push({path: "/login"});
+
 })
 </script>
 

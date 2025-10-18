@@ -90,7 +90,7 @@ type AxiosResponse<T> = { code: number, data: T, success: boolean, msg: string }
 
 async function request<T>(url, data = {}, params = {}, method): Promise<AxiosResponse<T>> {
   return axiosInstance({
-    url: '/v1/' + url,
+    url: url,
     method,
     data,
     params,

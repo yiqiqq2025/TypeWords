@@ -26,9 +26,8 @@ import { getCurrentStudyWord } from "@/hooks/dict.ts";
 import PracticeSettingDialog from "@/pages/word/components/PracticeSettingDialog.vue";
 import { useSettingStore } from "@/stores/setting.ts";
 import { MessageBox } from "@/utils/MessageBox.tsx";
-import { CAN_REQUEST, Origin } from "@/config/env.ts";
+import { CAN_REQUEST, Origin, PracticeSaveWordKey } from "@/config/env.ts";
 import { detail } from "@/apis";
-import { PracticeSaveWordKey } from "@/utils/const.ts";
 
 const runtimeStore = useRuntimeStore()
 const base = useBaseStore()
@@ -369,7 +368,7 @@ async function exportData() {
 }
 
 function searchWord() {
-  console.log('wordForm.word',wordForm.word)
+  console.log('wordForm.word', wordForm.word)
 }
 
 defineRender(() => {

@@ -1,4 +1,4 @@
-import http from "@/utils/http.ts";
+import http, { axiosInstance } from "@/utils/http.ts";
 import { Dict } from "@/types/types.ts";
 import { cloneDeep } from "@/utils";
 
@@ -46,4 +46,15 @@ export function getSetting(params?, data?) {
 
 export function addDict(params?, data?) {
   return http<Dict>('dict/addDict', remove(data), remove(params), 'post')
+}
+
+export function uploadImportData(data) {
+  return axiosInstance({
+    url: 'dict/uploadImportData',
+    method: 'post',
+    headers: {
+      contentType: 'formdata',
+    },
+    data,
+  })
 }
