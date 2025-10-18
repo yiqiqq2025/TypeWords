@@ -27,6 +27,7 @@ import PracticeSettingDialog from "@/pages/word/components/PracticeSettingDialog
 import { useSettingStore } from "@/stores/setting.ts";
 import { MessageBox } from "@/utils/MessageBox.tsx";
 import { Origin } from "@/config/ENV.ts";
+import { PracticeSaveWordKey } from "@/utils/const.ts";
 
 const runtimeStore = useRuntimeStore()
 const base = useBaseStore()
@@ -216,6 +217,7 @@ function startPractice() {
     if (!store.sdict.words.length) {
       return Toast.warning('没有单词可学习！')
     }
+    localStorage.removeItem(PracticeSaveWordKey.key)
     window.umami?.track('startStudyWord', {
       name: store.sdict.name,
       index: store.sdict.lastLearnIndex,
