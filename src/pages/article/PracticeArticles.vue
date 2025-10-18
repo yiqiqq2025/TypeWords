@@ -303,8 +303,8 @@ function wrong(word: Word) {
   if (settingStore.ignoreSimpleWord) {
     if (store.simpleWords.includes(temp)) return
   }
-  if (!allWrongWords.has(word.word.toLowerCase())) {
-    allWrongWords.add(word.word.toLowerCase())
+  if (!allWrongWords.has(temp)) {
+    allWrongWords.add(temp)
     statStore.wrong++
   }
 
