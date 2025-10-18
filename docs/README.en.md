@@ -1,5 +1,5 @@
-<h1 align="center">
-  Type Words
+<h1 align=center>
+  <img src="https://github.com/user-attachments/assets/9d626e0f-0601-4640-8981-ad66d8ac4853" alt="TypeWords" style="width: 500px;"/>
 </h1>
 
 <p align="center">
@@ -34,9 +34,8 @@ Practice English, one strike, one step forward
   <br/>
 </p>  
 
-
-![image](/public/word.png)
-![image](/public/article.png)
+<img width="1920" height="1440" alt="295shots_so" src="https://github.com/user-attachments/assets/383ed437-856e-48fe-92b0-9619babb49be" />
+<img width="1920" height="1440" alt="922shots_so" src="https://github.com/user-attachments/assets/5b5fa13f-747c-4368-ae21-3c9d7d30fbc7" />
 
 ## Online visit
 

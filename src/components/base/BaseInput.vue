@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import {ref, useAttrs, watch} from 'vue';
+import { ref, useAttrs, watch } from 'vue';
+import Close from "@/components/icon/Close.vue";
+import { useDisableEventListener } from "@/hooks/event.ts";
 
 const props = defineProps({
   modelValue: [String, Number],
   placeholder: String,
   disabled: Boolean,
+  autofocus: Boolean,
   type: {
     type: String,
     default: 'text',
@@ -25,6 +28,8 @@ const attrs = useAttrs();
 
 const inputValue = ref(props.modelValue);
 const errorMsg = ref('');
+let focus = $ref(false)
+let inputEl = $ref<HTMLDivElement>()
 
 watch(() => props.modelValue, (val) => {
   inputValue.value = val;
@@ -57,24 +62,42 @@ const onChange = (e: Event) => {
 };
 
 const onFocus = (e: FocusEvent) => {
+  focus = true
   emit('focus', e);
 };
 
 const onBlur = (e: FocusEvent) => {
+  focus = false
   validate(inputValue.value);
   emit('blur', e);
 };
 
 const clearInput = () => {
+
   inputValue.value = '';
   validate('');
   emit('update:modelValue', '');
 };
 
+//当聚焦时，禁用输入监听
+useDisableEventListener(() => focus)
+
+const vFocus = {
+  mounted: (el, bind) => {
+    if (bind.value) {
+      el.focus()
+      setTimeout(() => focus = true)
+    }
+  }
+}
+
 </script>
 
 <template>
-  <div class="custom-input" :class="{ 'is-disabled': disabled, 'has-error': errorMsg }">
+  <div class="base-input2"
+       ref="inputEl"
+       :class="{ 'is-disabled': disabled, 'has-error': errorMsg,focus }">
+    <slot name="subfix"></slot>
     <input
         v-bind="attrs"
         :type="type"
@@ -85,88 +108,71 @@ const clearInput = () => {
         @change="onChange"
         @focus="onFocus"
         @blur="onBlur"
-        class="custom-input__inner"
+        class="inner"
+        v-focus="autofocus"
         :maxlength="maxLength"
     />
-    <button
+    <slot name="prefix"></slot>
+    <Close
         v-if="clearable && inputValue && !disabled"
-        type="button"
-        class="custom-input__clear"
-        @click="clearInput"
-        aria-label="Clear input"
-    >×
-    </button>
-
-    <div v-if="errorMsg" class="custom-input__error">{{ errorMsg }}</div>
+        @click="clearInput"/>
+    <div v-if="errorMsg" class="base-input2__error">{{ errorMsg }}</div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.custom-input {
+.base-input2 {
   position: relative;
-  display: inline-block;
+  display: inline-flex;
+  box-sizing: border-box;
   width: 100%;
+  background: var(--color-input-bg);
+  border: 1px solid var(--color-input-border);
+  border-radius: 4px;
+  overflow: hidden;
+  padding: .2rem .3rem;
+  transition: all .3s;
+  align-items: center;
+  background: var(--color-input-bg);
 
   &.is-disabled {
     opacity: 0.6;
   }
 
   &.has-error {
-    .custom-input__inner {
+    .base-input2__inner {
       border-color: #f56c6c;
     }
 
-    .custom-input__error {
+    .base-input2__error {
       color: #f56c6c;
       font-size: 0.85rem;
       margin-top: 0.25rem;
     }
   }
 
-  &__inner {
-    width: 100%;
-    padding: 0.4rem 1.5rem 0.4rem 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
-    box-sizing: border-box;
-    transition: all .3s;
-    color: var(--color-input-color);
-    background: var(--color-input-bg);
-
-    &:focus {
-      outline: none;
-      border-color: #409eff;
-      box-shadow: 0 0 3px #409eff;
-    }
-
-    &:disabled {
-      background-color: #f5f5f5;
-      cursor: not-allowed;
-    }
+  &.focus {
+    border: 1px solid var(--color-select-bg);
   }
 
-  &__clear {
-    position: absolute;
-    right: 0.4rem;
-    top: 50%;
-    transform: translateY(-50%);
-    border: none;
-    background: transparent;
-    font-size: 1.2rem;
-    line-height: 1;
-    cursor: pointer;
-    color: #999;
-    padding: 0;
-    user-select: none;
-
-    &:hover {
-      color: #666;
-    }
+  &:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
   }
 
   &__error {
     padding-left: 0.5rem;
+  }
+
+  .inner {
+    flex: 1;
+    font-size: 1rem;
+    outline: none;
+    border: none;
+    box-sizing: border-box;
+    transition: all .3s;
+    height: 1.5rem;
+    color: var(--color-input-color);
   }
 }
 </style>

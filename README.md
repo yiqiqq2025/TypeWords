@@ -30,8 +30,8 @@
   <br/>
 </p>
 
-![image](/public/word.png)
-![image](/public/article.png)
+<img width="1920" height="1440" alt="295shots_so" src="https://github.com/user-attachments/assets/383ed437-856e-48fe-92b0-9619babb49be" />
+<img width="1920" height="1440" alt="922shots_so" src="https://github.com/user-attachments/assets/5b5fa13f-747c-4368-ae21-3c9d7d30fbc7" />
 
 ## 在线访问
 
@@ -78,7 +78,7 @@
 
 ## 运行
 
-#### 注：本项目可单独运行，数据保存在本地，换设备需手动备份数据，不影响正常使用；官方部署版本包含后端接口用于同步数据，后端项目暂未开源
+#### 注：本项目可单独运行，数据保存在本地，换设备需手动备份数据，不影响正常使用；
 本项目是基于`Vue`开发的，需要 node 环境来运行。
 
 1. 安装 NodeJS，参考[官方文档](https://nodejs.org/en/download)

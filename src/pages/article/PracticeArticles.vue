@@ -207,16 +207,6 @@ function setArticle(val: Article) {
   allWrongWords = new Set()
   articleData.list[store.sbook.lastLearnIndex] = val
   articleData.article = val
-
-  savePracticeData()
-  clearInterval(timer)
-  timer = setInterval(() => {
-    if (isFocus) {
-      statStore.spend += 1000
-      savePracticeData(false)
-    }
-  }, 1000)
-
   let ignoreList = [store.allIgnoreWords, store.knownWords][settingStore.ignoreSimpleWord ? 0 : 1]
   articleData.article.sections.map((v, i) => {
     v.map((w) => {
@@ -227,6 +217,16 @@ function setArticle(val: Article) {
       })
     })
   })
+
+  savePracticeData()
+  clearInterval(timer)
+  timer = setInterval(() => {
+    if (isFocus) {
+      statStore.spend += 1000
+      savePracticeData(false)
+    }
+  }, 1000)
+
   _nextTick(typingArticleRef?.init)
 
   window.umami?.track('startStudyArticle', {
@@ -314,8 +314,8 @@ function wrong(word: Word) {
   if (settingStore.ignoreSimpleWord) {
     if (store.simpleWords.includes(temp)) return
   }
-  if (!allWrongWords.has(word.word.toLowerCase())) {
-    allWrongWords.add(word.word.toLowerCase())
+  if (!allWrongWords.has(temp)) {
+    allWrongWords.add(temp)
     statStore.wrong++
   }
 

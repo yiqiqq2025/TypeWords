@@ -28,6 +28,7 @@ import { useSettingStore } from "@/stores/setting.ts";
 import { MessageBox } from "@/utils/MessageBox.tsx";
 import { CAN_REQUEST, Origin } from "@/config/env.ts";
 import { detail } from "@/apis";
+import { PracticeSaveWordKey } from "@/utils/const.ts";
 
 const runtimeStore = useRuntimeStore()
 const base = useBaseStore()
@@ -224,6 +225,7 @@ const {nav} = useNav()
 
 //todo 可以和首页合并
 async function startPractice() {
+  localStorage.removeItem(PracticeSaveWordKey.key)
   studyLoading = true
   await base.changeDict(runtimeStore.editDict)
   studyLoading = false
@@ -366,6 +368,10 @@ async function exportData() {
   exportLoading = false
 }
 
+function searchWord() {
+  console.log('wordForm.word',wordForm.word)
+}
+
 defineRender(() => {
   return (
       <BasePage>
@@ -447,7 +453,9 @@ defineRender(() => {
                               <BaseInput
                                   modelValue={wordForm.word}
                                   onUpdate:modelValue={e => wordForm.word = e}
-                              />
+                              >
+
+                              </BaseInput>
                             </FormItem>
                             <FormItem label="英音音标">
                               <BaseInput

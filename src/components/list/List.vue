@@ -1,10 +1,10 @@
 <script setup lang="ts" generic="T extends {id:string}">
 
 import BaseIcon from "@/components/BaseIcon.vue";
-import Input from "@/components/Input.vue";
-import {cloneDeep, throttle} from "@/utils";
-import {Article} from "@/types/types.ts";
+import { cloneDeep, throttle } from "@/utils";
+import { Article } from "@/types/types.ts";
 import DeleteIcon from "@/components/icon/DeleteIcon.vue";
+import BaseInput from "@/components/base/BaseInput.vue";
 
 interface IProps {
   list: T[]
@@ -102,7 +102,14 @@ defineExpose({scrollBottom})
        ref="el"
   >
     <div class="search">
-      <Input prefix-icon v-model="searchKey"/>
+      <BaseInput
+          clearable
+          v-model="searchKey"
+      >
+        <template #subfix>
+          <IconFluentSearch24Regular class="text-lg text-gray"/>
+        </template>
+      </BaseInput>
     </div>
     <transition-group name="drag" class="list" tag="div">
       <div class="item"
