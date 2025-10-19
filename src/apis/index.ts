@@ -48,7 +48,7 @@ export function addDict(params?, data?) {
   return http<Dict>('dict/addDict', remove(data), remove(params), 'post')
 }
 
-export function uploadImportData(data) {
+export function uploadImportData(data,onUploadProgress) {
   return axiosInstance({
     url: 'dict/uploadImportData',
     method: 'post',
@@ -56,5 +56,6 @@ export function uploadImportData(data) {
       contentType: 'formdata',
     },
     data,
+    onUploadProgress
   })
 }

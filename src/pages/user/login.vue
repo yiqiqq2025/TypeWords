@@ -8,13 +8,27 @@ function sync() {
 
 }
 
-function handleAudioChange(e) {
+async function handleAudioChange(e) {
   let uploadFile = e.target?.files?.[0]
   if (!uploadFile) return
   let data = new FormData();
   data.append("file", uploadFile);
-  uploadImportData(data)
+  let res = await uploadImportData(data, e => {
+    console.log('e', e)
+  })
+  console.log('res', res)
   console.log(uploadFile)
+  e.target.value = ''
+}
+
+async function s() {
+  const taskId = await fetch('/startImport').then(r => r.json()).then(d => d.taskId);
+
+  const timer = setInterval(async () => {
+    const res = await fetch(`/getProgress/${taskId}`).then(r => r.json());
+    console.log(`当前进度: ${res.progress}%`);
+    if (res.progress >= 100) clearInterval(timer);
+  }, 1000);
 }
 </script>
 
