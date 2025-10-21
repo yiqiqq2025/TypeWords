@@ -16,9 +16,10 @@ const map = {
 }
 
 export const ENV = Object.assign(map['DEV'], common)
-export const IS_OFFICIAL = import.meta.env.DEV
-// export const IS_OFFICIAL = false
-export let IS_LOGIN = true
+// export const IS_OFFICIAL = import.meta.env.DEV
+// export let IS_LOGIN = true
+export const IS_OFFICIAL = false
+export let IS_LOGIN = false
 export const CAN_REQUEST = IS_LOGIN && IS_OFFICIAL
 export const RESOURCE_PATH = ENV.API + 'static'
 

@@ -1,14 +1,14 @@
-import { BaseState, DefaultBaseState, useBaseStore } from "@/stores/base.ts";
-import { getDefaultSettingState, SettingState } from "@/stores/setting.ts";
-import { Dict, DictId, DictResource, DictType } from "@/types/types.ts";
-import { useRouter } from "vue-router";
-import { useRuntimeStore } from "@/stores/runtime.ts";
+import {BaseState, DefaultBaseState, useBaseStore} from "@/stores/base.ts";
+import {getDefaultSettingState, SettingState} from "@/stores/setting.ts";
+import {Dict, DictId, DictResource, DictType} from "@/types/types.ts";
+import {useRouter} from "vue-router";
+import {useRuntimeStore} from "@/stores/runtime.ts";
 import dayjs from 'dayjs'
 import axios from "axios";
-import { ENV, IS_OFFICIAL, RESOURCE_PATH, SAVE_DICT_KEY, SAVE_SETTING_KEY } from "@/config/env.ts";
-import { nextTick } from "vue";
+import {ENV, IS_OFFICIAL, RESOURCE_PATH, SAVE_DICT_KEY, SAVE_SETTING_KEY} from "@/config/env.ts";
+import {nextTick} from "vue";
 import Toast from '@/components/base/toast/Toast.ts'
-import { getDefaultDict, getDefaultWord } from "@/types/func.ts";
+import {getDefaultDict, getDefaultWord} from "@/types/func.ts";
 import duration from "dayjs/plugin/duration";
 
 dayjs.extend(duration);
@@ -124,9 +124,7 @@ export function shakeCommonDict(n: BaseState): BaseState {
 }
 
 export function isMobile(): boolean {
-  return /Mobi|Android|iPhone|Safari/i.test(navigator.userAgent)
-  //@ts-ignore
-  return ('ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0);
+  return /Mobi|iPhone|Android|ipad|tablet/i.test(window.navigator.userAgent)
 }
 
 export function useNav() {
