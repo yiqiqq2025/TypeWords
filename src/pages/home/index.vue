@@ -12,7 +12,7 @@ let showXhsDialog = $ref(false)
 <template>
   <div class="flex flex-col justify-between min-h-screen">
     <div class="center flex-col gap-8">
-      <h1>一起ABC</h1>
+      <h1>{{ ProjectName }}</h1>
       <div class="text-center -mt-10">
         <h2>学习英语，一次敲击，一点进步</h2>
         <h2>记忆不再盲目，学习更高效，开源单词与文章练习工具</h2>
@@ -21,8 +21,6 @@ let showXhsDialog = $ref(false)
         <BaseButton size="large" @click="$router.push('/words')">单词练习</BaseButton>
         <BaseButton size="large" @click="$router.push('/articles')">文章练习</BaseButton>
       </div>
-
-    
       <div class="w-60vw">
         <div class="flex mb-5 gap-space">
           <div class="card">
@@ -122,6 +120,10 @@ let showXhsDialog = $ref(false)
         </div>
       </div>
     </div>
+    <div class="center gap-space  my-10 bottom">
+      <div>YiQiQQ</div>
+    </div>
+  </div>
 </template>
 <style scoped lang="scss">
 h1 {
