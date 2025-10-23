@@ -125,67 +125,6 @@ let showXhsDialog = $ref(false)
         </div>
       </div>
     </div>
-    <div class="center gap-space  my-10 bottom">
-      <div class="center gap-1">
-        <a
-            :href="GITHUB"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="GITHUB 项目地址">
-          <BaseIcon>
-            <IconSimpleIconsGithub/>
-          </BaseIcon>
-        </a>
-
-        <BaseIcon @click="showWechatDialog = true">
-          <IconSimpleIconsWechat/>
-        </BaseIcon>
-        <BaseIcon @click="showXhsDialog = true" >
-          <IconSimpleIconsXiaohongshu/>
-        </BaseIcon>
-        <a
-            href="https://x.com/typewords2"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="关注我的 X 账户 typewords2">
-          <BaseIcon>
-            <IconRiTwitterFill/>
-          </BaseIcon>
-        </a>
-        <a
-            href="mailto:zyronon@163.com"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="发送邮件到 zyronon@163.com">
-          <BaseIcon>
-            <IconMaterialSymbolsMail/>
-          </BaseIcon>
-        </a>
-      </div>
-      <div>蜀ICP备2025157466号</div>
-    </div>
-
-    <Dialog v-model="showWechatDialog" title="Type Words 交流群">
-      <div class="w-120 p-6 pt-0">
-        <div class="mb-4">
-          加入我们的用户社群后，您可以与我们的开发团队进行沟通，分享您的使用体验和建议，帮助我们改进产品，同时也能够及时了解我们的最新动态和更新内容。
-        </div>
-        <div class="text-center">
-          <img src="/wechat.png" alt="微信群二维码" class="w-60 rounded-lg">
-        </div>
-      </div>
-    </Dialog>
-    <Dialog v-model="showXhsDialog" title="小红书">
-      <div class="w-120 p-6 pt-0">
-        <div class="mb-4">
-          关注小红书后，您可以获得开发团队的最新动态和更新内容，反馈您的使用体验和建议，帮助我们改进产品，同时也能够及时了解我们的最新动态和更新内容。
-        </div>
-        <div class="text-center">
-          <img src="/xhs.png" alt="小红书二维码" class="w-60 rounded-lg">
-        </div>
-      </div>
-    </Dialog>
-  </div>
 </template>
 <style scoped lang="scss">
 h1 {
