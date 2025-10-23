@@ -695,9 +695,7 @@ function importOldData() {
 
         <div v-if="tabIndex === 6" class="center flex-col">
           <h1>Type Words</h1>
-          <p class="w-100 text-xl">
-            感谢使用本项目！本项目是开源项目，如果觉得有帮助，请在 GitHub 点个 Star，您的支持是我持续改进的动力。
-          </p>
+        
           <p>
             GitHub地址：<a href="https://github.com/zyronon/TypeWords" target="_blank">https://github.com/zyronon/TypeWords</a>
           </p>
