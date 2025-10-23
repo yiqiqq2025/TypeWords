@@ -22,10 +22,7 @@ let showXhsDialog = $ref(false)
         <BaseButton size="large" @click="$router.push('/articles')">文章练习</BaseButton>
       </div>
 
-      <div class="center justify-center flex-col gap-2 w-full mb-4">
-        <a href="https://skywork.ai/p/GrXQb4" class="w-60vw" target="_blank"><img src="/skywork-ai.png" alt="Skywork.AI" class="w-full rounded-lg"></a>
-        <span>Skywork.AI:<a href="https://skywork.ai/p/GrXQb4" class="color-blue!" target="_blank">10 tasks in 1 hour, not 10 hours →Limited free spots: 127 left</a></span>
-      </div>
+    
       <div class="w-60vw">
         <div class="flex mb-5 gap-space">
           <div class="card">
